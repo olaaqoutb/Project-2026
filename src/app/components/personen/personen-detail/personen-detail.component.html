@@ -592,7 +592,10 @@
           {{ isPanelOpen.vertragsdaten ? "expand_less" : "expand_more" }}
         </mat-icon>
         <mat-card-title>Vertragsdaten</mat-card-title>
-        <mat-checkbox>inkl. inaktive</mat-checkbox>
+        <mat-checkbox
+          [(ngModel)]="showInactive"
+          (click)="$event.stopPropagation()"
+        >inkl. inaktive</mat-checkbox>
       </mat-card-header>
 
       <mat-card-content
@@ -601,24 +604,27 @@
       >
         <div class="vertrage-container">
           <!-- Level 0: Main Contracts -->
-          <div *ngFor="let vertrag of vertrageData" class="vertrag-level-0">
+          <div *ngFor="let vertrag of filteredVertrage" class="vertrag-level-0">
             <div class="vertrag-header"
                  [class.selected]="selectedVertragId === vertrag.id"
+                 [class.inactive]="!vertrag.aktiv"
                  (click)="selectVertrag(vertrag.id, $event); toggleVertrag(vertrag)">
-              <mat-icon class="expand-icon-small">
-                {{ vertrag.expanded ? "expand_more" : "chevron_right" }}
-              </mat-icon>
               <div class="vertrag-info">
                 <div class="tree-heading">
                   <mat-icon class="vertrage-level-icon">article</mat-icon>
                   <span class="vertrag-title">{{ vertrag.title }}</span>
                 </div>
                 <span class="vertrag-details">
-              Geplant: {{ vertrag.geplant | number : "1.2-2" }} | Gebucht:
-                  {{ vertrag.gebucht | number : "1.2-2" }}
+              <i class="mdi mdi-file-tree detail-icon"></i> Geplant: <strong>{{ vertrag.geplant | number : "1.2-2" }}</strong> | Gebucht:
+                  <strong>{{ vertrag.gebucht | number : "1.2-2" }}</strong>
             </span>
               </div>
-              <button mat-icon-button class="vertrag-action-btn" *ngIf="vertrag.id=='1'">
+              <button
+                mat-icon-button
+                class="vertrag-action-btn"
+                matTooltip="Zum Vertrag"
+                (click)="goToVertrag(vertrag.id, $event)"
+              >
                 <mat-icon>keyboard_double_arrow_right</mat-icon>
               </button>
             </div>
@@ -634,21 +640,15 @@
                   [class.selected]="selectedVertragId === level1.id"
                   (click)="selectVertrag(level1.id, $event); toggleLevel2(level1)"
                 >
-                  <mat-icon
-                    class="expand-icon-small"
-                    *ngIf="level1.children && level1.children.length > 0"
-                  >
-                    {{ level1.expanded ? "expand_more" : "chevron_right" }}
-                  </mat-icon>
                   <div class="vertrag-info">
                     <div class="tree-heading">
-                      <mat-icon class="vertrage-level-icon">location_on</mat-icon>
+                      <i class="mdi mdi-map-marker vertrage-level-icon-mdi"></i>
                       <span class="vertrag-title">{{ level1.title }}</span>
                     </div>
                     <span class="vertrag-details">
-                  Volumen €: {{ level1.volumenE | number : "1.2-2" }} |
-                  Volumen Std: {{ level1.volumenStd }} |
-                  Geplant: {{ level1.geplant }}
+                  <i class="mdi mdi-file-tree detail-icon"></i> Volumen €: <strong>{{ level1.volumenE | number : "1.2-2" }}</strong> |
+                  Volumen Std: <strong>{{ level1.volumenStd }}</strong> |
+                  Geplant: <strong>{{ level1.geplant }}</strong>
                 </span>
                   </div>
                 </div>
@@ -662,16 +662,15 @@
                     <div class="vertrag-header level-2"
                          [class.selected]="selectedVertragId === level2.id"
                          (click)="selectVertrag(level2.id, $event)">
-                      <mat-icon class="expand-icon-small placeholder"></mat-icon>
                       <div class="vertrag-info">
                         <div class="tree-heading">
-                          <mat-icon class="vertrage-level-icon">person</mat-icon>
+                          <i class="mdi mdi-account vertrage-level-icon-mdi"></i>
                           <span class="vertrag-title">{{ level2.title }}</span>
                         </div>
                         <span class="vertrag-details">
-                      Volumen €: {{ level2.volumenE | number : "1.2-2" }} |
-                      Gesamt: {{ level2.gesamt }} | Geplant:
-                          {{ level2.geplant }}
+                      <i class="mdi mdi-close-octagon-outline detail-icon"></i> Volumen €: <strong>{{ level2.volumenE | number : "1.2-2" }}</strong> |
+                      Gesamt: <strong>{{ level2.gesamt }}</strong> | Geplant:
+                          <strong>{{ level2.geplant }}</strong>
                     </span>
                       </div>
                     </div>

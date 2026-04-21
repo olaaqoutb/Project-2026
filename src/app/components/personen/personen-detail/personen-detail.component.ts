@@ -19,6 +19,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatListModule} from '@angular/material/list';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {DateUtilsService} from '../../../services/utils/date-utils.service';
 
 @Component({
@@ -38,6 +39,7 @@ import {DateUtilsService} from '../../../services/utils/date-utils.service';
     MatListModule,
     MatInputModule,
     MatOptionModule,
+    MatTooltipModule,
     FormsModule
 
   ],
@@ -65,6 +67,13 @@ export class PersonenDetailComponent {
   };
 
   vertrageData: any[] = [];
+  showInactive = false;
+
+  get filteredVertrage(): any[] {
+    return this.showInactive
+      ? this.vertrageData
+      : this.vertrageData.filter(v => v.aktiv !== false);
+  }
 
   // Dropdown options
   geschlechtOptions = [
@@ -261,6 +270,7 @@ export class PersonenDetailComponent {
         title: contract.vertragsname || 'Unnamed Contract',
         geplant: contract.stundenGeplant || 0,
         gebucht: contract.stundenGebucht || 0,
+        aktiv: contract.aktiv !== false,
         expanded: false,
         children: [] as any[]
       };
@@ -311,6 +321,14 @@ export class PersonenDetailComponent {
       }
 
       return level0;
+    });
+
+    // Expand every node so the full tree is visible on page load.
+    this.vertrageData.forEach(level0 => {
+      level0.expanded = true;
+      level0.children?.forEach((level1: any) => {
+        level1.expanded = true;
+      });
     });
 
     console.log('Contracts transformed:', this.vertrageData.length, 'tree items');
@@ -575,5 +593,12 @@ export class PersonenDetailComponent {
     }
     this.selectedVertragId = vertragId;
     console.log('Selected vertrag:', vertragId);
+  }
+
+  goToVertrag(vertragId: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.router.navigate(['/vertrag', vertragId]);
   }
 }

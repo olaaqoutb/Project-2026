@@ -22,6 +22,7 @@ import { ApiVertragsTyp } from '../models/ApiVertragsTyp';
 import { ApiMussPdfLesen } from '../models/ApiMussPdfLesen';
 import { ApiStempelzeitMarker } from '../models/ApiStempelzeitMarker';
 import { ApiStempelzeitEintragungsart } from '../models/ApiStempelzeitEintragungsart';
+import { ApiVerbraucherTyp } from '../models/ApiVerbraucherTyp';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Organisationseinheiten
@@ -257,6 +258,70 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     vertragsverantwortlicher: MOCK_PERSONEN[0],
     stundenGeplant: '8000',
     stundenGebucht: '3240',
+    vertragPosition: [
+      {
+        id: 'vp-1a', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Frontend Development',
+        volumenStunden: '4000', volumenEuro: '480000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '4000', stundenGebucht: '1850',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-1a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1200', volumenEuro: '144000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '1200', stundenGebucht: '620',
+          },
+          {
+            id: 'vpv-1a-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '800', volumenEuro: '96000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_PERSONEN[1],
+            stundenGeplant: '800', stundenGebucht: '350',
+          },
+        ],
+      },
+      {
+        id: 'vp-1b', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Backend Development',
+        volumenStunden: '3000', volumenEuro: '360000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '3000', stundenGebucht: '1070',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-1b-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '600', volumenEuro: '72000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '600', stundenGebucht: '260',
+          },
+          {
+            id: 'vpv-1b-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1400', volumenEuro: '168000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_PERSONEN[2],
+            stundenGeplant: '1400', stundenGebucht: '810',
+          },
+        ],
+      },
+      {
+        id: 'vp-1c', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Architecture Consulting',
+        volumenStunden: '1000', volumenEuro: '150000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '1000', stundenGebucht: '320',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-1c-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1000', volumenEuro: '150000.00', stundenpreis: '150.00',
+            aktiv: true, person: MOCK_PERSONEN[2],
+            stundenGeplant: '1000', stundenGebucht: '320',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'v-2',
@@ -274,8 +339,264 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     vertragsverantwortlicher: MOCK_PERSONEN[1],
     stundenGeplant: '18000',
     stundenGebucht: '2050',
+    vertragPosition: [
+      {
+        id: 'vp-2a', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Server Operations',
+        volumenStunden: '8000', volumenEuro: '800000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '8000', stundenGebucht: '550',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-2a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '3000', volumenEuro: '300000.00', stundenpreis: '100.00',
+            aktiv: true, person: MOCK_PERSONEN[2],
+            stundenGeplant: '3000', stundenGebucht: '400',
+          },
+          {
+            id: 'vpv-2a-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Max Gruber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '500', volumenEuro: '50000.00', stundenpreis: '100.00',
+            aktiv: true, person: MOCK_PERSONEN[4],
+            stundenGeplant: '500', stundenGebucht: '150',
+          },
+        ],
+      },
+      {
+        id: 'vp-2b', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Incident Response',
+        volumenStunden: '5000', volumenEuro: '600000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '5000', stundenGebucht: '1160',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-2b-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '500', volumenEuro: '60000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '500', stundenGebucht: '180',
+          },
+          {
+            id: 'vpv-2b-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '2500', volumenEuro: '300000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_PERSONEN[2],
+            stundenGeplant: '2500', stundenGebucht: '980',
+          },
+        ],
+      },
+      {
+        id: 'vp-2c', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Monitoring & Support',
+        volumenStunden: '5000', volumenEuro: '500000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '5000', stundenGebucht: '700',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-2c-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '2000', volumenEuro: '200000.00', stundenpreis: '100.00',
+            aktiv: true, person: MOCK_PERSONEN[3],
+            stundenGeplant: '2000', stundenGebucht: '700',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Digitale Akte 2026',
+    vertragspartner: 'BMI-DigiServ GmbH',
+    gueltigVon: '2026-01-01',
+    gueltigBis: '2027-12-31',
+    aktiv: true,
+    auftraggeber: 'BMI',
+    vertragssumme: '720000.00',
+    vertragsTyp: ApiVertragsTyp.PROJEKT,
+    vertragsverantwortlicher: MOCK_LOGGED_IN_PERSON,
+    stundenGeplant: '5500',
+    stundenGebucht: '920',
+    vertragPosition: [
+      {
+        id: 'vp-3a', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Requirements Engineering',
+        volumenStunden: '2000', volumenEuro: '300000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '2000', stundenGebucht: '320',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-3a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1200', volumenEuro: '180000.00', stundenpreis: '150.00',
+            aktiv: true, person: MOCK_PERSONEN[1],
+            stundenGeplant: '1200', stundenGebucht: '200',
+          },
+          {
+            id: 'vpv-3a-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '500', volumenEuro: '75000.00', stundenpreis: '150.00',
+            aktiv: true, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '500', stundenGebucht: '120',
+          },
+        ],
+      },
+      {
+        id: 'vp-3b', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Implementation',
+        volumenStunden: '3500', volumenEuro: '420000.00',
+        aktiv: true, planungsjahr: '2026',
+        stundenGeplant: '3500', stundenGebucht: '600',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-3b-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1000', volumenEuro: '120000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '1000', stundenGebucht: '340',
+          },
+          {
+            id: 'vpv-3b-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '800', volumenEuro: '96000.00', stundenpreis: '120.00',
+            aktiv: true, person: MOCK_PERSONEN[3],
+            stundenGeplant: '800', stundenGebucht: '260',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v-4',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Altvertrag E-Government 2022 (ausgelaufen)',
+    vertragspartner: 'OldTech Solutions GmbH',
+    gueltigVon: '2022-01-01',
+    gueltigBis: '2023-12-31',
+    aktiv: false,
+    auftraggeber: 'BMI',
+    vertragssumme: '450000.00',
+    vertragsTyp: ApiVertragsTyp.PROJEKT,
+    vertragsverantwortlicher: MOCK_PERSONEN[2],
+    stundenGeplant: '3200',
+    stundenGebucht: '3200',
+    vertragPosition: [
+      {
+        id: 'vp-4a', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Legacy Migration',
+        volumenStunden: '3200', volumenEuro: '450000.00',
+        aktiv: false, planungsjahr: '2023',
+        stundenGeplant: '3200', stundenGebucht: '3200',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-4a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1600', volumenEuro: '225000.00', stundenpreis: '140.00',
+            aktiv: false, person: MOCK_LOGGED_IN_PERSON,
+            stundenGeplant: '1600', stundenGebucht: '1600',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v-5',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Pilotprojekt Dokumentenmanagement 2023',
+    vertragspartner: 'DocuFlow Systems',
+    gueltigVon: '2023-03-01',
+    gueltigBis: '2024-02-28',
+    aktiv: false,
+    auftraggeber: 'BMI',
+    vertragssumme: '180000.00',
+    vertragsTyp: ApiVertragsTyp.PROJEKT,
+    vertragsverantwortlicher: MOCK_PERSONEN[1],
+    stundenGeplant: '1500',
+    stundenGebucht: '1500',
+    vertragPosition: [
+      {
+        id: 'vp-5a', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Pilot Implementation',
+        volumenStunden: '1500', volumenEuro: '180000.00',
+        aktiv: false, planungsjahr: '2023',
+        stundenGeplant: '1500', stundenGebucht: '1500',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-5a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '900', volumenEuro: '108000.00', stundenpreis: '120.00',
+            aktiv: false, person: MOCK_PERSONEN[1],
+            stundenGeplant: '900', stundenGebucht: '900',
+          },
+          {
+            id: 'vpv-5a-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '600', volumenEuro: '72000.00', stundenpreis: '120.00',
+            aktiv: false, person: MOCK_PERSONEN[2],
+            stundenGeplant: '600', stundenGebucht: '600',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v-6',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Wartungsvertrag Ressort 2021',
+    vertragspartner: 'MaintCorp Austria',
+    gueltigVon: '2021-01-01',
+    gueltigBis: '2022-12-31',
+    aktiv: false,
+    auftraggeber: 'BMI',
+    vertragssumme: '290000.00',
+    vertragsTyp: ApiVertragsTyp.BETRIEB,
+    vertragsverantwortlicher: MOCK_PERSONEN[2],
+    stundenGeplant: '2800',
+    stundenGebucht: '2800',
+    vertragPosition: [
+      {
+        id: 'vp-6a', version: 1, deleted: false, state: ApiState.READ,
+        position: '2nd-Level Support',
+        volumenStunden: '2800', volumenEuro: '290000.00',
+        aktiv: false, planungsjahr: '2022',
+        stundenGeplant: '2800', stundenGebucht: '2800',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-6a-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1800', volumenEuro: '180000.00', stundenpreis: '100.00',
+            aktiv: false, person: MOCK_PERSONEN[2],
+            stundenGeplant: '1800', stundenGebucht: '1800',
+          },
+          {
+            id: 'vpv-6a-2', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '1000', volumenEuro: '110000.00', stundenpreis: '110.00',
+            aktiv: false, person: MOCK_PERSONEN[3],
+            stundenGeplant: '1000', stundenGebucht: '1000',
+          },
+        ],
+      },
+    ],
   },
 ];
+
+// Assign contracts to each person (post-hoc to avoid circular initialization).
+// v-1..v-3 are active; v-4..v-6 are inactive (shown in red when "inkl. inaktive" is checked).
+MOCK_LOGGED_IN_PERSON.vertrag = [MOCK_VERTRAEGE[0], MOCK_VERTRAEGE[1], MOCK_VERTRAEGE[2], MOCK_VERTRAEGE[3]];
+MOCK_PERSONEN[1].vertrag = [MOCK_VERTRAEGE[0], MOCK_VERTRAEGE[2], MOCK_VERTRAEGE[4]];
+MOCK_PERSONEN[2].vertrag = [MOCK_VERTRAEGE[0], MOCK_VERTRAEGE[1], MOCK_VERTRAEGE[3], MOCK_VERTRAEGE[4], MOCK_VERTRAEGE[5]];
+MOCK_PERSONEN[3].vertrag = [MOCK_VERTRAEGE[1], MOCK_VERTRAEGE[2], MOCK_VERTRAEGE[5]];
+MOCK_PERSONEN[4].vertrag = [MOCK_VERTRAEGE[1]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Stempelzeiten (time punches)
