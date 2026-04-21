@@ -98,12 +98,16 @@
       <tr
         mat-row
         *matRowDef="let row; columns: displayedColumns ;"
-        [class]="getRowClass(row)"
-        (click)="goToDetails(row)"
+        [class.inactive-row]="row.aktiv === false"
+        [class.active-row]="row.aktiv !== false"
+        [class.selected-row]="selectedRowId === row.id"
+        [attr.data-row-id]="row.id"
+        (click)="onRowClick(row)"
+        (dblclick)="goToDetails(row)"
         class="list-row"
       ></tr>
     </table>
-    <div *ngIf="!dataSource?.data?.length && !isLoading" class="empty-state">
+    <div *ngIf="!dataSource.data.length && !isLoading" class="empty-state">
       <mat-icon>info_outline</mat-icon>
       <span>Keine Daten gefunden</span>
     </div>

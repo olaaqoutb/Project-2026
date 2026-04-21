@@ -164,6 +164,70 @@ export const MOCK_PERSONEN: ApiPerson[] = [
   },
 ];
 
+// Generate 95 additional persons so lists (e.g. /abwesenheit-korrigieren) have
+// a realistic 100-row dataset to scroll through.
+(() => {
+  const vornamen = [
+    'Lukas', 'Sophie', 'Michael', 'Laura', 'Daniel', 'Nina', 'Thomas', 'Sarah',
+    'Markus', 'Lisa', 'Stefan', 'Elena', 'Christoph', 'Katharina', 'Alexander',
+    'Marlene', 'Florian', 'Valentina', 'Martin', 'Theresa', 'Simon', 'Hannah',
+    'Philipp', 'Magdalena', 'Tobias', 'Leonie', 'Jakob', 'Isabella', 'David',
+    'Charlotte', 'Manuel', 'Amelie', 'Patrick', 'Emma', 'Sebastian', 'Mia',
+    'Fabian', 'Clara', 'Andreas', 'Victoria', 'Jonas', 'Marie', 'Maximilian',
+    'Johanna', 'Benedikt', 'Lena', 'Raphael', 'Paula', 'Moritz'
+  ];
+  const nachnamen = [
+    'Wagner', 'Bauer', 'Fischer', 'Weber', 'Hofer', 'Schneider', 'Mayer',
+    'Lehmann', 'Winkler', 'Steiner', 'Egger', 'Lang', 'Brunner', 'Reiter',
+    'Berger', 'Koller', 'Pichler', 'Moser', 'Schuster', 'Haas', 'Wimmer',
+    'Lechner', 'Mayr', 'Fuchs', 'Schwarz', 'Böhm', 'Gruber', 'Maier', 'Horvath',
+    'Leitner', 'Kainz', 'Wallner', 'Wieser', 'Auer', 'Pfeiffer', 'Schober',
+    'Stadler', 'Zeller', 'Binder', 'Jäger', 'Klein', 'Hoffmann', 'Kohler',
+    'Neumann', 'Graf', 'Bader', 'Stocker', 'Baumgartner', 'Eder', 'Ortner'
+  ];
+  const mitarbeiterarten = [
+    ApiMitarbeiterart.INTERN,
+    ApiMitarbeiterart.EXTERN,
+    ApiMitarbeiterart.ZIVILDIENSTLEISTENDER,
+  ];
+  const rollen = [
+    ApiRolle.DEFAULT,
+    ApiRolle.PROJECT_OFFICE,
+    ApiRolle.PROJECT_OFFICE_READ_ONLY,
+  ];
+
+  for (let i = 6; i <= 100; i++) {
+    const vor = vornamen[(i * 7) % vornamen.length];
+    const nach = nachnamen[(i * 13) % nachnamen.length];
+    const maart = mitarbeiterarten[i % mitarbeiterarten.length];
+    const rolle = rollen[i % rollen.length];
+    const geschlecht = i % 2 === 0 ? ApiGeschlecht.WEIBLICH : ApiGeschlecht.MAENNLICH;
+    const oe = MOCK_ORGANISATIONSEINHEITEN[i % MOCK_ORGANISATIONSEINHEITEN.length];
+    const year = 2015 + (i % 11);
+    const month = String((i % 12) + 1).padStart(2, '0');
+    const day = String((i % 27) + 1).padStart(2, '0');
+
+    MOCK_PERSONEN.push({
+      id: `p-${i}`,
+      version: 1,
+      deleted: false,
+      state: ApiState.READ,
+      vorname: vor,
+      nachname: nach,
+      geschlecht,
+      persnr: String(100000 + i),
+      portalUser: `${vor[0].toLowerCase()}${nach.toLowerCase()}${i}`,
+      email: `${vor.toLowerCase()}.${nach.toLowerCase()}@example.at`,
+      eintrittsDatum: `${year}-${month}-${day}`,
+      aktiv: i % 13 !== 0, // every 13th is inactive
+      organisationseinheit: oe,
+      rolle,
+      mitarbeiterart: maart,
+      firma: maart === ApiMitarbeiterart.EXTERN ? 'ACME Consulting GmbH' : undefined,
+    });
+  }
+})();
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Anwesenheit (presence list) — shape is ApiPersonAnwesenheit
 // ─────────────────────────────────────────────────────────────────────────────

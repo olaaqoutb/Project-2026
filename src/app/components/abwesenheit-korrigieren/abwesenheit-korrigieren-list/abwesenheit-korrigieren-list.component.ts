@@ -74,6 +74,9 @@ export class AbwesenheitKorrigierenListComponent {
     mitarbeiterart: 'asc'
   };
 
+  private static readonly LAST_ROW_KEY = 'abwkor.lastRowId';
+  selectedRowId: string | null = null;
+
   constructor(
     private enumService: EnumService,
     private personenService : PersonenService,
@@ -130,6 +133,7 @@ export class AbwesenheitKorrigierenListComponent {
         this.persons = this.applySorting(response.body!);
         this.applyFilter();
         this.isLoading = false;
+        this.restoreAndScrollToLastRow();
         this.statusPanelService.addMessageRequest(
           AppConstants.MSG_PERSONEN_LOADED_SUCCESS, 'GET', duration, response
         );
@@ -267,12 +271,29 @@ export class AbwesenheitKorrigierenListComponent {
     return 'swap_vert';
   }
 
+  onRowClick(row: ApiPerson): void {
+    this.selectedRowId = row.id ?? null;
+  }
+
   goToDetails(row: ApiPerson): void {
     if (!row.id) {
       console.error('Person ID is missing', row);
       return;
     }
+    this.selectedRowId = row.id;
+    sessionStorage.setItem(AbwesenheitKorrigierenListComponent.LAST_ROW_KEY, row.id);
     this.router.navigate(['/abwesenheit-korrigieren', row.id], { state: { selectedPerson : row } });
+  }
+
+  private restoreAndScrollToLastRow(): void {
+    const lastId = sessionStorage.getItem(AbwesenheitKorrigierenListComponent.LAST_ROW_KEY);
+    if (!lastId) return;
+    this.selectedRowId = lastId;
+    // Wait for the next render so the row exists in the DOM.
+    setTimeout(() => {
+      const el = document.querySelector(`[data-row-id="${lastId}"]`) as HTMLElement | null;
+      el?.scrollIntoView({ behavior: 'auto', block: 'center' });
+    }, 0);
   }
 
 }
