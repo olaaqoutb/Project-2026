@@ -1,0 +1,309 @@
+// status-panel.component.scss
+.status-panel {
+  position: fixed;
+  z-index: 9999;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f9fafb;// #f3ff2f; //   #1a1a2e;
+  color: #000000;// #e0e0e0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: 2px solid transparent;
+
+  &:hover {
+    background:  #f9fafb;//  #befff1; // #2a7a86; // #16213e;
+    border-top-color: #4cc9f0;
+  }
+
+  // Hide when no messages and collapsed
+  &:not(.has-messages):not(.expanded) {
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // ========================================
+  // COLLAPSED STATE (Default - 1 line)
+  // ========================================
+  &:not(.expanded) {
+    height: 25px;
+    max-height: 25px;
+
+    .collapsed-view {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      height: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+
+      .status-icon {
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .status-method {
+        font-weight: 600;
+        min-width: 50px;
+        flex-shrink: 0;
+      }
+
+      .status-url {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #b0b0b0;
+      }
+
+      .status-status {
+        font-weight: 600;
+        min-width: 40px;
+        flex-shrink: 0;
+      }
+
+      .status-duration {
+        color: #4cc9f0;
+        min-width: 60px;
+        flex-shrink: 0;
+        text-align: right;
+      }
+
+      .status-time {
+        color: #666;
+        font-size: 11px;
+        min-width: 70px;
+        flex-shrink: 0;
+      }
+
+      .placeholder {
+        color: #666;
+        font-style: italic;
+        flex: 1;
+        text-align: center;
+      }
+
+      .expand-hint {
+        color: #666;
+        font-size: 16px;
+        margin-left: auto;
+        flex-shrink: 0;
+
+        .mdi {
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .expanded-view {
+      display: none;
+    }
+  }
+
+  // ========================================
+  // EXPANDED STATE (10 messages)
+  // ========================================
+  &.expanded {
+    max-height: 400px;
+    border-top-color: #4cc9f0;
+
+    .collapsed-view {
+      display: none;
+    }
+
+    .expanded-view {
+      display: block;
+
+      .expanded-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        background: #0f3460;
+        border-bottom: 1px solid #1a1a2e;
+
+        .title {
+          font-weight: 600;
+          color: #4cc9f0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .mdi {
+            font-size: 16px;
+          }
+        }
+
+        .header-actions {
+          display: flex;
+          gap: 8px;
+
+          .action-btn {
+            background: transparent;
+            border: 1px solid #4cc9f0;
+            color: #4cc9f0;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+
+            &:hover {
+              background: rgba(76, 201, 240, 0.1);
+            }
+
+            .mdi {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .messages-list {
+        max-height: 320px;
+        overflow-y: auto;
+
+        .message-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 6px 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+
+          &.success {
+            border-left: 3px solid #4ade80;
+          }
+
+          &.error {
+            border-left: 3px solid #f72585;
+          }
+
+          .status-icon {
+            font-size: 14px;
+            min-width: 20px;
+            flex-shrink: 0;
+          }
+
+          .status-time {
+            color: #666;
+            font-size: 11px;
+            min-width: 70px;
+            flex-shrink: 0;
+          }
+
+          .status-method {
+            font-weight: 600;
+            min-width: 60px;
+            flex-shrink: 0;
+          }
+
+          .status-url {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #b0b0b0;
+          }
+
+          .status-code {
+            color: #888;
+            min-width: 40px;
+            flex-shrink: 0;
+          }
+
+          .status-duration {
+            color: #4cc9f0;
+            min-width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+          }
+        }
+
+        .empty-state {
+          padding: 40px 16px;
+          text-align: center;
+          color: #666;
+          font-style: italic;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+
+          .mdi {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .expanded-footer {
+        padding: 8px 16px;
+        background: #0f3460;
+        border-top: 1px solid #1a1a2e;
+        text-align: center;
+
+        .hint {
+          color: #888;
+          font-size: 11px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+
+          .mdi {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Scrollbar styling
+.messages-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.messages-list::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: #0f3460;
+  border-radius: 4px;
+
+  &:hover {
+    background: #16213e;
+  }
+}
+
+// Animation for new messages
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message-item {
+  animation: slideIn 0.3s ease-out;
+}

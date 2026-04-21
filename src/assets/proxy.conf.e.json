@@ -1,0 +1,15 @@
+ {
+  "/api": {
+    "target": "http://lhe3int.at/at.getit3-e/srv",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api": "" }
+  },
+  "/srv": {
+    "target": "http://lhe3int.at/at.getit3-e/srv",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

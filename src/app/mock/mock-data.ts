@@ -1,0 +1,594 @@
+/**
+ * Mock data set used by MockBackendInterceptor to simulate the BMI/GETIT
+ * backend during local development when no real API is available.
+ *
+ * Every array mirrors the structure of the matching Api* model.
+ */
+
+import { ApiPerson } from '../models/ApiPerson';
+import { ApiPersonAnwesenheit } from '../models/ApiPersonAnwesenheit';
+import { ApiOrganisationseinheit } from '../models/ApiOrganisationseinheit';
+import { ApiProdukt } from '../models/ApiProdukt';
+import { ApiVertrag } from '../models/ApiVertrag';
+import { ApiStempelzeit } from '../models/ApiStempelzeit';
+import { ApiMitarbeiterart } from '../models/ApiMitarbeiterart';
+import { ApiGeschlecht } from '../models/ApiGeschlecht';
+import { ApiAnwesendStatus } from '../models/ApiAnwesendStatus';
+import { ApiState } from '../models/ApiState';
+import { ApiRolle } from '../models/ApiRolle';
+import { ApiZeitTyp } from '../models/ApiZeitTyp';
+import { ApiProduktTyp } from '../models/ApiProduktTyp';
+import { ApiVertragsTyp } from '../models/ApiVertragsTyp';
+import { ApiMussPdfLesen } from '../models/ApiMussPdfLesen';
+import { ApiStempelzeitMarker } from '../models/ApiStempelzeitMarker';
+import { ApiStempelzeitEintragungsart } from '../models/ApiStempelzeitEintragungsart';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Organisationseinheiten
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_ORGANISATIONSEINHEITEN: ApiOrganisationseinheit[] = [
+  {
+    id: 'oe-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    bezeichnung: 'IT-Entwicklung',
+    kurzBezeichnung: 'IT-ENT',
+    gueltigVon: '2020-01-01',
+    gueltigBis: '2099-12-31',
+    email: ['it-entwicklung@example.at'],
+  },
+  {
+    id: 'oe-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    bezeichnung: 'IT-Betrieb',
+    kurzBezeichnung: 'IT-BTR',
+    gueltigVon: '2020-01-01',
+    gueltigBis: '2099-12-31',
+    email: ['it-betrieb@example.at'],
+  },
+  {
+    id: 'oe-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    bezeichnung: 'Projektmanagement',
+    kurzBezeichnung: 'PM',
+    gueltigVon: '2021-06-01',
+    gueltigBis: '2099-12-31',
+    email: ['pm@example.at'],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Personen
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_LOGGED_IN_PERSON: ApiPerson = {
+  id: 'p-me',
+  version: 1,
+  deleted: false,
+  state: ApiState.READ,
+  titel: 'Mag.',
+  vorname: 'Hassan',
+  nachname: 'Adam',
+  geschlecht: ApiGeschlecht.MAENNLICH,
+  persnr: '100001',
+  portalUser: 'hadam',
+  email: 'hassan.adam@example.at',
+  eintrittsDatum: '2022-03-01',
+  aktiv: true,
+  telefonNummer: '+43 1 234 5678',
+  zimmerNummer: 'A 3.14',
+  organisationseinheit: MOCK_ORGANISATIONSEINHEITEN[0],
+  rolle: ApiRolle.ADMIN_LEITER,
+  mitarbeiterart: ApiMitarbeiterart.INTERN,
+  leistungskategorie: 'LK1',
+  stundensatz: '85.00',
+  stundenkontingentJaehrlich: '1760',
+  geprueft: true,
+};
+
+export const MOCK_PERSONEN: ApiPerson[] = [
+  MOCK_LOGGED_IN_PERSON,
+  {
+    id: 'p-2',
+    version: 2,
+    deleted: false,
+    state: ApiState.READ,
+    vorname: 'Anna',
+    nachname: 'Müller',
+    geschlecht: ApiGeschlecht.WEIBLICH,
+    persnr: '100002',
+    portalUser: 'amueller',
+    email: 'anna.mueller@example.at',
+    eintrittsDatum: '2019-09-15',
+    aktiv: true,
+    organisationseinheit: MOCK_ORGANISATIONSEINHEITEN[0],
+    rolle: ApiRolle.PROJECT_OFFICE,
+    mitarbeiterart: ApiMitarbeiterart.INTERN,
+  },
+  {
+    id: 'p-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vorname: 'Peter',
+    nachname: 'Schmidt',
+    geschlecht: ApiGeschlecht.MAENNLICH,
+    persnr: '100003',
+    portalUser: 'pschmidt',
+    email: 'peter.schmidt@example.at',
+    eintrittsDatum: '2018-04-10',
+    aktiv: true,
+    organisationseinheit: MOCK_ORGANISATIONSEINHEITEN[1],
+    rolle: ApiRolle.DEFAULT,
+    mitarbeiterart: ApiMitarbeiterart.EXTERN,
+    firma: 'ACME Consulting GmbH',
+  },
+  {
+    id: 'p-4',
+    version: 3,
+    deleted: false,
+    state: ApiState.READ,
+    vorname: 'Julia',
+    nachname: 'Huber',
+    geschlecht: ApiGeschlecht.WEIBLICH,
+    persnr: '100004',
+    portalUser: 'jhuber',
+    email: 'julia.huber@example.at',
+    eintrittsDatum: '2023-01-02',
+    aktiv: true,
+    organisationseinheit: MOCK_ORGANISATIONSEINHEITEN[2],
+    rolle: ApiRolle.PROJECT_OFFICE_READ_ONLY,
+    mitarbeiterart: ApiMitarbeiterart.INTERN,
+  },
+  {
+    id: 'p-5',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vorname: 'Max',
+    nachname: 'Gruber',
+    geschlecht: ApiGeschlecht.MAENNLICH,
+    persnr: '100005',
+    portalUser: 'mgruber',
+    email: 'max.gruber@example.at',
+    eintrittsDatum: '2024-05-20',
+    aktiv: true,
+    organisationseinheit: MOCK_ORGANISATIONSEINHEITEN[1],
+    rolle: ApiRolle.DEFAULT,
+    mitarbeiterart: ApiMitarbeiterart.ZIVILDIENSTLEISTENDER,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Anwesenheit (presence list) — shape is ApiPersonAnwesenheit
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_ANWESEND_PERSONEN: ApiPersonAnwesenheit[] = MOCK_PERSONEN.map(
+  (p, idx) => ({
+    vorname: p.vorname,
+    nachname: p.nachname,
+    portalUser: p.portalUser,
+    personId: p.id,
+    mitarbeiterart: p.mitarbeiterart,
+    logoff: idx % 2 === 0 ? undefined : '2026-04-19T16:30:00',
+    anwesend:
+      idx === 0
+        ? ApiAnwesendStatus.ANWESEND
+        : idx === 1
+        ? ApiAnwesendStatus.ANWESEND_HOMEOFFICE
+        : idx === 2
+        ? ApiAnwesendStatus.WAR_HEUTE_ANWESEND
+        : idx === 3
+        ? ApiAnwesendStatus.URLAUB
+        : ApiAnwesendStatus.ABWESEND,
+    abwesenheitVorhanden: idx >= 3,
+  })
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Produkte
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_PRODUKTE: ApiProdukt[] = [
+  {
+    id: 'prod-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    produktname: 'GETIT Portal',
+    kurzName: 'GETIT',
+    start: '2020-01-01',
+    ende: '2099-12-31',
+    aktiv: true,
+    auftraggeber: 'Bundesministerium',
+    auftraggeberOrganisation: 'BMI',
+    ergebnisverantwortlicher: MOCK_PERSONEN[1],
+    produktTyp: ApiProduktTyp.ANWENDUNG,
+  },
+  {
+    id: 'prod-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    produktname: 'SAP Basis',
+    kurzName: 'SAP-B',
+    start: '2018-01-01',
+    ende: '2099-12-31',
+    aktiv: true,
+    auftraggeber: 'Bundesministerium',
+    auftraggeberOrganisation: 'BMI',
+    ergebnisverantwortlicher: MOCK_PERSONEN[2],
+    produktTyp: ApiProduktTyp.ADMINISTRATION,
+  },
+  {
+    id: 'prod-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    produktname: 'Identity Platform',
+    kurzName: 'IDP',
+    start: '2021-06-01',
+    ende: '2099-12-31',
+    aktiv: true,
+    produktTyp: ApiProduktTyp.ZENTRALE_KOMPONENTE,
+    ergebnisverantwortlicher: MOCK_PERSONEN[0],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Verträge
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_VERTRAEGE: ApiVertrag[] = [
+  {
+    id: 'v-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Rahmenvertrag Softwareentwicklung 2024',
+    vertragspartner: 'ACME Consulting GmbH',
+    gueltigVon: '2024-01-01',
+    gueltigBis: '2026-12-31',
+    aktiv: true,
+    auftraggeber: 'BMI',
+    vertragssumme: '1200000.00',
+    vertragsTyp: ApiVertragsTyp.PROJEKT,
+    vertragsverantwortlicher: MOCK_PERSONEN[0],
+    stundenGeplant: '8000',
+    stundenGebucht: '3240',
+  },
+  {
+    id: 'v-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    vertragsname: 'Betriebsvertrag Infrastruktur 2025',
+    vertragspartner: 'TechOps Austria AG',
+    gueltigVon: '2025-01-01',
+    gueltigBis: '2028-12-31',
+    aktiv: true,
+    auftraggeber: 'BMI',
+    vertragssumme: '3500000.00',
+    vertragsTyp: ApiVertragsTyp.BETRIEB,
+    vertragsverantwortlicher: MOCK_PERSONEN[1],
+    stundenGeplant: '18000',
+    stundenGebucht: '2050',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Stempelzeiten (time punches)
+// ─────────────────────────────────────────────────────────────────────────────
+function iso(date: string, time: string): string {
+  return `${date}T${time}:00`;
+}
+export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
+  {
+    id: 'sz-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-17', '08:00'),
+    logoff: iso('2026-04-17', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    anmerkung: 'Regulärer Arbeitstag',
+  },
+  {
+    id: 'sz-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-18', '09:00'),
+    logoff: iso('2026-04-18', '17:15'),
+    zeitTyp: ApiZeitTyp.TELEARBEIT,
+  },
+  {
+    id: 'sz-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-19', '08:15'),
+    logoff: iso('2026-04-19', '16:45'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+  },
+  {
+    id: 'sz-4',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    person: MOCK_PERSONEN[1],
+    login: iso('2026-04-19', '07:45'),
+    logoff: iso('2026-04-19', '16:00'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+  },
+  // ── Julia Huber (p-4) — 3 rows ──────────────────────────────────────────────
+  { id: 'sz-5',  version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[3],
+    login: iso('2026-04-28', '00:00'), logoff: iso('2026-05-02', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Genehmigter Urlaub' },
+  { id: 'sz-6',  version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[3],
+    login: iso('2026-06-15', '00:00'), logoff: iso('2026-06-19', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Überstundenabbau' },
+  { id: 'sz-7',  version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[3],
+    login: iso('2026-12-21', '00:00'), logoff: iso('2026-12-31', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Weihnachtsurlaub' },
+
+  // ── Max Gruber (p-5) — 20 rows ───────────────────────────────────────────────
+  { id: 'sz-10', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-04-27', '00:00'), logoff: iso('2026-04-28', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Brückentag' },
+  { id: 'sz-11', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-05-06', '00:00'), logoff: iso('2026-05-08', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND, anmerkung: 'Krankenstand' },
+  { id: 'sz-12', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-05-18', '00:00'), logoff: iso('2026-05-22', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Pfingstferien' },
+  { id: 'sz-13', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-06-01', '00:00'), logoff: iso('2026-06-05', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Urlaub Juni' },
+  { id: 'sz-14', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-06-15', '00:00'), logoff: iso('2026-06-15', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'ZA' },
+  { id: 'sz-15', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-06-29', '00:00'), logoff: iso('2026-07-10', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Sommerurlaub Teil 1' },
+  { id: 'sz-16', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-07-20', '00:00'), logoff: iso('2026-07-31', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Sommerurlaub Teil 2' },
+  { id: 'sz-17', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-08-10', '00:00'), logoff: iso('2026-08-11', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND, anmerkung: 'Krankenstand' },
+  { id: 'sz-18', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-08-24', '00:00'), logoff: iso('2026-08-29', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Resturlaub August' },
+  { id: 'sz-19', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-09-07', '00:00'), logoff: iso('2026-09-07', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Einzeltag ZA' },
+  { id: 'sz-20', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-09-21', '00:00'), logoff: iso('2026-09-25', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Herbsturlaub' },
+  { id: 'sz-21', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-10-05', '00:00'), logoff: iso('2026-10-09', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Oktober' },
+  { id: 'sz-22', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-10-26', '00:00'), logoff: iso('2026-10-27', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Nationalfeiertag' },
+  { id: 'sz-23', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-11-02', '00:00'), logoff: iso('2026-11-02', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Brückentag' },
+  { id: 'sz-24', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-11-16', '00:00'), logoff: iso('2026-11-20', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'November Urlaub' },
+  { id: 'sz-25', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-12-07', '00:00'), logoff: iso('2026-12-11', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND, anmerkung: 'Krankenstand Dez.' },
+  { id: 'sz-26', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2026-12-21', '00:00'), logoff: iso('2026-12-31', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Weihnachtsurlaub' },
+  { id: 'sz-27', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2027-01-04', '00:00'), logoff: iso('2027-01-05', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'Nachfeier Neujahr' },
+  { id: 'sz-28', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2027-02-08', '00:00'), logoff: iso('2027-02-12', '23:59'),
+    zeitTyp: ApiZeitTyp.URLAUB, anmerkung: 'Semesterferien' },
+  { id: 'sz-29', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[4],
+    login: iso('2027-03-01', '00:00'), logoff: iso('2027-03-03', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND, anmerkung: 'Krankenstand März' },
+
+  // ── Hassan Adam (p-me) — current week (Apr 13–20) ───────────────────────────
+  { id: 'sz-30', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-20', '08:00'), logoff: iso('2026-04-20', '16:00'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Montag',
+    marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
+  { id: 'sz-31', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-16', '08:30'), logoff: iso('2026-04-16', '17:00'),
+    zeitTyp: ApiZeitTyp.REMOTEZEIT,
+    marker: [ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ABMELDUNG] },
+  { id: 'sz-32', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-15', '09:00'), logoff: iso('2026-04-15', '17:30'),
+    zeitTyp: ApiZeitTyp.TELEARBEIT, anmerkung: 'Nachgebucht',
+    eintragungsart: ApiStempelzeitEintragungsart.SELBST },
+  { id: 'sz-33', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-14', '07:45'), logoff: iso('2026-04-14', '16:15'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
+  { id: 'sz-34', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-13', '08:00'), logoff: iso('2026-04-13', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Zeitkorrektur durch Leiter', poKorrektur: true },
+
+  // ── Hassan Adam (p-me) — week Apr 6–10 ─────────────────────────────────────
+  { id: 'sz-35', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-10', '00:00'), logoff: iso('2026-04-10', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'ZA-Tag' },
+  { id: 'sz-36', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-09', '08:00'), logoff: iso('2026-04-09', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
+  { id: 'sz-37', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-08', '09:00'), logoff: iso('2026-04-08', '17:00'),
+    zeitTyp: ApiZeitTyp.TELEARBEIT },
+  { id: 'sz-38', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-07', '08:15'), logoff: iso('2026-04-07', '16:45'),
+    zeitTyp: ApiZeitTyp.REMOTEZEIT, anmerkung: 'Nachgebucht',
+    eintragungsart: ApiStempelzeitEintragungsart.SELBST },
+  { id: 'sz-39', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-06', '08:00'), logoff: iso('2026-04-06', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
+
+  // ── Hassan Adam (p-me) — week Mar 30 – Apr 3 ───────────────────────────────
+  { id: 'sz-40', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-03', '08:00'), logoff: iso('2026-04-03', '15:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Früher gegangen' },
+  { id: 'sz-41', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-02', '08:30'), logoff: iso('2026-04-02', '17:00'),
+    zeitTyp: ApiZeitTyp.REMOTEZEIT },
+  { id: 'sz-42', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-04-01', '08:00'), logoff: iso('2026-04-01', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
+  { id: 'sz-43', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-31', '00:00'), logoff: iso('2026-03-31', '23:59'),
+    zeitTyp: ApiZeitTyp.BEREITSCHAFT, anmerkung: 'Bereitschaftsdienst' },
+  { id: 'sz-44', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-30', '08:00'), logoff: iso('2026-03-30', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Zeitkorrektur', poKorrektur: true },
+
+  // ── Hassan Adam (p-me) — week Mar 23–27 ────────────────────────────────────
+  { id: 'sz-45', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-27', '08:00'), logoff: iso('2026-03-27', '16:00'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT },
+  { id: 'sz-46', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-26', '00:00'), logoff: iso('2026-03-26', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND },
+  { id: 'sz-47', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-25', '00:00'), logoff: iso('2026-03-25', '23:59'),
+    zeitTyp: ApiZeitTyp.KRANKENSTAND },
+  { id: 'sz-48', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-24', '08:00'), logoff: iso('2026-03-24', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
+  { id: 'sz-49', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
+    login: iso('2026-03-23', '00:00'), logoff: iso('2026-03-23', '23:59'),
+    zeitTyp: ApiZeitTyp.GUTSCHRIFT, anmerkung: 'Überstundenabbau' },
+
+  // ── Anna Müller (p-2) — recent entries ─────────────────────────────────────
+  { id: 'sz-50', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-20', '09:00'), logoff: iso('2026-04-20', '17:30'),
+    zeitTyp: ApiZeitTyp.TELEARBEIT,
+    marker: [ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ABMELDUNG] },
+  { id: 'sz-51', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-17', '08:00'), logoff: iso('2026-04-17', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT,
+    marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
+  { id: 'sz-52', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-16', '07:30'), logoff: iso('2026-04-16', '16:00'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT },
+  { id: 'sz-53', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-15', '08:00'), logoff: iso('2026-04-15', '16:30'),
+    zeitTyp: ApiZeitTyp.REMOTEZEIT,
+    marker: [ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ABMELDUNG] },
+  { id: 'sz-54', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-14', '00:00'), logoff: iso('2026-04-14', '23:59'),
+    zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'ZA-Tag' },
+  { id: 'sz-55', version: 1, deleted: false, state: ApiState.READ, person: MOCK_PERSONEN[1],
+    login: iso('2026-04-13', '08:00'), logoff: iso('2026-04-13', '16:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Nachgebucht',
+    eintragungsart: ApiStempelzeitEintragungsart.SELBST },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Freigabe-Positionen, Tätigkeitsbuchungen, Trigger, LkDetails
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_FREIGABE_POSITIONEN: any[] = [
+  {
+    id: 'fp-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    bezeichnung: 'Entwicklung GETIT Portal Q2/2026',
+    funktion: 'DV',
+    status: 'OFFEN',
+    anzahl: 12,
+  },
+  {
+    id: 'fp-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    bezeichnung: 'Wartung SAP Basis Q2/2026',
+    funktion: 'DV',
+    status: 'FREIGEGEBEN',
+    anzahl: 8,
+  },
+];
+
+export const MOCK_TAETIGKEITSBUCHUNGEN: any[] = [
+  {
+    id: 'tb-1',
+    version: 1,
+    state: ApiState.READ,
+    datum: '2026-04-17',
+    dauer: '4.0',
+    beschreibung: 'Feature X implementiert',
+  },
+  {
+    id: 'tb-2',
+    version: 1,
+    state: ApiState.READ,
+    datum: '2026-04-18',
+    dauer: '3.5',
+    beschreibung: 'Code Review und Bugfixes',
+  },
+];
+
+export const MOCK_TRIGGER: any[] = [
+  {
+    id: 'tr-1',
+    version: 1,
+    state: ApiState.READ,
+    aktion: 'JAHRESABSCHLUSS',
+    status: 'OFFEN',
+  },
+];
+
+export const MOCK_LK_DETAILS: any[] = [
+  {
+    id: 'lk-1',
+    version: 1,
+    state: ApiState.READ,
+    kategorie: 'LK1',
+    stundensatz: '85.00',
+    basisstunden: '1760',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Diverses
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_MUSS_PDF_LESEN: ApiMussPdfLesen = { mussPdfLesen: false };
+
+export const MOCK_ABSCHLUSS_INFO: any = {
+  abschlussDatum: '2026-03-31',
+  offen: false,
+  gepruefteStunden: '156.5',
+};
+
+export const MOCK_FEIERTAGE: any[] = [
+  { datum: '2026-01-01', bezeichnung: 'Neujahr' },
+  { datum: '2026-01-06', bezeichnung: 'Heilige Drei Könige' },
+  { datum: '2026-04-06', bezeichnung: 'Ostermontag' },
+  { datum: '2026-05-01', bezeichnung: 'Staatsfeiertag' },
+  { datum: '2026-05-14', bezeichnung: 'Christi Himmelfahrt' },
+  { datum: '2026-05-25', bezeichnung: 'Pfingstmontag' },
+  { datum: '2026-06-04', bezeichnung: 'Fronleichnam' },
+  { datum: '2026-08-15', bezeichnung: 'Mariä Himmelfahrt' },
+  { datum: '2026-10-26', bezeichnung: 'Nationalfeiertag' },
+  { datum: '2026-11-01', bezeichnung: 'Allerheiligen' },
+  { datum: '2026-12-08', bezeichnung: 'Mariä Empfängnis' },
+  { datum: '2026-12-25', bezeichnung: 'Weihnachten' },
+  { datum: '2026-12-26', bezeichnung: 'Stefanitag' },
+];

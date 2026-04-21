@@ -1,0 +1,420 @@
+<div class="container2">
+  <!-- First Half: Title and Tree -->
+  <div class="left-panel">
+    <div class="left-panel-header">
+      <button (click)="goBackToList()" class="btn-header">
+        <mat-icon class="icon-header">arrow_back</mat-icon>
+      </button>
+      <h1 class="Stempe-title">Stempelzeiten - {{ personName }}</h1>
+      <button (click)="addTimeEntryFromHeader()" class="btn-header">
+        <mat-icon class="icon-header ">alarm</mat-icon>
+      </button>
+    </div>
+    <div *ngIf="isLoading" class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Lade Daten...</span>
+    </div>
+
+    <mat-tree
+      [dataSource]="dataSource"
+      [treeControl]="treeControl"
+      class="tree"
+      *ngIf="!isLoading"
+    >
+      <!-- Leaf nodes (time entries) -->
+      <mat-tree-node
+        *matTreeNodeDef="let node"
+        matTreeNodePadding
+        (click)="onNodeClick(node)"
+        (dblclick)="onNodeDoubleClick(node)"
+        [class.selected]="selectedNode === node"
+      >
+        <div class="tree-node">
+          <span class="node-text">{{ node.name }}</span>
+          <span class="zeittyp-korrektur" *ngIf="node.timeEntry">
+
+            {{ getZeittypDisplay(node.timeEntry.zeitTyp) }}
+            <span *ngIf="node.timeEntry.poKorrektur" class="korrektur-badge"
+            >[Korrektur]</span>
+
+             <span *ngIf="node.timeEntry.eintragungsart === 'SELBST'" class="korrektur-badge"
+             >[Eigenkorrektur]</span>
+          </span>
+
+
+
+        </div>
+      </mat-tree-node>
+
+      <!-- Expandable nodes (months and days) -->
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+        (click)="onNodeClick(node)"
+        (dblclick)="onNodeDoubleClick(node)"
+        [class.selected]="selectedNode === node || highlightedDayNode === node"
+      >
+        <div class="tree-node">
+          <!--<mat-icon
+            class="calendar-icon"
+            *ngIf="treeControl.getLevel(node) == 0"
+          >calendar_month</mat-icon
+          >-->
+
+          <i class="mdi mdi-16px mdi-calendar-multiple calendar-icon"  *ngIf="treeControl.getLevel(node) == 0"
+             matTooltip="TEST"
+             matTooltipPosition="above"
+             matTooltipShowDelay="50">
+          </i>
+
+
+
+          <i class="mdi mdi-16px mdi-calendar-today calendar-icon"  *ngIf="treeControl.getLevel(node) == 1"
+             matTooltip="TEST"
+             matTooltipPosition="above"
+             matTooltipShowDelay="50">
+          </i>
+          <!--<mat-icon
+            class="calendar-icon"
+            *ngIf="treeControl.getLevel(node) == 1"
+          >event</mat-icon
+          >-->
+          <span class="node-text">{{ node.name }}</span>
+          <span class="gebucht-time" *ngIf="treeControl.getLevel(node) === 1">
+            Gebucht: {{ getGebuchtTime(node) }}
+          </span>
+          <button class="alarm-btn" (click)="addTimeEntry(node, $event)">
+            <mat-icon
+              class="icon-header node-icon-alarm"
+              *ngIf="treeControl.getLevel(node) === 1"
+            >alarm</mat-icon
+            >
+
+
+
+
+          </button>
+        </div>
+      </mat-tree-node>
+
+
+    </mat-tree>
+  </div>
+
+  <!-- Second Half: Form -->
+  <div
+    class="right-panel"
+    *ngIf="selectedNode && selectedNode.formData && !isLoading"
+  >
+    <div class="form-header">
+      <!-- DELETE / CANCEL -->
+      <button
+        mat-button
+        class="{{ isEditing ? 'header-btn' : 'delete-btn' }} "
+        [disabled]="!selectedNode"
+        (click)="
+          isCreatingNew
+            ? cancelNewEntry()
+            : isEditing
+              ? cancelFormChanges()
+              : deleteEntry()
+        "
+      >
+        <mat-icon class="{{ isEditing ? '' : 'delete-icon' }}">
+          {{ isCreatingNew || isEditing ? "close" : "delete" }}
+        </mat-icon>
+
+        <span>
+          {{ isCreatingNew || isEditing ? "Abbrechen" : "Löschen" }}
+        </span>
+      </button>
+
+      <h2 class="right-header">
+        {{ isCreatingNew ? "Neue Stempelzeit" : getHeaderTitle() }}
+      </h2>
+
+      <!-- EDIT / SAVE -->
+     <!-- <button
+        mat-button
+        (click)="
+    selectedNode?.level === 2
+      ? (isCreatingNew ? saveNewEntry() : isEditing ? saveForm() : (isEditing = true))
+      : showLevelWarning()
+  "
+        class="header-btn"
+        [class.primary]="isEditing || isCreatingNew"
+        *ngIf="isArbeitszeit"
+      >
+      >
+        <mat-icon>
+          {{ isCreatingNew ? "check" : isEditing ? "check" : "edit" }}
+        </mat-icon>
+
+        <span>
+          {{
+            isCreatingNew ? "Speichern" : isEditing ? "Speichern" : "Bearbeiten"
+          }}
+        </span>
+      </button>-->
+
+
+      <button
+        mat-button
+        (click)="onSaveOrEditClick()"
+        class="header-btn"
+        [class.primary]="isEditing || isCreatingNew"
+        *ngIf="isCreatingNew || (isArbeitszeit && selectedNode?.level === 2)"
+        [disabled]="!isCreatingNew && selectedNode.level !== 2"
+        [matTooltip]="isCreatingNew ? '' : (selectedNode.level === 2 ? '' : 'Nur für Zeiteinträge verfügbar')"
+      >
+        <mat-icon>
+          {{ isCreatingNew ? "check" : isEditing ? "check" : "edit" }}
+        </mat-icon>
+        <span>
+    {{ isCreatingNew ? "Speichern" : isEditing ? "Speichern" : "Bearbeiten" }}
+  </span>
+      </button>
+    </div>
+    <!-- Form Content -->
+    <form [formGroup]="stempelzeitForm" class="stempelzeit-form">
+
+      <div class="form-field-group">
+        <label class="field-label">Datum: </label>
+        <mat-form-field appearance="outline" class="date-form-field">
+          <input
+            matInput
+            formControlName="datum"
+            [readonly]="!isEditing || !isCreatingNew"
+            class="datum"
+            [matDatepicker]="datum"
+            [matDatepickerFilter]="dateFilter"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="datum"
+            [disabled]="!isCreatingNew"
+          ></mat-datepicker-toggle>
+          <mat-datepicker
+            #datum
+            panelClass="drop-down-date"
+            yPosition="below"
+            xPosition="end"
+            [disabled]="!isCreatingNew"
+          ></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+
+      <!-- Datum Field -->
+
+
+      <!--  <div class="form-field-group width">
+        <label class="field-label">Datum: </label>
+           <input
+            matInput
+            formControlName="datum"
+            [readonly]="!isEditing || !isCreatingNew"
+            class="datum"
+            [matDatepicker]="datum"
+            [matDatepickerFilter]="dateFilter"
+          />
+           <mat-datepicker-toggle
+            matSuffix
+            [for]="datum"
+            class="date-picker-toggle"
+            [disabled]="!isCreatingNew"
+          ></mat-datepicker-toggle>
+          <mat-datepicker
+            #datum
+            panelClass="drop-down-date"
+            yPosition="below"
+            xPosition="end"
+            [disabled]="!isCreatingNew"
+          ></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+      -->
+
+      <!-- Zeittyp Dropdown -->
+      <div class="form-field-group zeit-width">
+        <label class="field-label">Zeittyp:</label>
+        <mat-form-field appearance="outline" class="field-input">
+          <mat-select
+            formControlName="zeittyp"
+            [disabled]="!isEditing"
+            (selectionChange)="onZeittypChange($event)"
+            (closed)="onDropdownClosed()"
+            [style.pointer-events]="isEditing ? 'auto' : 'none'"
+            [style.opacity]="isEditing ? '1' : '0.7'"
+            #zeittypSelect
+            panelClass="drop-down"
+          >
+            <mat-option
+              *ngFor="let option of zeittypOptions"
+              [value]="option.key"
+            >
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Time Input Section -->
+      <div class="time-section">
+        <!-- Anmeldezeit -->
+        <!-- Time Input Section -->
+        <div class="time-section">
+          <!-- Anmeldezeit -->
+          <div class="time-group">
+            <label class="time-label">Anmeldezeit[Stunde]:</label>
+            <div class="time-inputs-horizontal">
+
+              <!-- Stunde -->
+              <div class="time-column">
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseHour('anmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('anmeldezeit') + 1 > 24 ? 0 : getHour('anmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getHour('anmeldezeit')"
+                           [disabled]="!isEditing"
+                           (input)="onTimeInput('anmeldezeitStunde', $event, 24)"
+                           maxlength="2" />
+                    <input type="number" formControlName="anmeldezeitStunde" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseHour('anmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('anmeldezeit') - 1 < 0 ? 24 : getHour('anmeldezeit') - 1 }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Minuten -->
+              <div class="time-column">
+                <div class="mint">
+                  <span class="time-unit">[Minuten]:</span>
+                </div>
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseMinute('anmeldezeit')"
+                          [disabled]="!isEditing || getHour('anmeldezeit') === 24">
+                    {{ getMinute('anmeldezeit') + 1 > 59 ? 0 : getMinute('anmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getMinute('anmeldezeit')"
+                           [disabled]="!isEditing || getHour('anmeldezeit') === 24"
+                           (input)="onTimeInput('anmeldezeitMinuten', $event, 59)"
+                           maxlength="2" />
+                    <input type="number" formControlName="anmeldezeitMinuten" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseMinute('anmeldezeit')"
+                          [disabled]="!isEditing || getHour('anmeldezeit') === 24">
+                    {{ getMinute('anmeldezeit') - 1 < 0 ? 59 : getMinute('anmeldezeit') - 1 }}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Abmeldezeit -->
+          <div class="time-group">
+            <label class="time-label">Abmeldezeit[Stunde]:</label>
+            <div class="time-inputs-horizontal">
+
+              <!-- Stunde -->
+              <div class="time-column">
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseHour('abmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('abmeldezeit') + 1 > 24 ? 0 : getHour('abmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getHour('abmeldezeit')"
+                           [disabled]="!isEditing"
+                           (input)="onTimeInput('abmeldezeitStunde', $event, 24)"
+                           maxlength="2" />
+                    <input type="number" formControlName="abmeldezeitStunde" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseHour('abmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('abmeldezeit') - 1 < 0 ? 24 : getHour('abmeldezeit') - 1 }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Minuten -->
+              <div class="time-column">
+                <div class="mint">
+                  <span class="time-unit">[Minuten]:</span>
+                </div>
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseMinute('abmeldezeit')"
+                          [disabled]="!isEditing || getHour('abmeldezeit') === 24">
+                    {{ getMinute('abmeldezeit') + 1 > 59 ? 0 : getMinute('abmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getMinute('abmeldezeit')"
+                           [disabled]="!isEditing || getHour('abmeldezeit') === 24"
+                           (input)="onTimeInput('abmeldezeitMinuten', $event, 59)"
+                           maxlength="2" />
+                    <input type="number" formControlName="abmeldezeitMinuten" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseMinute('abmeldezeit')"
+                          [disabled]="!isEditing || getHour('abmeldezeit') === 24">
+                    {{ getMinute('abmeldezeit') - 1 < 0 ? 59 : getMinute('abmeldezeit') - 1 }}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anmerkung Field -->
+      <div class="form-field-group">
+        <label class="field-label">Anmerkung:</label>
+        <mat-form-field appearance="outline" class="field-input full-width">
+          <input
+            matInput
+            formControlName="anmerkung"
+            [readonly]="!isEditing"
+            maxlength="60"
+            class="border anmerkung"
+          />
+          <mat-error *ngIf="stempelzeitForm.get('anmerkung')?.invalid && stempelzeitForm.get('anmerkung')?.touched">
+            Anmerkung ist erforderlich
+          </mat-error>
+
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+  <div
+    class="right-panel"
+    *ngIf="(!selectedNode || !selectedNode.formData) && !isLoading"
+  >
+    <div class="right-panel-header">
+      <div
+        class="selected-node-info title2"
+        *ngIf="selectedNode && !selectedNode.formData"
+      >
+        <h2 class="selected-node-title">{{ getSelectedNodeDisplayName() }}</h2>
+      </div>
+    </div>
+  </div>
+</div>

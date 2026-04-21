@@ -1,0 +1,15 @@
+ {
+  "/api": {
+    "target": "http://lht3int.at/at.getit3-t/srv",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api": "" }
+  },
+  "/srv": {
+    "target": "http://lht3int.at/at.getit3-t/srv",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

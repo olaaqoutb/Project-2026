@@ -1,0 +1,49 @@
+
+<div class="app-container">
+  <app-header></app-header>
+  <app-info-bar></app-info-bar>
+
+  <div class="content-container">
+    <app-sidebar></app-sidebar>
+    <div class="main-content">
+
+
+      <router-outlet />
+
+      <app-status-panel-list />
+
+      <main class="main">
+
+        <app-debug-config></app-debug-config>
+      </main>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+<!--
+<div class="app-container">
+  <app-header></app-header>
+  <app-info-bar></app-info-bar>
+
+  <div class="content-container">
+    <app-sidebar></app-sidebar>
+
+    <div class="main-content-wrapper">
+      <div class="main-content">
+        <router-outlet />
+
+        <main class="main">
+          <app-debug-config></app-debug-config>
+        </main>
+      </div>
+
+       <app-status-panel-list class="status-panel-docked" />
+    </div>
+  </div>
+</div>
+-->
+

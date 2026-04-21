@@ -1,0 +1,15 @@
+ {
+   "/api/*": {
+     "target": "http://localhost:29200",
+     "secure": false,
+     "changeOrigin": true
+   },
+   "/**": {
+     "target": "http://localhost:4200",
+     "secure": false,
+     "pathRewrite": {
+       ".*": "/index.html"
+     },
+     "bypass": "function (req) { if (req.url.match(/\\.(js|css|ico|png|jpg|woff|woff2|ttf|eot)$/)) { return req.url; } }"
+   }
+}

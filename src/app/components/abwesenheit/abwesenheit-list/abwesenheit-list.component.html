@@ -1,0 +1,186 @@
+<div class="table-container">
+
+  <!-- Loading spinner -->
+  <div class="loading-state" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <div class="loading-content">
+      <p>Daten werden geladen...</p>
+    </div>
+  </div>
+  <!-- Table content -->
+  <div *ngIf="!loading" class="table-content custom-option">
+     <!--   <table mat-table [dataSource]="dataSource" class="table no-radius">
+       <ng-container matColumnDef="beginn" class="coulmn-width">
+        <mat-header-cell *matHeaderCellDef
+        >Beginn</mat-header-cell
+        >
+        <mat-cell *matCellDef="let element">
+           {{ element.login | date: "dd.MM.yyyy HH:mm" }}
+        </mat-cell>
+      </ng-container>
+
+       <ng-container matColumnDef="ende">
+        <mat-header-cell *matHeaderCellDef>Ende</mat-header-cell>
+        <mat-cell *matCellDef="let element">
+           {{ element.logoff | date: "dd.MM.yyyy HH:mm" }}
+        </mat-cell>
+      </ng-container>
+
+       <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element" class="actions-cell">
+          <button
+            (click)="
+              sendEmail(element.id, element); $event.stopPropagation()
+            "
+            aria-label="Edit absence"
+            class="icon-calendar"
+          >
+            <mat-icon class="icon">calendar_today</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row
+        *matRowDef="let element; columns: displayedColumns"
+        (click)="selectAbwesenheit(element.id, element)"
+        class="hover-highlight"
+        [ngClass]="{
+          'row-past': getRowDateStatus(element) === 'row-past',
+           'row-today': getRowDateStatus(element) !== 'row-past',
+          'selected-row': selectedAbwesenheitId != null && selectedAbwesenheitId === element.id,
+        }"
+      ></mat-row>
+    </table>
+-->
+
+
+    <table mat-table [dataSource]="dataSource" class="table absence-table">
+      <!-- Beginn Column -->
+      <ng-container matColumnDef="beginn" class="coulmn-width">
+        <mat-header-cell *matHeaderCellDef
+        >Beginn</mat-header-cell
+        >
+        <mat-cell *matCellDef="let element">
+          <!--{{ absence.startDate }} - {{ absence.startTime }} -->
+          {{ element.login | date: "dd.MM.yyyy - HH:mm" }}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Ende Column -->
+      <ng-container matColumnDef="ende">
+        <mat-header-cell *matHeaderCellDef>Ende</mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          {{ formatDateTimeEnde( element.logoff) }}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element" class="actions-cell">
+          <button
+            (click)="
+              sendEmail(element.id!, element); $event.stopPropagation()
+            "
+            aria-label="Edit absence"
+            class="icon-calendar"
+            matTooltip="Abwesenheit in den Kalendar exportieren"
+            matTooltipPosition="above"
+            matTooltipShowDelay="300"
+          >
+            <mat-icon class="icon">calendar_today</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row
+        *matRowDef="let element; columns: displayedColumns"
+        (click)="selectAbwesenheit(element.id, element)"
+        class="hover-highlight"
+        [ngClass]="{
+          'row-past': getRowDateStatus(element) === 'row-past',
+           'row-today': getRowDateStatus(element) !== 'row-past',
+          'selected-row': selectedAbwesenheitId === element.id,
+        }"
+      ></mat-row>
+    </table>
+
+
+    <!-- Empty state -->
+    <div *ngIf="dataSource.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">event_busy</mat-icon>
+      <p>Keine Abwesenheiten gefunden</p>
+    </div>
+  </div>
+</div>
+
+
+
+<!--
+
+<div class="table-container">
+
+
+   <div class="loading-state" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <div class="loading-content">
+      <p>Daten werden geladen...</p>
+    </div>
+  </div>
+   <div *ngIf="!loading" class="table-content">
+    <mat-table [dataSource]="dataSource" class="table">
+       <ng-container matColumnDef="beginn" class="coulmn-width">
+        <mat-header-cell *matHeaderCellDef id="cell-height"
+        >Beginn</mat-header-cell
+        >
+        <mat-cell *matCellDef="let element">
+           {{ element.login | date: "dd.MM.yyyy HH:mm" }}
+        </mat-cell>
+      </ng-container>
+
+       <ng-container matColumnDef="ende">
+        <mat-header-cell *matHeaderCellDef>Ende</mat-header-cell>
+        <mat-cell *matCellDef="let element">
+           {{ element.logoff | date: "dd.MM.yyyy HH:mm" }}
+        </mat-cell>
+      </ng-container>
+
+       <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element" class="actions-cell">
+          <button
+            (click)="
+              selectAbwesenheit(element); $event.stopPropagation()
+            "
+            aria-label="Edit absence"
+            class="icon-calendar"
+          >
+            <mat-icon class="icon">calendar_today</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row
+        *matRowDef="let element; columns: displayedColumns"
+        (click)="selectAbwesenheit(element)"
+        class="hover-highlight"
+        [ngClass]="{
+    'row-past': getRowDateStatus(element) === 'row-past',
+    'row-today': getRowDateStatus(element) !== 'row-past',
+    'selected-row': selectedAbwesenheitId === element.uniqueId
+  }"
+
+      ></mat-row>
+    </mat-table>
+     <div *ngIf="dataSource.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">event_busy</mat-icon>
+      <p>Keine Abwesenheiten gefunden</p>
+    </div>
+  </div>
+</div>
+-->

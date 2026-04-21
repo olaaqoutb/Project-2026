@@ -1,0 +1,76 @@
+<!-- <div class="absence-container">
+  <div class="absence-layout">
+     <div class="table-section">
+      <app-abwesenheit-list
+        (abwesenheitSelected)="onAbsenceSelected($event)"
+      ></app-abwesenheit-list>
+    </div>
+
+     <div class="form-section">
+      <app-abwesenheit-detail
+        [abwesenheitId]="selectedAbsenceId"
+        [abwesenheit]="selectedAbsence"
+        [createMode]="selectedAbsenceId === 'new'"
+        (saved)="onFormSaved()"
+        (cancelled)="onFormCancelled()"
+      ></app-abwesenheit-detail>
+    </div>
+  </div>
+</div>
+ -->
+
+
+<div class="absence-container">
+  <div class="unified-header">
+    <div class="header-actions">
+      <ng-container>
+        <button
+          mat-raised-button
+          class="btn-add btn-centered"
+          (click)="createNewAbsence()"
+          matTooltip="Neue Abwesenheit anlegen"
+          matTooltipPosition="above"
+          matTooltipShowDelay="300"
+        >
+          <mat-icon>add</mat-icon>
+          Neu
+        </button>
+      </ng-container>
+
+    </div>
+    <div class="header-left">
+
+      <h2 class="header-title">Abwesenheit - Hassan Terab</h2>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="absence-layout">
+    <div class="table-section">
+      <app-abwesenheit-list
+        (abwesenheitSelected)="onAbsenceSelected($event)"
+        [selectedAbwesenheitId]="selectedAbwesenheitId"
+      ></app-abwesenheit-list>
+    </div>
+
+    <div class="form-section">
+
+      <app-abwesenheit-detail
+        [abwesenheitId]="selectedAbwesenheitId"
+        [abwesenheit]="selectedAbwesenheit"
+        [createMode]="selectedAbwesenheitId === 'new'"
+        (saved)="onFormSaved()"
+        (cancelled)="onFormCancelled()"
+      ></app-abwesenheit-detail>
+      <!--
+      <app-absence-detail
+        [absenceId]="selectedAbsenceId"
+        [absence]="selectedAbsence"
+        [createMode]="selectedAbsenceId === 'new'"
+        (saved)="onFormSaved()"
+        (cancelled)="onFormCancelled()"
+      ></app-absence-detail>-->
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,41 @@
+.dialog-container {
+  min-width: 400px;
+}
+
+.question {
+  font-weight: 500;
+  color: #1976d2;
+  margin-top: 10px;
+}
+
+mat-dialog-actions {
+  gap: 10px;
+}
+
+
+
+.close-button {
+  background-color: #338e9c !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  border: 1px solid #338e9c !important;
+  border-radius: 6px;
+  padding: 8px 16px;
+}
+
+
+.custom-dialog-title {
+  background-color: #338e9c;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  border-radius: 1px 1px 0 0; /* Round top corners */
+  font-weight: bold;
+
+  /* Flexbox for centering */
+  display: flex;
+  align-items: center;     /* vertical center */
+  justify-content: center; /* horizontal center */
+
+  height: 48px; /* Optional: define fixed height for better alignment */
+}

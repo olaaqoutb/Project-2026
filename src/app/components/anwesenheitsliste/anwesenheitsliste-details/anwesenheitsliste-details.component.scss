@@ -1,0 +1,231 @@
+@use "../../../../styles/variables" as *;
+@use "../../../../styles/shared" as shared;
+
+// With ViewEncapsulation.None these styles are global — scope tightly.
+.compact-dialog {
+  .mat-mdc-dialog-container,
+  .mat-mdc-dialog-surface,
+  .mdc-dialog__surface {
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  app-anwesenheitsliste-details {
+    display: block;
+    height: auto;
+  }
+}
+
+.attendance-detail-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  border-radius: 1px;
+  overflow: hidden;
+  min-width: 400px;
+
+  .dialog-header {
+    flex: 0 0 auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: $primary-color;
+    color: $white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .employee-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      mat-icon {
+        font-size: 24px;
+        height: 24px;
+        width: 24px;
+      }
+
+      h2 {
+        margin: 0;
+        font-family: shared.$font-family-base;
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+    }
+
+    .close-button {
+      position: absolute;
+      right: 0.75rem;
+    }
+  }
+
+  .employee-summary {
+    flex: 0 0 auto;
+    background-color: rgba($primary-color, 0.05);
+    padding: 12px 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-bottom: 1px solid $light-gray;
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+      margin-bottom: 4px;
+
+      .label {
+        font-weight: 600;
+        color: $text-secondary;
+        margin-right: 6px;
+      }
+
+      .value {
+        color: $text-color;
+        &.status-indicator {
+          @extend .status-indicator;
+        }
+      }
+    }
+  }
+
+  .dialog-content {
+    flex: 0 0 auto;
+    overflow: hidden;
+    padding: 0;
+
+    .table-container {
+      max-height: 370px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border: none !important;
+      margin-bottom: 0 !important;
+      @include shared.custom-scrollbar(8px);
+    }
+
+    .absence-table {
+      width: 100%;
+      min-width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: shared.$font-family-base;
+      background-color: transparent;
+    }
+  }
+
+  .dialog-footer {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-top: 1px solid $light-gray;
+
+    .close-button {
+      background-color: $primary-color;
+      color: $white;
+      font-family: shared.$font-family-base;
+      font-weight: 500;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      @include shared.button-transition;
+    }
+  }
+}
+
+// ── Table styles (ViewEncapsulation.None → plain global selectors) ──
+
+// Column widths
+.absence-table .mat-column-beginn { width: 40%; }
+.absence-table .mat-column-ende   { width: 40%; }
+.absence-table .mat-column-tage   { width: 20%; text-align: center !important; }
+
+// Header row — sticky
+.absence-table .mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.absence-table .mat-mdc-header-cell {
+  font-family:      shared.$font-family-base;
+  font-size:        0.9rem;
+  font-weight:      600;
+  padding:          6px 12px;
+  border-bottom:    none !important;
+  background-color: $primary-color !important;
+  color:            $white !important;
+}
+
+// Data rows — alternating + hover
+.absence-table .mat-mdc-row {
+  height: 42px;
+  cursor: default;
+  transition: background-color 0.15s ease;
+
+  .mat-mdc-cell {
+    font-family:   shared.$font-family-base;
+    font-size:     0.9rem;
+    padding:       6px 12px;
+    border-bottom: none !important;
+  }
+}
+
+.absence-table .mat-mdc-row:nth-child(odd)  .mat-mdc-cell { background-color: #ffffff !important; color: $text-color !important; }
+.absence-table .mat-mdc-row:nth-child(even) .mat-mdc-cell { background-color: #f0f4f8 !important; color: $text-color !important; }
+.absence-table .mat-mdc-row:hover           .mat-mdc-cell { background-color: #deeaf3 !important; color: $text-color !important; }
+
+.status-indicator {
+  @include shared.status-indicator;
+}
+
+.teal-icon {
+  color: $primary-color !important;
+}
+
+@media (max-width: 600px) {
+  .attendance-detail-container {
+    min-width: 300px;
+
+    .dialog-header {
+      padding: 0.75rem 1rem;
+
+      .employee-info h2 {
+        font-size: 1rem;
+      }
+    }
+
+    .employee-summary {
+      padding: 8px 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .summary-item {
+        margin-bottom: 6px;
+      }
+    }
+
+    .dialog-content {
+      .table-container {
+        max-height: calc(80vh - 130px);
+      }
+
+      .absence-table {
+        ::ng-deep .mat-mdc-header-row,
+        ::ng-deep .mat-mdc-row {
+          .mat-mdc-cell,
+          .mat-mdc-header-cell {
+            padding: 6px 8px;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}

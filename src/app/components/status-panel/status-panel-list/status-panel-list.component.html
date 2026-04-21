@@ -1,0 +1,127 @@
+<!-- status-panel.component.html -->
+<div
+  class="status-panel"
+  [class.expanded]="isExpanded$ | async"
+  [class.has-messages]="statusService.hasMessages()"
+  (dblclick)="onDoubleClick()"
+  title="Double-click to expand/collapse">
+
+  <!-- COLLAPSED VIEW: Show only latest message (1 line) -->
+  <div class="collapsed-view" *ngIf="!(isExpanded$ | async)">
+    <ng-container *ngIf="getLatestMessage() as latest">
+
+
+      <span class="status-icon">{{ getStatusIcon(latest.status) }}</span>
+      <span class="status-time" [style.color]="getStatusColor(latest.status)">{{ formatMessage(latest) }}</span>
+
+      <!--
+      <span class="status-time">{{ formatTime(latest.timestamp) }}:</span>
+
+
+
+      <span class="status-status" [style.color]="getStatusColor(latest.status)">
+       Requestid [{{latest.requestId}}]
+      </span>
+
+      <span class="status-status" [style.color]="getStatusColor(latest.status)">
+        {{latest.message}}
+      </span>
+
+      <span class="status-method" [style.color]="getStatusColor(latest.status)">
+        {{ latest.method }}
+      </span>
+      <span class="status-url" [title]="latest.url">
+        {{ shortenUrl(latest.url) }}
+      </span>
+
+      <span class="status-duration" *ngIf="latest.duration">
+        {{ latest.duration }}ms
+      </span>
+
+      -->
+
+    </ng-container>
+
+    <!-- Show placeholder when no messages -->
+    <span class="placeholder" *ngIf="!getLatestMessage()">
+      Ready - Double-click to expand
+    </span>
+
+    <!-- Expand hint -->
+    <span class="expand-hint" *ngIf="getLatestMessage()">
+      <span class="mdi mdi-chevron-up"></span>
+    </span>
+  </div>
+
+  <!-- ✅ EXPANDED VIEW: Show last 10 messages -->
+  <div class="expanded-view" *ngIf="isExpanded$ | async">
+    <!-- Header -->
+   <!-- <div class="expanded-header">
+      <span class="title">
+        <span class="mdi mdi-message-text"></span>
+        HTTP Requests (Last 10)
+      </span>
+      <div class="header-actions">
+        <button class="action-btn" (click)="clear()" title="Clear all" *ngIf="statusService.hasMessages()">
+          <span class="mdi mdi-broom"></span>
+          Clear All
+        </button>
+        <button class="action-btn" (click)="onDoubleClick()" title="Collapse">
+          <span class="mdi mdi-chevron-down"></span>
+          Collapse
+        </button>
+      </div>
+    </div>
+    -->
+
+    <!-- Messages List -->
+    <div class="messages-list">
+      <div
+        *ngFor="let msg of getLast10Messages()"
+        class="message-item"
+        [class.success]="msg.status === 'success'"
+        [class.error]="msg.status === 'error'">
+
+        <span class="status-icon">{{ getStatusIcon(msg.status) }} </span>
+
+        <span class="status-time"  [style.color]="getStatusColor(msg.status)">{{ formatMessage(msg) }}</span>
+        <!--
+        <span class="status-time">{{ formatTime(msg.timestamp) }}</span>
+
+        <span class="status-method" [style.color]="getStatusColor(msg.status)">
+          {{ msg.method }}
+        </span>
+
+        <span class="status-url" [title]="msg.url">
+          {{ shortenUrl(msg.url) }}
+        </span>
+
+        <span class="status-code">
+          {{ msg.statusCode }} --  {{ msg.requestId }}
+        </span>
+
+        <span class="status-duration" *ngIf="msg.duration">
+          {{ msg.duration }}ms
+        </span>
+
+        -->
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="!statusService.hasMessages()">
+        <span class="mdi mdi-information-outline"></span>
+        No requests yet
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <!--<div class="expanded-footer">
+      <span class="hint">
+        <span class="mdi mdi-keyboard-tab"></span>
+        Double-click to collapse
+      </span>
+    </div>
+
+    -->
+  </div>
+</div>

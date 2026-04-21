@@ -1,0 +1,17 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="custom-dialog-title">Hinweis</h2>
+
+  <mat-dialog-content>
+    <p style="margin-top: 10px;">Es sind neue Informationen verfügbar.</p>
+    <p class="question">Wollen Sie die Informationen jetzt lesen?</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onNoClick()">
+      Nein
+    </button>
+    <button mat-raised-button class="close-button"  color="primary" (click)="onYesClick()">
+      Ja
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,17 @@
+/* ========================================
+   COMPONENT IMPORTS - MODULAR ARCHITECTURE
+   ======================================== */
+
+// Forward all component stylesheets (Sass 3.0+ syntax, replaces @import)
+@forward "header";
+@forward "info-bar";
+@forward "sidebar";
+@forward "forms";
+@forward "tables";
+@forward "badges";
+@forward "responsive";
+@forward "dialogs";
+@forward "inputs";
+@forward "collapsible-sections";
+@forward "absence";
+@forward "calendar";
