@@ -135,19 +135,40 @@ $card-elevation: 2px 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+
+    /* Force the expand arrow to the very left of the header, regardless of
+       Angular Material's content-projection order. */
     .expand-icon {
-      transform: rotate(180deg);
+      order: -1;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    &.open .expand-icon {
+      /* nothing — arrow text itself changes between expand_less/expand_more */
     }
 
     &:hover {
       background-color: #eef0f2;
     }
 
+    /* Title sits directly to the right of the arrow. */
+    .mat-mdc-card-header-text,
     mat-card-title {
       margin: 0;
+      order: 0;
       font-size: 15px;
       font-weight: 500;
       color: #34495e;
+    }
+
+    /* Make the native mat-card-header children slot also participate in the
+       flex row — by default Angular Material wraps the title in a flex column
+       container, which pushed the arrow into an ambiguous position. */
+    ::ng-deep .mat-mdc-card-header-text {
+      display: flex;
+      align-items: center;
+      margin: 0;
     }
   }
 
