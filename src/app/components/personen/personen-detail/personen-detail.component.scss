@@ -17,13 +17,39 @@ $spacing-xl: 32px;
 $border-radius: 4px;
 $card-elevation: 2px 2px 8px rgba(0, 0, 0, 0.1);
 
+:host {
+  /* Host is the scroll container for the whole detail view. The app.component
+     rule already makes it flex: 1 inside main-content, so it has a concrete
+     height; overflow-y: auto here guarantees a scrollbar once the sections
+     expand past the viewport height. */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: block !important;
+}
+
 .personen-container {
   background-color: #f5f5f5;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  min-height: 100%;
+  /* Match the sidebar typography. */
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  /* Reserve a little extra bottom space so the last field is never hidden
+     behind the fixed status panel / window edge. */
+  padding-bottom: 24px;
+
+  mat-label,
+  mat-card-title,
+  .field-label,
+  input.mat-mdc-input-element,
+  textarea.mat-mdc-input-element,
+  .mat-mdc-select-value,
+  .mat-mdc-option,
+  mat-option,
+  .mat-mdc-form-field {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+  }
 
   @media (max-width: 768px) {
     padding: $spacing-sm;
@@ -115,9 +141,59 @@ $card-elevation: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .person-form {
-  display: flex;
-  flex-direction: column;
+  display: block;       /* natural block flow — container handles the scroll */
   padding-bottom: $spacing-xl;
+}
+
+/* Red asterisk after labels for required fields. */
+.required-label::after {
+  content: ' *';
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+/* Validation summary shown above the form when Save is pressed invalid. */
+.validation-errors {
+  margin: 12px 16px;
+  padding: 12px 16px;
+  background-color: #fdecea;
+  border: 1px solid #d32f2f;
+  border-radius: 4px;
+  color: #b71c1c;
+  font-size: 14px;
+
+  .validation-errors-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    margin-bottom: 6px;
+
+    mat-icon {
+      color: #d32f2f;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  li {
+    line-height: 1.5;
+  }
+}
+
+/* Red border on invalid required fields — lives in the global stylesheet
+   (see styles.scss under "Personen-Detail invalid fields") so the selector
+   is not scoped away by view encapsulation. */
+
+/* The required label asterisk stays the inherited text colour. */
+.required-label {
+  color: inherit;
 }
 
 .section-card {
@@ -214,29 +290,51 @@ $card-elevation: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 
-.date-range {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  width: 50%;
+/* Eintritts/Austrittsdatum row.
+   The .field-row wrapper already puts a 200px label on the left. The
+   .date-range takes the normal single-field slot (50% of the column) so
+   the pair is aligned with every other control; each picker fills half
+   of that slot. */
+.date-range-row {
+  .date-range {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 50%;
+    flex: 0 0 50%;
 
-  .date-field {
-    flex: 1;
-  }
-
-  .date-separator {
-    color: #666;
-    font-size: 16px;
-    padding: 0 $spacing-xs;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
+    .date-field {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto !important;
+    }
 
     .date-separator {
-      display: none;
+      color: #666;
+      font-size: 16px;
+      padding: 0;
+      margin: 0 -2px; /* pulls the two pickers tighter to the slash */
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      flex: 1 1 auto;
+
+      .date-separator {
+        display: none;
+      }
     }
   }
+}
+
+/* Override the generic `.form-column mat-form-field { width: 50% }` rule
+   for the two datepickers so each picker actually fills its flex slot
+   instead of being pinned at 50% of the column. */
+.form-column .date-range-row .date-range .date-field.mat-mdc-form-field {
+  width: 100% !important;
 }
 
 .checkbox-group {

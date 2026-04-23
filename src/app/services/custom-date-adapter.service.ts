@@ -16,13 +16,30 @@ export class CustomDateAdapter extends NativeDateAdapter {
     return ('00' + n).slice(-2);
   }
   override parse(value: any): Date | null {
-    if ((typeof value === 'string') && (value.indexOf('.') > -1)) {
-      const str = value.split('.');
-      const day = Number(str[0]);
-      const month = Number(str[1]) - 1;
-      const year = Number(str[2]);
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
 
-      return new Date(year, month, day);
+      // "DD.MM.YYYY" / "D.M.YYYY" / "D.M.YY"
+      if (trimmed.indexOf('.') > -1) {
+        const [d, m, y] = trimmed.split('.');
+        const day = Number(d);
+        const month = Number(m) - 1;
+        let year = Number(y);
+        if (!isNaN(year) && y && y.length === 2) {
+          year += year < 70 ? 2000 : 1900;
+        }
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+        return new Date(year, month, day);
+      }
+
+      // Numeric-only shortcut: "01012022" -> 01.01.2022, "010122" -> 01.01.2022
+      if (/^\d{6}$|^\d{8}$/.test(trimmed)) {
+        const day = Number(trimmed.slice(0, 2));
+        const month = Number(trimmed.slice(2, 4)) - 1;
+        let year = Number(trimmed.slice(4));
+        if (trimmed.length === 6) year += year < 70 ? 2000 : 1900;
+        return new Date(year, month, day);
+      }
     }
     const timestamp = typeof value === 'number' ? value : Date.parse(value);
     return isNaN(timestamp) ? null : new Date(timestamp);

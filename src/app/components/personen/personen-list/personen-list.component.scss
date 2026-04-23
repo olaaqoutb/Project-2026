@@ -43,6 +43,7 @@ $tablet: 900px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  flex-shrink: 0;
 
   @media (max-width: $phone) {
     flex-direction: column;

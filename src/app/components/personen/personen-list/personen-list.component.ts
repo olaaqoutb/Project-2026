@@ -102,7 +102,11 @@ export class PersonenListComponent implements AfterViewInit {
 
   ngOnInit(): void {
   //  this.loadDataFromJson();
+    // Restore the last-selected row only for a single back-navigation, then
+    // clear it so a page refresh (F5) does not keep the row highlighted and
+    // does not force the list to jump to it on every reload.
     this.selectedPersonId = sessionStorage.getItem(PersonenListComponent.SELECTED_ID_KEY);
+    sessionStorage.removeItem(PersonenListComponent.SELECTED_ID_KEY);
     this.loadDataFromServer();
   }
 
@@ -112,15 +116,19 @@ export class PersonenListComponent implements AfterViewInit {
     this.scrollToSelectedRow();
   }
 
+  private selectionScrolled = false;
+
   private scrollToSelectedRow(): void {
-    if (!this.selectedPersonId) return;
-    // Let mat-table render the rows before querying the DOM.
+    // Only run once per component init so later data refreshes / re-renders
+    // don't keep yanking the scroll position back to the selected row.
+    if (!this.selectedPersonId || this.selectionScrolled) return;
     setTimeout(() => {
       const host = this.personenTable?.nativeElement ?? document;
       const row = (host as HTMLElement | Document)
         .querySelector(`[data-person-id="${this.selectedPersonId}"]`) as HTMLElement | null;
       if (row) {
         row.scrollIntoView({ block: 'center', behavior: 'auto' });
+        this.selectionScrolled = true;
       }
     }, 0);
   }

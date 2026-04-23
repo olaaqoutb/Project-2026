@@ -8,7 +8,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
-import {MatNativeDateModule, MatOptionModule} from '@angular/material/core';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule, MatOptionModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {CustomDateAdapter} from '../../../services/custom-date-adapter.service';
+import {DATE_FORMATS} from '../../abwesenheit-korrigieren/abwesenheit-korrigieren-detail/abwesenheit-korrigieren-detail.component';
 import { PersonenService } from '../../../services/personen.service';
  import {ActivatedRoute, Router} from '@angular/router';
 import {ApiPerson} from '../../../models/ApiPerson';
@@ -20,7 +23,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatListModule} from '@angular/material/list';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {DateUtilsService} from '../../../services/utils/date-utils.service';
+import {ErrorDialogComponent} from '../../dialogs/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-personen-detail',
@@ -39,9 +44,17 @@ import {DateUtilsService} from '../../../services/utils/date-utils.service';
     MatListModule,
     MatInputModule,
     MatOptionModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
     MatTooltipModule,
+    MatDialogModule,
     FormsModule
 
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
   ],
   templateUrl: './personen-detail.component.html',
   styleUrl: './personen-detail.component.scss'
@@ -57,6 +70,21 @@ export class PersonenDetailComponent {
   personId: string | null = null;
   currentPerson: ApiPerson | null = null;
   originalFormValues: any = null;
+
+  /** German messages shown to the user when Save is pressed with invalid form. */
+  validationErrors: string[] = [];
+
+  /** Pairs FormControl names with the German label text used in the error list. */
+  private readonly requiredFieldLabels: { name: string; label: string }[] = [
+    { name: 'nachname', label: 'Familienname' },
+    { name: 'vorname', label: 'Vorname' },
+    { name: 'geburtsdatum', label: 'Geburtsdatum' },
+    { name: 'geschlecht', label: 'Geschlecht' },
+    { name: 'eintrittsDatum', label: 'Eintrittsdatum' },
+    { name: 'emailGeschaeftlich', label: 'Email geschäftlich' },
+    { name: 'organisationseinheit', label: 'Organisationseinheit' },
+    { name: 'mitarbeiter', label: 'Mitarbeiterart' },
+  ];
 
   // Panel state
   isPanelOpen = {
@@ -124,7 +152,8 @@ export class PersonenDetailComponent {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dummyService: DummyService
+    private dummyService: DummyService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -152,24 +181,24 @@ export class PersonenDetailComponent {
       titel: [{ value: '', disabled: true }],
       vorname: [{ value: '', disabled: true }, Validators.required],
       nachname: [{ value: '', disabled: true }, Validators.required],
-      geburtsdatum: [{ value: '', disabled: true }],
-      geschlecht: [{ value: '', disabled: true }],
+      geburtsdatum: [{ value: '', disabled: true }, Validators.required],
+      geschlecht: [{ value: '', disabled: true }, Validators.required],
       staatsangehoerigkeit: [{ value: '', disabled: true }],
       aktiv: [{ value: true, disabled: true }],
       anmerkung: [{ value: '', disabled: true }],
 
       // Organisationsdaten Section
-      eintrittsDatum: [{ value: '', disabled: true }],
+      eintrittsDatum: [{ value: '', disabled: true }, Validators.required],
       austrittsDatum: [{ value: '', disabled: true }],
-      emailGeschaeftlich: [{ value: '', disabled: true }, Validators.email],
+      emailGeschaeftlich: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       emailExtern: [{ value: '', disabled: true }, Validators.email],
       telefonnummer: [{ value: '', disabled: true }],
       mobilnummerBMI: [{ value: '', disabled: true }],
       mobilnummerExtern: [{ value: '', disabled: true }],
       zimmernummer: [{ value: '', disabled: true }],
       freigabegruppe: [{ value: '', disabled: true }],
-      organisationseinheit: [{ value: '', disabled: true }],
-      mitarbeiter: [{ value: '', disabled: true }],
+      organisationseinheit: [{ value: '', disabled: true }, Validators.required],
+      mitarbeiter: [{ value: '', disabled: true }, Validators.required],
       dienstverwendung: [{ value: '', disabled: true }],
       personenverantwortlicher: [{ value: '', disabled: true }],
       teamzuordnung: [{ value: '', disabled: true }],
@@ -198,8 +227,11 @@ export class PersonenDetailComponent {
   }
 
   private loadPersonData(): void {
-    if (!this.personId) {
-      console.log('No ID found - creating new person');
+    if (!this.personId || this.personId === 'neu') {
+      console.log('Creating new person — skipping load, leaving form empty');
+      this.personId = null;
+      this.currentPerson = null;
+      this.vertrageData = [];
       return;
     }
 
@@ -430,6 +462,7 @@ export class PersonenDetailComponent {
   private exitEditMode(): void {
     console.log('Exiting edit mode');
     this.isEditMode = false;
+    this.validationErrors = [];
     this.disableAllControls(this.personForm);
   }
 
@@ -446,8 +479,27 @@ export class PersonenDetailComponent {
     if (this.personForm.invalid) {
       console.log(' Form is invalid, not saving');
       this.personForm.markAllAsTouched();
+      // Force Material to re-evaluate validity so .mat-form-field-invalid
+      // is applied to every required control that is still empty.
+      this.personForm.updateValueAndValidity();
+      this.buildValidationErrors();
+      // Open the two panels whose required fields live in, so the user
+      // can actually see the red-highlighted inputs.
+      this.isPanelOpen.personendaten = true;
+      this.isPanelOpen.organisationsdaten = true;
+      this.dialog.open(ErrorDialogComponent, {
+        data: {
+          title: 'Pflichtfelder prüfen',
+          detail: this.validationErrors.join('\n'),
+        },
+        panelClass: 'custom-dialog-width',
+        autoFocus: false,
+      });
       return;
     }
+
+    // Clear any previous validation errors on a successful submit attempt.
+    this.validationErrors = [];
 
     this.isLoading = true;
 
@@ -482,6 +534,12 @@ export class PersonenDetailComponent {
           this.isLoading = false;
         }
       });
+  }
+
+  private buildValidationErrors(): void {
+    this.validationErrors = this.requiredFieldLabels
+      .filter(f => this.personForm.get(f.name)?.hasError('required'))
+      .map(f => `Das Feld '${f.label}' darf nicht leer sein.`);
   }
 
   onCancel(): void {
