@@ -283,12 +283,17 @@
           >
         </div>
         <div class="positionen-list scrollable-container">
+          <div class="positionen-list-inner">
           <ng-container
             *ngTemplateOutlet="
               renderNode;
               context: { $implicit: vertragspositionen, level: 1 }
             "
           ></ng-container>
+          <!-- Bottom spacer: guarantees the last tree row is scrollable into
+               full view regardless of viewport height. -->
+          <div class="tree-bottom-spacer" aria-hidden="true"></div>
+          </div>
   
           <ng-template #renderNode let-nodes let-level="level">
             <div *ngFor="let node of nodes">

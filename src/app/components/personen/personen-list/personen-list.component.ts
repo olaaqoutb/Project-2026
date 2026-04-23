@@ -1,4 +1,4 @@
-import {Component, Renderer2} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Renderer2, ViewChild} from '@angular/core';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {FormsModule} from '@angular/forms';
@@ -48,7 +48,12 @@ import {MatTooltip} from '@angular/material/tooltip';
   templateUrl: './personen-list.component.html',
   styleUrl: './personen-list.component.scss'
 })
-export class PersonenListComponent {
+export class PersonenListComponent implements AfterViewInit {
+  private static readonly SELECTED_ID_KEY = 'personen-list-selected-id';
+  @ViewChild('personenTable', { read: ElementRef }) personenTable?: ElementRef<HTMLElement>;
+
+  selectedPersonId: string | null = null;
+
   displayedColumns: string[] = [
     'iconcheck',
     'statusIcon',
@@ -97,7 +102,27 @@ export class PersonenListComponent {
 
   ngOnInit(): void {
   //  this.loadDataFromJson();
+    this.selectedPersonId = sessionStorage.getItem(PersonenListComponent.SELECTED_ID_KEY);
     this.loadDataFromServer();
+  }
+
+  ngAfterViewInit(): void {
+    // If the table finishes rendering before data loads, scroll happens again
+    // in loadDataFromServer's subscription — this is just the fallback path.
+    this.scrollToSelectedRow();
+  }
+
+  private scrollToSelectedRow(): void {
+    if (!this.selectedPersonId) return;
+    // Let mat-table render the rows before querying the DOM.
+    setTimeout(() => {
+      const host = this.personenTable?.nativeElement ?? document;
+      const row = (host as HTMLElement | Document)
+        .querySelector(`[data-person-id="${this.selectedPersonId}"]`) as HTMLElement | null;
+      if (row) {
+        row.scrollIntoView({ block: 'center', behavior: 'auto' });
+      }
+    }, 0);
   }
   menuItems = [
     'Personenliste Alle',
@@ -120,6 +145,7 @@ export class PersonenListComponent {
         this.attendanceData = data ; // this.transformData(data);
         this.applyFilter();
         this.isLoading = false;
+        this.scrollToSelectedRow();
       },
       error: (error: any) => {
         console.error('Error loading data from JSON:', error);
@@ -317,6 +343,10 @@ export class PersonenListComponent {
     console.log('Navigate to details:', row);
 
     if (row.id) {
+      // Remember which row the user clicked so the list can restore focus
+      // to it when they navigate back.
+      this.selectedPersonId = row.id;
+      sessionStorage.setItem(PersonenListComponent.SELECTED_ID_KEY, row.id);
       this.router.navigate(['/personen', row.id]);
     } else {
       console.error('Person ID is missing');

@@ -305,6 +305,137 @@ export const MOCK_PRODUKTE: ApiProdukt[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Verträge
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Generates additional vertragPosition entries for a vertrag so the tree in
+ * /vertraege/:id (vertrag-detail-2) has enough rows to test scrolling and
+ * alignment of varied-length names.
+ */
+function buildExtraVertragPositionen(count: number, parentId: string): any[] {
+  const namesLong = [
+    'Cloud-Migration Produktionssysteme (AWS EU-Central & Fallback AT-Vienna)',
+    'Sicherheitsaudit & Penetration-Testing der extern erreichbaren Schnittstellen',
+    'End-to-End Monitoring + Alerting Rollout (Prometheus, Grafana, PagerDuty)',
+    'Einführung Continuous Delivery Pipeline mit GitLab Runner und ArgoCD',
+    'DSGVO-Konformitätsprüfung und Anpassung Datenhaltung personenbezogener Daten',
+  ];
+  const namesMed = [
+    'Mobile App Modernisierung',
+    'API Gateway Rollout',
+    'Schulung Entwicklerteam',
+    'Barrierefreiheit WCAG 2.2',
+    'Performance Tuning',
+    'Legacy Refactoring',
+    'Observability Dashboards',
+    'Disaster Recovery',
+  ];
+  const namesShort = ['UX', 'DB', 'CI', 'QA', 'Ops', 'Sec', 'Doc'];
+
+  const produkte = [
+    { produktname: 'GETIT Portal', kurzName: 'GETIT' },
+    { produktname: 'Personen-Service', kurzName: 'PERS' },
+    { produktname: 'Reporting Engine', kurzName: 'RPT' },
+    { produktname: 'Identity Platform', kurzName: 'IDP' },
+    { produktname: 'Datenbank-Plattform', kurzName: 'DB' },
+    { produktname: 'Observability Stack', kurzName: 'OBS' },
+    { produktname: 'Code Quality Gate', kurzName: 'CQ' },
+  ];
+  const verbraucherNames = [
+    'Hassan Adam Terab',
+    'Anna Müller',
+    'Dr. Peter Friedrich Schmidt-Hohenberg',
+    'Max Gruber',
+    'Julia Huber',
+    'HA',
+    'Stefan Breitner – Externer Berater (ACME GmbH)',
+  ];
+
+  const pickName = (i: number) => {
+    const m = i % 5;
+    if (m === 0) return namesLong[i % namesLong.length];
+    if (m === 4) return namesShort[i % namesShort.length];
+    return namesMed[i % namesMed.length];
+  };
+
+  const out: any[] = [];
+  for (let i = 0; i < count; i++) {
+    const idx = i + 5; // start after manually authored vp-1a..vp-1d
+    const aktiv = i % 7 !== 0;
+    const volStd = 200 + ((i * 173) % 2400);
+    const volEuro = volStd * (100 + (i % 3) * 25);
+    const geplant = Math.floor(volStd * 0.9);
+    const verbraucher1 = verbraucherNames[i % verbraucherNames.length];
+    const verbraucher2 = verbraucherNames[(i + 3) % verbraucherNames.length];
+    const produktA = produkte[i % produkte.length];
+    const produktB = produkte[(i + 2) % produkte.length];
+
+    out.push({
+      id: `vp-${parentId}-ext-${idx}`,
+      version: 1, deleted: false, state: ApiState.READ,
+      position: pickName(i),
+      volumenStunden: String(volStd),
+      volumenEuro: volEuro.toFixed(2),
+      aktiv, planungsjahr: '2026',
+      stundenGeplant: String(geplant), stundenGebucht: String(Math.floor(geplant / 3)),
+      vertragPositionVerbraucher: [
+        {
+          id: `vpv-${parentId}-ext-${idx}-1`,
+          version: 1, deleted: false, state: ApiState.READ,
+          verbraucher: verbraucher1, verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+          volumenStunden: String(Math.floor(volStd * 0.6)),
+          volumenEuro: (volEuro * 0.6).toFixed(2),
+          stundenpreis: '120.00',
+          aktiv, person: MOCK_PERSONEN[i % MOCK_PERSONEN.length],
+          stundenGeplant: String(Math.floor(geplant * 0.6)),
+          stundenGebucht: String(Math.floor(geplant * 0.2)),
+          stundenplanung: [
+            {
+              id: `sp-${parentId}-ext-${idx}-1-1`, version: 1, state: ApiState.READ,
+              stundenGeplant: String(Math.floor(geplant * 0.4)),
+              produktPosition: {
+                id: `pp-${parentId}-ext-${idx}-1-1`, aktiv: aktiv,
+                produktPositionname: pickName(i + 1),
+                produkt: produktA,
+              },
+            },
+            {
+              id: `sp-${parentId}-ext-${idx}-1-2`, version: 1, state: ApiState.READ,
+              stundenGeplant: String(Math.floor(geplant * 0.2)),
+              produktPosition: {
+                id: `pp-${parentId}-ext-${idx}-1-2`, aktiv: true,
+                produktPositionname: pickName(i + 2),
+                produkt: produktB,
+              },
+            },
+          ],
+        },
+        {
+          id: `vpv-${parentId}-ext-${idx}-2`,
+          version: 1, deleted: false, state: ApiState.READ,
+          verbraucher: verbraucher2, verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+          volumenStunden: String(Math.floor(volStd * 0.4)),
+          volumenEuro: (volEuro * 0.4).toFixed(2),
+          stundenpreis: '120.00',
+          aktiv, person: MOCK_PERSONEN[(i + 2) % MOCK_PERSONEN.length],
+          stundenGeplant: String(Math.floor(geplant * 0.4)),
+          stundenGebucht: String(Math.floor(geplant * 0.15)),
+          stundenplanung: [
+            {
+              id: `sp-${parentId}-ext-${idx}-2-1`, version: 1, state: ApiState.READ,
+              stundenGeplant: String(Math.floor(geplant * 0.4)),
+              produktPosition: {
+                id: `pp-${parentId}-ext-${idx}-2-1`, aktiv: true,
+                produktPositionname: pickName(i + 3),
+                produkt: produktA,
+              },
+            },
+          ],
+        },
+      ],
+    });
+  }
+  return out;
+}
+
 export const MOCK_VERTRAEGE: ApiVertrag[] = [
   {
     id: 'v-1',
@@ -512,6 +643,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           },
         ],
       },
+      ...buildExtraVertragPositionen(26, 'v-1'),
     ],
   },
   {

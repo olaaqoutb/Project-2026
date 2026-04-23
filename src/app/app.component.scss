@@ -41,11 +41,14 @@
         overflow: auto;
       }
 
-      /* Ensure routed components fill the main-content area so their internal
-         scroll containers (like table bodies) receive a concrete height. */
+      /* Routed list/detail components that manage their own scroll need to
+         fill the main-content flex area so their internal scroll containers
+         receive a concrete height. */
       > app-freigabe-list,
       > app-freigabe-korigieren-list,
-      > app-freigabe-historisch-list {
+      > app-freigabe-historisch-list,
+      > app-personen-list,
+      > app-personen-detail {
         display: flex;
         flex: 1;
         flex-direction: column;

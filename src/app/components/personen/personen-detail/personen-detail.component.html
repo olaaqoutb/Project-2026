@@ -594,6 +594,7 @@
         <mat-card-title>Vertragsdaten</mat-card-title>
         <mat-checkbox
           [(ngModel)]="showInactive"
+          [ngModelOptions]="{ standalone: true }"
           (click)="$event.stopPropagation()"
         >inkl. inaktive</mat-checkbox>
       </mat-card-header>

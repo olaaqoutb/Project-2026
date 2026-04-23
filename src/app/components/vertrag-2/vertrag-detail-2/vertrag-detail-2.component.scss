@@ -136,9 +136,20 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   margin-top: 0;
   padding: 0;
   font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
+  /* Use the browser's default gray scrollbar (same as personen-detail). */
+}
+
+/* Dedicated spacer at the bottom of the tree, rendered as a real element so
+   it survives flex/overflow quirks where padding-bottom on a scroll container
+   can be collapsed. Guarantees the last row is fully visible at any height. */
+.tree-bottom-spacer {
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.positionen-list-inner {
+  display: block;
+  padding-bottom: 0;
 }
 
 /* Tree rows styled to match personen-detail Vertragsdaten tree. */

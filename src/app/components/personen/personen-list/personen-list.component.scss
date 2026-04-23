@@ -24,6 +24,10 @@ $tablet: 900px;
   width: 100%!important;
   max-width: 100%;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 .status-icon-green{
   color:green;
@@ -210,17 +214,11 @@ $tablet: 900px;
   max-width: 100%;
   overflow-x: auto;
   margin: 0;
-  height: calc(100vh - 40px);
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   cursor: pointer;
   box-sizing: border-box;
-
-  @media (max-width: 780px) {
-    height:calc(100vh - 220px);
-  }
-  @media (min-width: 1920px) {
-    height: 100vh;
-  }
 
 
   .mat-table {
@@ -279,6 +277,17 @@ $tablet: 900px;
 .sort-arrow {
   position: relative;
   top: 8px;
+}
+
+/* Row highlighted when user returns from the detail view. */
+.mat-mdc-row.selected-row,
+tr.mat-mdc-row.selected-row,
+.list-row.selected-row {
+  background-color: #c7e4ea !important;
+  td {
+    background-color: #c7e4ea !important;
+    font-weight: 600;
+  }
 }
 
 .list-row {

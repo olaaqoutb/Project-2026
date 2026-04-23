@@ -51,7 +51,7 @@
     <mat-icon>error_outline</mat-icon>
     <span>{{ errorMessage }}</span>
   </div>
-  <div class="table-container" *ngIf="!isLoading && !errorMessage">
+  <div class="table-container" #personenTable *ngIf="!isLoading && !errorMessage">
     <table
       mat-table
       [dataSource]="dataSource"
@@ -174,6 +174,8 @@
         mat-row
         *matRowDef="let row; columns: displayedColumns"
         [class]="getRowClass(row)"
+        [class.selected-row]="row.id && row.id === selectedPersonId"
+        [attr.data-person-id]="row.id"
         (click)="goToDetails(row)"
         class="list-row"
       ></tr>

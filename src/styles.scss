@@ -46,15 +46,20 @@ body {
   min-width: 0;
 }
 
-/* Tables throughout the app use .table-container / .table-content and
-   frequently hard-code height:100vh. Force them to fill only their parent
-   so the table's internal scrollbar is the ONLY scroll for long lists. */
-.content-container .table-container {
+/* Freigabe tables only — force their .table-container / .table-content to
+   fill only their parent so the table's internal scrollbar is the ONLY
+   scroll on those routes. Applied narrowly so other pages (personen, etc.)
+   keep their own viewport-based sizing. */
+app-freigabe-list .table-container,
+app-freigabe-korigieren-list .table-container,
+app-freigabe-historisch-list .table-container {
   height: 100% !important;
   max-height: 100% !important;
   min-height: 0 !important;
 }
-.content-container .table-content {
+app-freigabe-list .table-content,
+app-freigabe-korigieren-list .table-content,
+app-freigabe-historisch-list .table-content {
   max-height: 100% !important;
   min-height: 0 !important;
 }
