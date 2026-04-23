@@ -325,17 +325,46 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     vertragPosition: [
       {
         id: 'vp-1a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Frontend Development',
+        position: 'FE-Entwicklung GETIT Portal – Angular 19 Migration & Redesign',
         volumenStunden: '4000', volumenEuro: '480000.00',
         aktiv: true, planungsjahr: '2026',
         stundenGeplant: '4000', stundenGebucht: '1850',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1a-1', version: 1, deleted: false, state: ApiState.READ,
-            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            verbraucher: 'Hassan Adam Terab – Senior Frontend Engineer', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
             volumenStunden: '1200', volumenEuro: '144000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1200', stundenGebucht: '620',
+            stundenplanung: [
+              {
+                id: 'sp-1a-1-1', version: 1, state: ApiState.READ,
+                stundenGeplant: '300',
+                produktPosition: {
+                  id: 'pp-1a-1-1', aktiv: true,
+                  produktPositionname: 'Komponentenbibliothek Redesign',
+                  produkt: { produktname: 'UI Component Library Angular', kurzName: 'UILIB' },
+                },
+              },
+              {
+                id: 'sp-1a-1-2', version: 1, state: ApiState.READ,
+                stundenGeplant: '500',
+                produktPosition: {
+                  id: 'pp-1a-1-2', aktiv: true,
+                  produktPositionname: 'Dashboard',
+                  produkt: { produktname: 'Personen', kurzName: 'PERS' },
+                },
+              },
+              {
+                id: 'sp-1a-1-3', version: 1, state: ApiState.READ,
+                stundenGeplant: '400',
+                produktPosition: {
+                  id: 'pp-1a-1-3', aktiv: false,
+                  produktPositionname: 'Legacy Reports (abgekündigt)',
+                  produkt: { produktname: 'Reporting Engine', kurzName: 'RPT' },
+                },
+              },
+            ],
           },
           {
             id: 'vpv-1a-2', version: 1, deleted: false, state: ApiState.READ,
@@ -343,35 +372,96 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             volumenStunden: '800', volumenEuro: '96000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '800', stundenGebucht: '350',
+            stundenplanung: [
+              {
+                id: 'sp-1a-2-1', version: 1, state: ApiState.READ,
+                stundenGeplant: '250',
+                produktPosition: {
+                  id: 'pp-1a-2-1', aktiv: true,
+                  produktPositionname: 'Test',
+                  produkt: { produktname: 'QA', kurzName: 'QA' },
+                },
+              },
+              {
+                id: 'sp-1a-2-2', version: 1, state: ApiState.READ,
+                stundenGeplant: '550',
+                produktPosition: {
+                  id: 'pp-1a-2-2', aktiv: true,
+                  produktPositionname: 'Internationale Lokalisierung – DE/EN/FR/IT/ES',
+                  produkt: { produktname: 'Translation Service Framework', kurzName: 'TSF' },
+                },
+              },
+            ],
           },
         ],
       },
       {
         id: 'vp-1b', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Backend Development',
+        position: 'BE-Dev',
         volumenStunden: '3000', volumenEuro: '360000.00',
         aktiv: true, planungsjahr: '2026',
         stundenGeplant: '3000', stundenGebucht: '1070',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1b-1', version: 1, deleted: false, state: ApiState.READ,
-            verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            verbraucher: 'HA', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
             volumenStunden: '600', volumenEuro: '72000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '600', stundenGebucht: '260',
+            stundenplanung: [
+              {
+                id: 'sp-1b-1-1', version: 1, state: ApiState.READ,
+                stundenGeplant: '600',
+                produktPosition: {
+                  id: 'pp-1b-1-1', aktiv: true,
+                  produktPositionname: 'Auth Service',
+                  produkt: { produktname: 'Identity Platform', kurzName: 'IDP' },
+                },
+              },
+            ],
           },
           {
             id: 'vpv-1b-2', version: 1, deleted: false, state: ApiState.READ,
-            verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            verbraucher: 'Dr. Peter Friedrich Schmidt-Hohenberg (extern, ACME Consulting GmbH, Standort Wien)',
+            verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
             volumenStunden: '1400', volumenEuro: '168000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1400', stundenGebucht: '810',
+            stundenplanung: [
+              {
+                id: 'sp-1b-2-1', version: 1, state: ApiState.READ,
+                stundenGeplant: '700',
+                produktPosition: {
+                  id: 'pp-1b-2-1', aktiv: true,
+                  produktPositionname: 'Datenbankmigration Oracle → PostgreSQL (Gesamtsystem)',
+                  produkt: { produktname: 'Datenbank-Plattform GETIT', kurzName: 'DB' },
+                },
+              },
+              {
+                id: 'sp-1b-2-2', version: 1, state: ApiState.READ,
+                stundenGeplant: '400',
+                produktPosition: {
+                  id: 'pp-1b-2-2', aktiv: true,
+                  produktPositionname: 'API',
+                  produkt: { produktname: 'GW', kurzName: 'GW' },
+                },
+              },
+              {
+                id: 'sp-1b-2-3', version: 1, state: ApiState.READ,
+                stundenGeplant: '300',
+                produktPosition: {
+                  id: 'pp-1b-2-3', aktiv: false,
+                  produktPositionname: 'Monitoring Infrastruktur (eingestellt 01/2026)',
+                  produkt: { produktname: 'Observability Stack', kurzName: 'OBS' },
+                },
+              },
+            ],
           },
         ],
       },
       {
         id: 'vp-1c', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Architecture Consulting',
+        position: 'Architektur-Beratung & Review (Bewertung der aktuellen Systemlandschaft)',
         volumenStunden: '1000', volumenEuro: '150000.00',
         aktiv: true, planungsjahr: '2026',
         stundenGeplant: '1000', stundenGebucht: '320',
@@ -382,6 +472,43 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             volumenStunden: '1000', volumenEuro: '150000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1000', stundenGebucht: '320',
+            stundenplanung: [
+              {
+                id: 'sp-1c-1-1', version: 1, state: ApiState.READ,
+                stundenGeplant: '600',
+                produktPosition: {
+                  id: 'pp-1c-1-1', aktiv: true,
+                  produktPositionname: 'Architektur-Board & Governance Workshops Q1–Q4',
+                  produkt: { produktname: 'Enterprise Architecture Office', kurzName: 'EA' },
+                },
+              },
+              {
+                id: 'sp-1c-1-2', version: 1, state: ApiState.READ,
+                stundenGeplant: '400',
+                produktPosition: {
+                  id: 'pp-1c-1-2', aktiv: true,
+                  produktPositionname: 'Review',
+                  produkt: { produktname: 'Code Quality Gate', kurzName: 'CQ' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'vp-1d', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Kurz',
+        volumenStunden: '500', volumenEuro: '60000.00',
+        aktiv: false, planungsjahr: '2026',
+        stundenGeplant: '500', stundenGebucht: '0',
+        vertragPositionVerbraucher: [
+          {
+            id: 'vpv-1d-1', version: 1, deleted: false, state: ApiState.READ,
+            verbraucher: 'X', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            volumenStunden: '500', volumenEuro: '60000.00', stundenpreis: '120.00',
+            aktiv: false, person: MOCK_PERSONEN[4],
+            stundenGeplant: '500', stundenGebucht: '0',
+            stundenplanung: [],
           },
         ],
       },
@@ -888,47 +1015,133 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Freigabe-Positionen, Tätigkeitsbuchungen, Trigger, LkDetails
 // ─────────────────────────────────────────────────────────────────────────────
-export const MOCK_FREIGABE_POSITIONEN: any[] = [
-  {
-    id: 'fp-1',
-    version: 1,
-    deleted: false,
-    state: ApiState.READ,
-    bezeichnung: 'Entwicklung GETIT Portal Q2/2026',
-    funktion: 'DV',
-    status: 'OFFEN',
-    anzahl: 12,
-  },
-  {
-    id: 'fp-2',
-    version: 1,
-    deleted: false,
-    state: ApiState.READ,
-    bezeichnung: 'Wartung SAP Basis Q2/2026',
-    funktion: 'DV',
-    status: 'FREIGEGEBEN',
-    anzahl: 8,
-  },
+const FREIGABE_STATUS_CYCLE = [
+  'PRUEFEN_DV',
+  'PRUEFEN_EV',
+  'ABGELEHNT',
+  'FREIGEGEBEN',
+  'FREIGEGEBEN_AUTO',
 ];
 
-export const MOCK_TAETIGKEITSBUCHUNGEN: any[] = [
-  {
-    id: 'tb-1',
-    version: 1,
-    state: ApiState.READ,
-    datum: '2026-04-17',
-    dauer: '4.0',
-    beschreibung: 'Feature X implementiert',
-  },
-  {
-    id: 'tb-2',
-    version: 1,
-    state: ApiState.READ,
-    datum: '2026-04-18',
-    dauer: '3.5',
-    beschreibung: 'Code Review und Bugfixes',
-  },
+const PRODUKT_POSITION_NAMES = [
+  'Betrieb',
+  'Testmanagement',
+  'Entwicklung',
+  'Konzeption',
+  'Wartung',
+  'Benutzerbetreuung',
+  'Datenbankadministration',
+  'Projektmanagement',
+  'Schulung',
+  'Deployment',
 ];
+
+function padId(n: number): string {
+  return n.toString().padStart(3, '0');
+}
+
+function pickMonat(index: number): string {
+  // Cycle through the last 12 months so the Monat column shows variety.
+  const base = new Date(2026, 3, 1); // April 2026
+  const d = new Date(base.getFullYear(), base.getMonth() - (index % 12), 1);
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  return `${y}-${m}-01`;
+}
+
+/** Builds a realistic set of ApiFreigabePosition-shaped mocks. */
+function buildMockFreigabePositionen(count: number, idPrefix: string): any[] {
+  const out: any[] = [];
+  for (let i = 0; i < count; i++) {
+    const bucher = MOCK_PERSONEN[i % MOCK_PERSONEN.length];
+    const produkt = MOCK_PRODUKTE[i % MOCK_PRODUKTE.length];
+    const posName = PRODUKT_POSITION_NAMES[i % PRODUKT_POSITION_NAMES.length];
+    const status = FREIGABE_STATUS_CYCLE[i % FREIGABE_STATUS_CYCLE.length];
+
+    out.push({
+      id: `${idPrefix}-${padId(i + 1)}`,
+      version: 1,
+      deleted: false,
+      state: ApiState.READ,
+      anmerkung: i % 4 === 0 ? 'Bitte prüfen' : '',
+      freigabeStatus: status,
+      minutenDauer: 60 + (i * 37) % 540,
+      buchungsZeitraum: pickMonat(i),
+      produktPosition: {
+        id: `pp-${idPrefix}-${i + 1}`,
+        version: 1,
+        deleted: false,
+        state: ApiState.READ,
+        produktPositionname: posName,
+        produkt: produkt,
+        aktiv: true,
+      },
+      bucher: bucher,
+      metadaten: i % 5 === 0
+        ? {
+            originalProduktPosition: PRODUKT_POSITION_NAMES[(i + 3) % PRODUKT_POSITION_NAMES.length],
+            originalProdukt: MOCK_PRODUKTE[(i + 1) % MOCK_PRODUKTE.length].kurzName,
+          }
+        : undefined,
+    });
+  }
+  return out;
+}
+
+export const MOCK_FREIGABE_POSITIONEN: any[] = buildMockFreigabePositionen(55, 'fp');
+
+export const MOCK_FREIGABE_POSITIONEN_HISTORY: any[] = buildMockFreigabePositionen(55, 'fph');
+
+function buildMockTaetigkeitsbuchungen(count: number): any[] {
+  const taetigkeiten = [
+    'Analyse', 'Programmierung', 'Konzeption', 'Wartung', 'Test',
+    'Dokumentation', 'Besprechung', 'Deployment', 'Schulung', 'Bericht',
+    'Fehlerbehebung', 'Projektmanagement', 'Workshop', 'Recherche',
+    'Qualitätssicherung', 'Softwaredesign', 'Datenbankadministration',
+  ];
+  const buchungspunkte = [
+    'Entwicklung', 'Betrieb', 'Wartung', 'Test', 'Rollout',
+    'Support', 'Konzept', 'Dokumentation', 'Deployment', 'Schulung',
+  ];
+  const anmerkungen = [
+    'Siehe Jira Ticket',
+    'Bug #1234 behoben',
+    'Review mit Team',
+    'Kundenanforderung umgesetzt',
+    '',
+    'Release vorbereitet',
+    'Abstimmung mit Fachbereich',
+    '',
+  ];
+  const out: any[] = [];
+  for (let i = 0; i < count; i++) {
+    // Spread across a 3-month window so months/days vary.
+    const monthOffset = i % 3;
+    const day = ((i % 27) + 1).toString().padStart(2, '0');
+    const month = (2 + monthOffset).toString().padStart(2, '0'); // Feb–Apr 2026
+    out.push({
+      id: `tb-${padId(i + 1)}`,
+      version: 1,
+      state: ApiState.READ,
+      minutenDauer: 30 + (i * 37) % 450,
+      taetigkeit: taetigkeiten[i % taetigkeiten.length],
+      buchungspunkt: {
+        id: `bp-${i + 1}`,
+        version: 1,
+        state: ApiState.READ,
+        buchungspunkt: buchungspunkte[i % buchungspunkte.length],
+        aktiv: true,
+      },
+      anmerkung: anmerkungen[i % anmerkungen.length],
+      jiraTicket: i % 4 === 0 ? `GETIT-${1000 + i}` : undefined,
+      datum: `2026-${month}-${day}T08:00:00`,
+      tagesabschluss: i % 5 === 0,
+    });
+  }
+  return out;
+}
+
+export const MOCK_TAETIGKEITSBUCHUNGEN: any[] = buildMockTaetigkeitsbuchungen(35);
 
 export const MOCK_TRIGGER: any[] = [
   {

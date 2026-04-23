@@ -120,11 +120,11 @@
             </td>
           </ng-container>
   
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
           <tr
             mat-row
             *matRowDef="let row; let i = index; columns: displayedColumns"
-            [ngClass]="getOddEvenRowClass(i)"
+            [ngClass]="[getOddEvenRowClass(i), row.id && row.id === selectedEntryId ? 'row-selected' : '']"
             [ngStyle]="getRowStyle(row)"
             (click)="selectEntry(row)"
           ></tr>
@@ -202,7 +202,7 @@
               </td>
             </ng-container>
   
-            <tr mat-header-row *matHeaderRowDef="detailDisplayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="detailDisplayedColumns; sticky: true"></tr>
             <tr
               mat-row
               *matRowDef="let row; columns: detailDisplayedColumns"

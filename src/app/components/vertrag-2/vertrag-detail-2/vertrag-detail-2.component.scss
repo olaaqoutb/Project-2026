@@ -129,27 +129,109 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .scrollable-container {
-  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-top: 0;
+  padding: 0;
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
   &::-webkit-scrollbar { width: 8px; }
   &::-webkit-scrollbar-track { background: #f1f1f1; }
   &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
 }
 
+/* Tree rows styled to match personen-detail Vertragsdaten tree. */
 .position-item {
-  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;height:47px;
-  &:hover { background-color: #f7f7f7; }
-  .position-icon {
-    font-size: 18px !important; margin-right: 12px;position:relative;bottom:10px;
-    &.active { color: green; }
-    &.inactive { color: darkred; }
+  display: flex;
+  align-items: flex-start; /* icon lines up with the title (first line) */
+  gap: 10px;
+  padding: 4px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+
+  &:hover { background-color: #f4f8fa; }
+
+  .tree-level-icon {
+    font-size: 17px;
+    line-height: 1.2;      /* match .position-title line-height so baselines align */
+    margin-right: 4px;
+    color: #314559;
+    flex-shrink: 0;
+    padding-top: 1px;      /* visual nudge to sit on the title baseline */
+
+    &.icon-inactive { color: #c62828; }
   }
+
   .position-info {
     flex: 1;
-    .position-title { font-weight: 500; color: #333; }
-    .position-dates { font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
-  .sync-icon { color: #555; font-size: 25px!important;border: 1px solid black;}
-  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; }
+
+  .position-title {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.2;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .position-extra {
+    font-size: 12px;
+    line-height: 1.2;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    span + span { margin-left: 10px; } /* spacing between the removed-pipe segments */
+
+    .detail-icon {
+      font-size: 14px;
+      margin-right: 4px;
+      color: #666;
+      vertical-align: middle;
+    }
+  }
+
+  .sync-icon {
+    color: #555;
+    font-size: 18px;
+    line-height: 1;
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: 4px;
+    border-radius: 4px;
+    align-self: center; /* keep action icon centered vertically, not top-aligned */
+
+    &.mdi-flip-h { transform: scaleX(-1); }
+
+    &:hover:not(.disabled-icon) {
+      background-color: rgba(51, 142, 156, 0.1);
+      color: #338e9c;
+    }
+    &.disabled-icon { color: #c0c0c0; cursor: not-allowed; }
+  }
+
+  &.selected-item {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #338E9C !important;
+    padding-left: 8px;
+  }
+}
+
+/* Remove the gap before the first row of the tree. */
+.positionen-list.scrollable-container > :first-child > :first-child .position-item:first-of-type,
+.positionen-list.scrollable-container > :first-child .position-item:first-of-type {
+  border-top: none;
+  margin-top: 0;
 }
 
 .position-detail-container {
@@ -203,33 +285,8 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
 
-.scrollable-container {
-  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
-}
-
-.position-item {
-  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;
-  &:hover { background-color: #f7f7f7; }
-  .expand-icon { font-size: 20px; margin-right: 4px; color: #666; flex-shrink: 0; }
-  .expand-icon-placeholder { padding-left:17px; width: 24px; flex-shrink: 0; }
-  .position-icon {
-    font-size: 20px; margin-right: 8px; flex-shrink: 0;
-    &.active { color: green; }
-  }
-  .position-info {
-    flex: 1; min-width: 0;
-    .position-title { font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .position-dates {
-      font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px;
-      .inline-icon { font-size: 16px; height: 16px; width: 16px; }
-    }
-  }
-  .sync-icon { color: #555; font-size: 20px!important; flex-shrink: 0; }
-  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; padding-left: 6px; }
-}
+/* Duplicate .scrollable-container / .position-item rules removed —
+   consolidated styling lives above. */
 
 .position-detail-container {
   flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
@@ -408,50 +465,8 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   color:  #b91c1c !important; /* Red */
 }
 
-/* Optional: Add status indicator dot */
-.position-icon {
-  position: relative;
-}
-
-.position-icon::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-.position-item .position-icon{
-  font-size: 20px!important;
-
-}
-.icon-active::after {
-  background-color: #265227; /* Green dot */
-}
-
-.icon-inactive::after {
-  background-color: #b91c1c ; /* Red dot */
-}
-
-/* Style the inline icons */
-.inline-icon {
-  font-size: 16px;
-  height: 16px;
-  width: 16px;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.position-extra {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-}
+/* Legacy .position-icon dot/inline-icon/position-extra styles removed —
+   replaced by the consolidated .position-item block above. */
 .volumen, .geplant{
   color: #b91c1c ;
   padding-right: 10px;

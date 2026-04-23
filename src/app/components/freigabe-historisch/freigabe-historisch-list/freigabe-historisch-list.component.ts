@@ -348,6 +348,14 @@ export class FreigabeHistorischListComponent {
     }
   }
 
+  exportData() {
+    console.log('Export data for month', this.selectedOption, this.dataSource.length, 'rows');
+  }
+
+  refreshData() {
+    this.loadFromServer();
+  }
+
   closeLogbuch() {
     this.showLogbuch = false;
   }

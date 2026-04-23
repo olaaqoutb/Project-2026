@@ -1,24 +1,35 @@
 
-.container {
-    height: 120vh;
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .container {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
-  
+
   .header {
-    height: 40px !important;
-    margin: auto;
+    min-height: 60px;
+    height: auto;
+    margin: 0 auto;
     border-bottom: none;
-    border: 1px solid #2b2a2a;
     width: 100%;
-    padding-bottom: 25px;
-    padding-top: 20px;
+    padding: 6px 12px;
     margin-bottom: 5px;
     background-color: #338e9c;
     border: 1px solid #0c4450;
-    display: flex; // Use flexbox for header content
-    align-items: center; // Vertically center items
-    justify-content: space-between; // Space between items
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   
     .header-main {
       margin:0 auto!important;
@@ -64,40 +75,40 @@
     }
   }
   #cancel-btn{width:110px!important}
-  #save-btn{width:110px!important}
+  /* legacy override removed — width handled below */
   
   
   
   
-  .mat-mdc-header-cell {
+  .mat-mdc-header-cell,
+  th.mat-header-cell {
     background-color: #d4dce0 !important;
     color: black !important;
     font-weight: bold !important;
+    position: sticky !important;
+    top: 0;
+    z-index: 10;
   }
-  
-  
-  
-  
+
   .content {
     display: flex;
     flex: 1;
+    min-height: 0;
     gap: 5px;
-    height: 1000px !important;
   }
   .mat-mdc-header-cell:hover {
     background-color: #d4dce0 !important;
   }
-  
+
   .left-container,
   .right-container {
     flex: 1;
-    // min-width: 0;
+    min-height: 0;
+    min-width: 0;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     overflow: auto !important;
-  }
-  .left-container {
-    height: calc(120vh - 190px);
+    height: 100%;
   }
   table {
     width: 100%;
@@ -167,9 +178,7 @@
   .produktposition-cell {
     width: 250px;
   }
-  .mat-mdc-row {
-    height: 30px !important;
-  }
+  /* row height consolidated at end of file */
   .mat-mdc-row:not(:nth-child(2n + 1)) {
     background-color: #f8f9fa;
   }
@@ -187,9 +196,7 @@
   .bolded-icon {
     font-weight: bold;
   }
-  .left-container td {
-    height: 30px !important;
-  }
+  /* td height consolidated at end of file */
   
   .sort-header {
     display: flex;
@@ -227,9 +234,11 @@
   .right-container {
     display: flex;
     flex-direction: column;
-   height: calc(120vh - 190px);
+    min-height: 0;
+    height: 100%;
     .detail-view {
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: auto;
@@ -238,23 +247,88 @@
   
   #save-btn {
     color: white;
-    float: right;
     background-color: #2e4155 !important;
-    height: 35px !important;
+    height: 36px !important;
+    min-width: 140px;
+    width: auto !important;
+    padding: 0 16px !important;
     font-size: 15px;
-    display: flex;
+    line-height: 1;
+    display: inline-flex;
+    gap: 8px;
     justify-content: center;
     align-items: center;
-    width: 110px;
+    white-space: nowrap;
     border-radius: 4px!important;
-  
+
     &:hover:not(:disabled) {
       background: linear-gradient(to right, #3e5870, #4a5d78);
     }
   }
   #edit-icon {
     font-size: 17px !important;
-    padding-right: 16px;
+    margin: 0;
+    padding: 0;
+    width: 17px;
+    height: 17px;
+    line-height: 1;
+  }
+
+  .mat-mdc-row.row-selected,
+  tr.mat-mdc-row.row-selected {
+    background-color: #c7e4ea !important;
+    td {
+      background-color: #c7e4ea !important;
+      font-weight: 600;
+    }
+  }
+
+  /* Uniform row height — overrides all earlier conflicting rules. */
+  .left-container tr.mat-mdc-row,
+  .left-container .mat-mdc-row {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+  }
+  .left-container tr.mat-mdc-row td.mat-mdc-cell,
+  .left-container tr.mat-mdc-row td {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 35px !important;
+    vertical-align: middle !important;
+    box-sizing: border-box;
+  }
+  .left-container tr.mat-mdc-row .actions-cell button.mat-mdc-icon-button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    line-height: 28px;
+    vertical-align: middle;
+  }
+
+  /* Same uniform 35px row height for the right-side detail table. */
+  .right-container tr.mat-mdc-row,
+  .right-container .mat-mdc-row,
+  .detail-table tr.mat-mdc-row {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+  }
+  .right-container tr.mat-mdc-row td.mat-mdc-cell,
+  .right-container tr.mat-mdc-row td,
+  .detail-table tr.mat-mdc-row td.mat-mdc-cell,
+  .detail-table tr.mat-mdc-row td {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 35px !important;
+    vertical-align: middle !important;
+    box-sizing: border-box;
   }
   .contain-header {
     display: flex;
@@ -555,16 +629,7 @@
   // }
   /* Add/Update these styles in your existing CSS */
   
-  /* Set all TD height to 36px */
-  .left-container td {
-    height: 36px !important;
-    padding: 4px 16px !important;
-    vertical-align: middle;
-  }
-  
-  .mat-mdc-row {
-    height: 36px !important;
-  }
+  /* td/row height consolidated at end of file */
   
   /* Produktposition display - keep values in same row when possible */
   .produkt-position-display {
@@ -605,8 +670,4 @@
     vertical-align: middle !important;
   }
   
-  /* Ensure all cells in the table have consistent height */
-  .left-container .mat-mdc-cell {
-    height: 36px !important;
-    box-sizing: border-box;
-  }
+  /* cell height consolidated at end of file */

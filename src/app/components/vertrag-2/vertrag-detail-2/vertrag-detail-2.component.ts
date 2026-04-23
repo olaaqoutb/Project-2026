@@ -568,22 +568,25 @@ private extractVertragTypenAndPositionTypen(detailData: any): void {
 
   // Position Tree and Detail Actions
 selectPosition(position: any): void {
-  if (this.selectedPosition?.id === position.id && !position.isNew) {
-    position.isExpanded = !position.isExpanded;
-    return;
-  }
-
+  // Single click only selects the node and shows details on the right.
+  // Expanding/collapsing children now happens on double-click (see toggleExpand).
   if (this.isNewPositionBeingCreated || this.isNewVerbraucherBeingCreated || this.isNewChildBeingCreated) {
     if (this.selectedPosition && this.selectedPosition.id === position.id && this.selectedPosition.isNew) {
-        return;
+      return;
     }
-      this.discardNewPosition(false);
-  this.doSelectPosition(position);
-
+    this.discardNewPosition(false);
+    this.doSelectPosition(position);
     return;
   }
 
   this.doSelectPosition(position);
+}
+
+toggleExpand(position: any, event: MouseEvent): void {
+  event?.stopPropagation();
+  if (position.children?.length) {
+    position.isExpanded = !position.isExpanded;
+  }
 }
 
 // Helper method to actually perform the selection, to be called after checks/dialogs
@@ -595,9 +598,8 @@ private doSelectPosition(position: any): void {
   this.isChildFormEditable = false;
   this.editingNewNodeParentId = null; // Clear parent tracking when selecting an existing node
 
-  if (previousSelection && !this.isParentOfSelected(previousSelection, position)) {
-    previousSelection.isExpanded = false;
-  }
+  // Do not auto-collapse the previous selection — expansion is controlled
+  // by the user explicitly via double-click.
 
   // If the selected position is marked as new (e.g., just added via a button)
   if (position.isNew) {

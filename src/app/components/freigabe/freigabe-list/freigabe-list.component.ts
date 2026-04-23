@@ -313,8 +313,8 @@ formatProduktPosition(item: any): string {
 
    loadDetailedData(entryId: string) {
      this.isLoading = true;
-     this.http.get<any[]>('response_freigabe_korrigieren_detail_1_.json').subscribe({
-       next: (data) => {
+     this.freigabeService.getFreigabePositionenDetail(entryId).subscribe({
+       next: (data: any[]) => {
          this.isLoading = false;
          this.detailedData = data.map((item) => ({
            Datum: item.datum ? this.formatDate(item.datum) : '',

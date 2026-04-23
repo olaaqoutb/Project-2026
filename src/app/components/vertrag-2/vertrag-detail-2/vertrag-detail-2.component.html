@@ -292,46 +292,27 @@
   
           <ng-template #renderNode let-nodes let-level="level">
             <div *ngFor="let node of nodes">
-              <!-- ======================= FIXED CODE ======================= -->
               <div
                 class="position-item"
-                [style.padding-left.px]="10 + (level - 1) * 40"
+                [ngClass]="[
+                  'level-' + node.level,
+                  node === selectedPosition ? 'selected-item' : ''
+                ]"
+                [style.padding-left.px]="10 + (level - 1) * 24"
                 (click)="selectPosition(node)"
-                [ngClass]="{ 'selected-item': node === selectedPosition }"
+                (dblclick)="toggleExpand(node, $event)"
               >
-                <!-- Icon for nodes WITH children -->
-                <mat-icon
-                  *ngIf="node.children?.length"
-                  class="expand-icon"
-                  (click)="
-                    node.isExpanded = !node.isExpanded; $event.stopPropagation()
-                  "
-                >
-                  {{
-                    node.isExpanded
-                      ? "keyboard_arrow_down"
-                      : "keyboard_arrow_right"
-                  }}
-                </mat-icon>
-  
-                <!-- Placeholder for nodes WITHOUT children -->
-                <div
-                  *ngIf="!node.children?.length"
-                  class="expand-icon-placeholder"
-                ></div>
-  
-                <!-- Custom icons for each level with dynamic color -->
-                <mat-icon
-                  class="position-icon"
+                <!-- Level icon (mdi) — replaces keyboard_arrow + mat-icon -->
+                <i
+                  class="mdi tree-level-icon"
                   [ngClass]="{
+                    'mdi-map-marker': node.level === 1,
+                    'mdi-account': node.level === 2,
+                    'mdi-alarm': node.level === 3,
                     'icon-active': node.aktiv,
                     'icon-inactive': !node.aktiv
                   }"
-                >
-                  <span *ngIf="node.level === 1" class="location-row-icon">place</span>
-                  <span *ngIf="node.level === 2">person</span>
-                  <span *ngIf="node.level === 3">alarm</span>
-                </mat-icon>
+                ></i>
   
                 <div class="position-info">
                   <div class="position-title">{{ node.name }}</div>
@@ -341,39 +322,27 @@
                     class="position-extra"
                     *ngIf="node.level === 1 && node.volumenStunden"
                   >
-                    <mat-icon class="inline-icon">euro_symbol</mat-icon>
-                    <span
-                      >Volumen €: {{ node.volumenEuro | number : "1.2-2" }}</span
-                    >
-                    <span class="volumen"
-                      >Volumen Std.: {{ node.volumenStunden }}</span
-                    >
-                    <span class="geplant"
-                      >Geplant: {{ node.stundenGeplant }}</span
-                    >
+                    <i class="mdi mdi-file-tree detail-icon"></i>
+                    <span>Volumen €: <strong>{{ node.volumenEuro | number : "1.2-2" }}</strong></span>
+                    <span class="volumen">Volumen Std.: <strong>{{ node.volumenStunden }}</strong></span>
+                    <span class="geplant">Geplant: <strong>{{ node.stundenGeplant }}</strong></span>
                   </div>
-  
+
                   <!-- Level 2: Verbraucher -->
                   <div
                     class="position-extra"
                     *ngIf="node.level === 2 && node.volumenStunden"
                   >
-                    <mat-icon class="inline-icon">euro_symbol</mat-icon>
-                    <span
-                      >Volumen €: {{ node.volumenEuro | number : "1.2-2" }}</span
-                    >
-                    <!-- <mat-icon class="inline-icon">sum</mat-icon> -->
-                    <span class="volumen">Gesamt: {{ node.volumenStunden }}</span>
-                    <span class="geplant"
-                      >Geplant: {{ node.stundenGeplant }}</span
-                    >
+                    <i class="mdi mdi-file-tree detail-icon"></i>
+                    <span>Volumen €: <strong>{{ node.volumenEuro | number : "1.2-2" }}</strong></span>
+                    <span class="volumen">Gesamt: <strong>{{ node.volumenStunden }}</strong></span>
+                    <span class="geplant">Geplant: <strong>{{ node.stundenGeplant }}</strong></span>
                   </div>
-  
+
                   <!-- Level 3: Buchungspunkt -->
                   <div class="position-extra" *ngIf="node.level === 3">
-                    <span class="geplant"
-                      >Geplant: {{ node.stundenGeplant }}</span
-                    >
+                    <i class="mdi mdi-file-tree detail-icon"></i>
+                    <span class="geplant">Geplant: <strong>{{ node.stundenGeplant }}</strong></span>
                   </div>
   
                   <!-- Show dates for Buchungspunkt (Level 3) -->
@@ -384,25 +353,21 @@
       </div> -->
                 </div>
   
-                <!-- Show person_add icon only for Level 1 -->
-               <mat-icon
-      class="sync-icon"
-      *ngIf="node.level === 1"
-      [ngClass]="{ 'disabled-icon': !canAddVerbraucher(node) }"
-    (click)="addVerbraucher(node, $event)"
-      >person_add</mat-icon
-    >
-  
-                <!-- Show alarm_add icon only for Level 2 -->
-                <mat-icon
-      class="sync-icon"
-      *ngIf="node.level === 2"
-       [ngClass]="{ 'disabled-icon': !canAddBuchungspunkt(node) }"
-    (click)="addBuchungspunkt(node, $event)"
-      >alarm_add</mat-icon
-    >
-  
-                <!-- Nothing shows for Level 3 -->
+                <!-- Add verbraucher icon only for Level 1 (flipped horizontally) -->
+                <i
+                  class="mdi mdi-account-plus mdi-flip-h sync-icon"
+                  *ngIf="node.level === 1"
+                  [ngClass]="{ 'disabled-icon': !canAddVerbraucher(node) }"
+                  (click)="addVerbraucher(node, $event)"
+                ></i>
+
+                <!-- Add buchungspunkt icon only for Level 2 -->
+                <i
+                  class="mdi mdi-alarm-plus sync-icon"
+                  *ngIf="node.level === 2"
+                  [ngClass]="{ 'disabled-icon': !canAddBuchungspunkt(node) }"
+                  (click)="addBuchungspunkt(node, $event)"
+                ></i>
               </div>
   
               <div *ngIf="node.isExpanded && node.children?.length">

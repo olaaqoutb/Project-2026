@@ -13,6 +13,7 @@ import { environment } from '../../environments/environment';
 import {
   MOCK_ANWESEND_PERSONEN,
   MOCK_FREIGABE_POSITIONEN,
+  MOCK_FREIGABE_POSITIONEN_HISTORY,
   MOCK_LK_DETAILS,
   MOCK_LOGGED_IN_PERSON,
   MOCK_MUSS_PDF_LESEN,
@@ -329,11 +330,26 @@ export class MockBackendInterceptor implements HttpInterceptor {
     if (endpoint === 'freigabePositionen' && m === 'GET') {
       return MOCK_FREIGABE_POSITIONEN;
     }
-    if (
-      endpoint.match(/^freigabePositionen\/[^/]+\/taetigkeitsbuchungen$/) &&
-      m === 'GET'
-    ) {
-      return MOCK_TAETIGKEITSBUCHUNGEN;
+    if (endpoint === 'freigabePositionen/history' && m === 'GET') {
+      return MOCK_FREIGABE_POSITIONEN_HISTORY;
+    }
+    const tbMatch = endpoint.match(/^freigabePositionen\/([^/]+)\/taetigkeitsbuchungen$/);
+    if (tbMatch && m === 'GET') {
+      const id = tbMatch[1];
+      // Deterministically vary the detail rows per freigabe-position id so
+      // selecting a different row on the left shows a different set of
+      // tätigkeitsbuchungen on the right.
+      let seed = 0;
+      for (let i = 0; i < id.length; i++) seed = (seed * 31 + id.charCodeAt(i)) >>> 0;
+      const total = MOCK_TAETIGKEITSBUCHUNGEN.length;
+      const count = 3 + (seed % 8); // 3..10 rows
+      const start = seed % total;
+      const slice: any[] = [];
+      for (let i = 0; i < count; i++) {
+        const src = MOCK_TAETIGKEITSBUCHUNGEN[(start + i) % total];
+        slice.push({ ...src, id: `${src.id}-${id}` });
+      }
+      return slice;
     }
 
     // ── feiertage ────────────────────────────────────────────────────────
