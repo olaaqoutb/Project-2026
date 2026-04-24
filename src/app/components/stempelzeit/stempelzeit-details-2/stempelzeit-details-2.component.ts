@@ -1,4 +1,5 @@
 import {ChangeDetectorRef, Component, inject, Injectable} from '@angular/core';
+import {TimeBoxComponent} from '../../../shared/components/time-box/time-box.component';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
@@ -96,6 +97,7 @@ export const MY_DATE_FORMATS: MatDateFormats = {
    // BrowserAnimationsModule,
     MatDialogModule,
     CommonModule, MatDatepicker, MatDatepickerInput, MatDatepickerToggle,
+    TimeBoxComponent,
    ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
