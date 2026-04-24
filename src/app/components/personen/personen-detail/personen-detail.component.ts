@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule, MatOptionModule} from '@angular/material/core';
@@ -73,6 +73,16 @@ export class PersonenDetailComponent {
 
   /** German messages shown to the user when Save is pressed with invalid form. */
   validationErrors: string[] = [];
+
+  /** Stricter email pattern validator — Angular's built-in Validators.email
+      accepts many bogus strings (e.g. "abc@d"). This enforces a reasonable
+      local@domain.tld shape. */
+  private static emailPatternValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value === null || value === undefined || value === '') return null;
+    const re = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+    return re.test(String(value).trim()) ? null : { email: true };
+  };
 
   /** Pairs FormControl names with the German label text used in the error list. */
   private readonly requiredFieldLabels: { name: string; label: string }[] = [
@@ -190,8 +200,8 @@ export class PersonenDetailComponent {
       // Organisationsdaten Section
       eintrittsDatum: [{ value: '', disabled: true }, Validators.required],
       austrittsDatum: [{ value: '', disabled: true }],
-      emailGeschaeftlich: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      emailExtern: [{ value: '', disabled: true }, Validators.email],
+      emailGeschaeftlich: [{ value: '', disabled: true }, [Validators.required, Validators.email, PersonenDetailComponent.emailPatternValidator]],
+      emailExtern: [{ value: '', disabled: true }, [Validators.email, PersonenDetailComponent.emailPatternValidator]],
       telefonnummer: [{ value: '', disabled: true }],
       mobilnummerBMI: [{ value: '', disabled: true }],
       mobilnummerExtern: [{ value: '', disabled: true }],
@@ -537,9 +547,25 @@ export class PersonenDetailComponent {
   }
 
   private buildValidationErrors(): void {
-    this.validationErrors = this.requiredFieldLabels
+    const messages: string[] = this.requiredFieldLabels
       .filter(f => this.personForm.get(f.name)?.hasError('required'))
       .map(f => `Das Feld '${f.label}' darf nicht leer sein.`);
+
+    // Email format validation — only report if the field has a value but
+    // doesn't match the email pattern.
+    const emailFields: { name: string; label: string }[] = [
+      { name: 'emailGeschaeftlich', label: 'Email geschäftlich' },
+      { name: 'emailExtern', label: 'Email extern' },
+    ];
+    for (const f of emailFields) {
+      const ctrl = this.personForm.get(f.name);
+      if (!ctrl) continue;
+      if (!ctrl.hasError('required') && ctrl.hasError('email') && ctrl.value) {
+        messages.push(`Das Feld '${f.label}' enthält keine gültige E-Mail-Adresse.`);
+      }
+    }
+
+    this.validationErrors = messages;
   }
 
   onCancel(): void {
