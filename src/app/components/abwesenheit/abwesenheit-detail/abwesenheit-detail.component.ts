@@ -46,7 +46,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {Subject, takeUntil} from 'rxjs';
 import {dateRangeValidator} from '../../../validators/abwesenheit-form.validators';
 import {ABWESENHEIT_FORM_ERRORS} from '../../../validators/abwesenheit-form.errors';
-import {TimeBoxComponent} from '../../../shared/components/time-box/time-box.component';
 
 
 @Component({
@@ -60,8 +59,7 @@ import {TimeBoxComponent} from '../../../shared/components/time-box/time-box.com
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatDialogModule, MatTooltipModule,
-    TimeBoxComponent,],
+    MatDialogModule, MatTooltipModule,],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     { provide: DateAdapter, useClass: CustomDateAdapter },

@@ -23,6 +23,8 @@ import { ApiMussPdfLesen } from '../models/ApiMussPdfLesen';
 import { ApiStempelzeitMarker } from '../models/ApiStempelzeitMarker';
 import { ApiStempelzeitEintragungsart } from '../models/ApiStempelzeitEintragungsart';
 import { ApiVerbraucherTyp } from '../models/ApiVerbraucherTyp';
+import { ApiPersonenvermerk } from '../models/ApiPersonenvermerk';
+import { ApiPersonenvermerkTyp } from '../models/ApiPersonenvermerkTyp';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Organisationseinheiten
@@ -271,6 +273,112 @@ export const MOCK_PRODUKTE: ApiProdukt[] = [
     auftraggeberOrganisation: 'BMI',
     ergebnisverantwortlicher: MOCK_PERSONEN[1],
     produktTyp: ApiProduktTyp.ANWENDUNG,
+    produktPosition: [
+      {
+        id: 'pp-1-1',
+        version: 1,
+        deleted: false,
+        state: ApiState.READ,
+        produktPositionname: 'Frontend-Entwicklung',
+        start: '2020-01-01',
+        ende: '2099-12-31',
+        aktiv: true,
+        buchungsfreigabe: true,
+        produktPositionBuchungspunkt: [
+          {
+            id: 'ppbp-1-1-1',
+            version: 1,
+            deleted: false,
+            state: ApiState.READ,
+            aktiv: true,
+            buchungspunkt: 'Feature-Entwicklung',
+            taetigkeitsbuchung: [
+              {
+                id: 'tb-1', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-17', minutenDauer: 120,
+                taetigkeit: 'ENTWICKLUNG' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'Abwesenheit-Modul UI', stempelzeit: { id: 'sz-1' } as any,
+              },
+              {
+                id: 'tb-2', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-17', minutenDauer: 90,
+                taetigkeit: 'ENTWICKLUNG' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'Navigation Refactor',
+              },
+              {
+                id: 'tb-3', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-18', minutenDauer: 180,
+                taetigkeit: 'ENTWICKLUNG' as any, buchungsart: 'TELEARBEIT' as any,
+                anmerkung: 'Personen-Liste Filter', stempelzeit: { id: 'sz-2' } as any,
+              },
+              {
+                id: 'tb-4', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-18', minutenDauer: 60,
+                taetigkeit: 'ENTWICKLUNG' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'Tree-View Styling',
+              },
+            ],
+          },
+          {
+            id: 'ppbp-1-1-2',
+            version: 1,
+            deleted: false,
+            state: ApiState.READ,
+            aktiv: true,
+            buchungspunkt: 'Bugfixing',
+            taetigkeitsbuchung: [
+              {
+                id: 'tb-5', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-17', minutenDauer: 75,
+                taetigkeit: 'BUGFIX' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'Datepicker locale fix',
+              },
+              {
+                id: 'tb-6', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-18', minutenDauer: 45,
+                taetigkeit: 'BUGFIX' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'Login redirect fix',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'pp-1-2',
+        version: 1,
+        deleted: false,
+        state: ApiState.READ,
+        produktPositionname: 'Code-Review',
+        start: '2020-01-01',
+        ende: '2099-12-31',
+        aktiv: true,
+        buchungsfreigabe: true,
+        produktPositionBuchungspunkt: [
+          {
+            id: 'ppbp-1-2-1',
+            version: 1,
+            deleted: false,
+            state: ApiState.READ,
+            aktiv: true,
+            buchungspunkt: 'Pull-Request-Review',
+            taetigkeitsbuchung: [
+              {
+                id: 'tb-7', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-17', minutenDauer: 45,
+                taetigkeit: 'CODE_REVIEW' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'PR #1428 review',
+              },
+              {
+                id: 'tb-8', version: 1, deleted: false, state: ApiState.READ,
+                datum: '2026-04-18', minutenDauer: 30,
+                taetigkeit: 'CODE_REVIEW' as any, buchungsart: 'ARBEITSZEIT' as any,
+                anmerkung: 'PR #1431 review',
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'prod-2',
@@ -1302,10 +1410,45 @@ export const MOCK_LK_DETAILS: any[] = [
 export const MOCK_MUSS_PDF_LESEN: ApiMussPdfLesen = { mussPdfLesen: false };
 
 export const MOCK_ABSCHLUSS_INFO: any = {
-  abschlussDatum: '2026-03-31',
-  offen: false,
-  gepruefteStunden: '156.5',
+  naechsterBuchbarerTag: '2026-04-03',
+  naechsterTagesabschlussAufheben: '2026-03-30',
+  letzterMonatsabschluss: '2025-12',
+  letzterGlobalerMonatsabschluss: '2025-12',
+  ersteBuchung: '2024-09-01',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Personenvermerke
+// ─────────────────────────────────────────────────────────────────────────────
+export const MOCK_PERSONENVERMERKE: ApiPersonenvermerk[] = [
+  {
+    id: 'pv-1',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    datum: '2026-02-10',
+    vermerkTyp: ApiPersonenvermerkTyp.BUCHUNGSERINNERUNG,
+    anmerkung: 'Bitte Buchung für 2026-02-09 nachtragen',
+  },
+  {
+    id: 'pv-2',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    datum: '2026-03-01',
+    vermerkTyp: ApiPersonenvermerkTyp.STD_LIMIT_10,
+    anmerkung: 'Wochenstundenlimit überschritten',
+  },
+  {
+    id: 'pv-3',
+    version: 1,
+    deleted: false,
+    state: ApiState.READ,
+    datum: '2026-01-15',
+    vermerkTyp: ApiPersonenvermerkTyp.INFO_PDF,
+    anmerkung: 'Neues Info-PDF wurde gelesen',
+  },
+];
 
 export const MOCK_FEIERTAGE: any[] = [
   { datum: '2026-01-01', bezeichnung: 'Neujahr' },

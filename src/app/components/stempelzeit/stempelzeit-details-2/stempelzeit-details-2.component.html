@@ -272,13 +272,26 @@
 
               <!-- Stunde -->
               <div class="time-column">
-                <app-time-box
-                  field="anmeldezeitStunde"
-                  [value]="stempelzeitForm.get('anmeldezeitStunde')?.value || 0"
-                  [max]="24"
-                  [disabled]="!isEditing"
-                  (valueChange)="stempelzeitForm.get('anmeldezeitStunde')?.patchValue($event); stempelzeitForm.updateValueAndValidity()"
-                />
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseHour('anmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('anmeldezeit') + 1 > 24 ? 0 : getHour('anmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getHour('anmeldezeit')"
+                           [disabled]="!isEditing"
+                           (input)="onTimeInput('anmeldezeitStunde', $event, 24)"
+                           maxlength="2" />
+                    <input type="number" formControlName="anmeldezeitStunde" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseHour('anmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('anmeldezeit') - 1 < 0 ? 24 : getHour('anmeldezeit') - 1 }}
+                  </button>
+                </div>
               </div>
 
               <!-- Minuten -->
@@ -286,13 +299,26 @@
                 <div class="mint">
                   <span class="time-unit">[Minuten]:</span>
                 </div>
-                <app-time-box
-                  field="anmeldezeitMinuten"
-                  [value]="stempelzeitForm.get('anmeldezeitMinuten')?.value || 0"
-                  [max]="59"
-                  [disabled]="!isEditing || (stempelzeitForm.get('anmeldezeitStunde')?.value === 24)"
-                  (valueChange)="stempelzeitForm.get('anmeldezeitMinuten')?.patchValue($event); stempelzeitForm.updateValueAndValidity()"
-                />
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseMinute('anmeldezeit')"
+                          [disabled]="!isEditing || getHour('anmeldezeit') === 24">
+                    {{ getMinute('anmeldezeit') + 1 > 59 ? 0 : getMinute('anmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getMinute('anmeldezeit')"
+                           [disabled]="!isEditing || getHour('anmeldezeit') === 24"
+                           (input)="onTimeInput('anmeldezeitMinuten', $event, 59)"
+                           maxlength="2" />
+                    <input type="number" formControlName="anmeldezeitMinuten" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseMinute('anmeldezeit')"
+                          [disabled]="!isEditing || getHour('anmeldezeit') === 24">
+                    {{ getMinute('anmeldezeit') - 1 < 0 ? 59 : getMinute('anmeldezeit') - 1 }}
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -305,13 +331,26 @@
 
               <!-- Stunde -->
               <div class="time-column">
-                <app-time-box
-                  field="abmeldezeitStunde"
-                  [value]="stempelzeitForm.get('abmeldezeitStunde')?.value || 0"
-                  [max]="24"
-                  [disabled]="!isEditing"
-                  (valueChange)="stempelzeitForm.get('abmeldezeitStunde')?.patchValue($event); stempelzeitForm.updateValueAndValidity()"
-                />
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseHour('abmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('abmeldezeit') + 1 > 24 ? 0 : getHour('abmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getHour('abmeldezeit')"
+                           [disabled]="!isEditing"
+                           (input)="onTimeInput('abmeldezeitStunde', $event, 24)"
+                           maxlength="2" />
+                    <input type="number" formControlName="abmeldezeitStunde" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseHour('abmeldezeit')"
+                          [disabled]="!isEditing">
+                    {{ getHour('abmeldezeit') - 1 < 0 ? 24 : getHour('abmeldezeit') - 1 }}
+                  </button>
+                </div>
               </div>
 
               <!-- Minuten -->
@@ -319,13 +358,26 @@
                 <div class="mint">
                   <span class="time-unit">[Minuten]:</span>
                 </div>
-                <app-time-box
-                  field="abmeldezeitMinuten"
-                  [value]="stempelzeitForm.get('abmeldezeitMinuten')?.value || 0"
-                  [max]="59"
-                  [disabled]="!isEditing || (stempelzeitForm.get('abmeldezeitStunde')?.value === 24)"
-                  (valueChange)="stempelzeitForm.get('abmeldezeitMinuten')?.patchValue($event); stempelzeitForm.updateValueAndValidity()"
-                />
+                <div class="time-box">
+                  <button type="button" class="time-btn plus dash"
+                          (click)="increaseMinute('abmeldezeit')"
+                          [disabled]="!isEditing || getHour('abmeldezeit') === 24">
+                    {{ getMinute('abmeldezeit') + 1 > 59 ? 0 : getMinute('abmeldezeit') + 1 }}
+                  </button>
+                  <div class="time-value">
+                    <input type="text" inputmode="numeric" class="time-value-input"
+                           [value]="getMinute('abmeldezeit')"
+                           [disabled]="!isEditing || getHour('abmeldezeit') === 24"
+                           (input)="onTimeInput('abmeldezeitMinuten', $event, 59)"
+                           maxlength="2" />
+                    <input type="number" formControlName="abmeldezeitMinuten" style="display:none" />
+                  </div>
+                  <button type="button" class="time-btn minus dash"
+                          (click)="decreaseMinute('abmeldezeit')"
+                          [disabled]="!isEditing || getHour('abmeldezeit') === 24">
+                    {{ getMinute('abmeldezeit') - 1 < 0 ? 59 : getMinute('abmeldezeit') - 1 }}
+                  </button>
+                </div>
               </div>
 
             </div>

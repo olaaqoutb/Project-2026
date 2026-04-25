@@ -1,0 +1,954 @@
+
+.container2 {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+   overflow: scroll!important;
+}
+
+.left-panel, .right-panel {
+  border-right: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  width: 50%;
+   height: 100vh;
+  height: auto!important; /* Allow natural height */
+}
+
+.left-panel {
+  width: 50%;
+  height: 100vh; /* Fixed height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Important: hide overflow on the panel itself */
+  border-right: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+.left-panel-header {
+  flex-shrink: 0; /* Prevent header from shrinking */
+  display: flex;
+  justify-content: space-between;
+  background-color: #338E9C;
+}
+
+.left-panel-header button {
+  height: 18px;
+  cursor: pointer;
+}
+
+.icon-header {
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 5px;
+  width: 45px !important;
+  color: white;
+  background-color: #2E4155;
+  height: 34px !important;
+  margin: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center!important;
+  justify-content: center!important;
+}
+.icon-add{font-size: 15px;padding-right: 7px;color:green;}
+.icon-r{font-size: 15px;padding-right: 7px;color:#b91c1c;}
+
+.right-panel {
+  flex: 1;
+  background-color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.right-panel .form-header {
+  flex-shrink: 0;
+}
+.gebucht-icon{font-size: 15px;}
+.title {
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.right-header {
+  font-weight: bold;
+    height: 41px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tree {
+  flex: 1 1 auto; /* Take remaining space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Hide horizontal scroll if not needed */
+  background-color: transparent;
+  height: 0; /* This helps with flex scrolling issues */
+  min-height: 0; /* Important for Firefox */
+}
+
+.tree-node {
+  display: flex;
+  width: 100%;
+  padding: 3px 0;
+}
+
+.mat-tree-node {
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+}
+
+.calendar-icon {
+  font-size: 16px;
+  color: #2E4155;
+}
+
+.toggle-button {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 10px;
+}
+
+.tree-toggle-icon {
+  color: #2E4155;
+  font-size: 20px;
+}
+.tree-toggle-icon-level1{position: relative;bottom: 6px;cursor: pointer;}
+.month-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.arrow-without-stempel{
+  position: relative;
+  top: 5px;
+}
+.month-name {
+  font-size: 15px;
+  color: #2E4155;
+}
+
+.abgeschlossen-badge {
+  color: #b91c1c;
+  font-weight: 500;
+  font-size: 13px;
+  // margin-left: 30px;
+}
+
+.month-gebucht {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gebucht-label {
+ font-weight: bold;
+  font-size: 13px;
+}
+
+.gebucht-value {
+  font-weight:bold;
+  font-size: 13px;
+  min-width: 50px;
+}
+
+.day-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  margin-right: 15px;
+  margin-left:10px
+}
+.expandable-node-level2{display: flex;flex-direction: row;justify-content: space-between;min-height: 44px!important;align-items: center!important;}
+.expandable-node-level3{display: flex;flex-direction: column;}
+
+.stempel-level2 .gebucht-icon {
+  font-size: 16px;
+  color: #666;
+  margin-left: 0;
+}
+
+.stempel-level2 .time-info {
+  margin-left: 0;
+  color: #666;
+  font-size: 12px;
+}
+.stempel-level2 {
+  display: flex;
+  align-items: center;
+  // margin-top: 2px;
+  margin-left: 0;
+  gap: 5px;
+}
+.time-info {
+  font-size: 13px;
+  color: #666;
+  margin-right: 15px;
+}
+.mat-tree-node {
+   border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  min-height: 35px !important;
+  height: auto !important;
+}
+.leaf-node {
+  padding-left: 48px;
+  flex-direction: column;
+  font-size: 14px;
+  display: flex;
+  gap: 15px;
+}
+.leaf-node2{gap:5px; padding-left: 48px;
+  flex-direction: column;
+  font-size: 14px;
+  display: flex;}
+
+.activity-product {
+  font-weight: 500;
+  color: #2E4155;
+}
+
+.activity-position, .activity-buchungspunkt {
+  color: #555;
+  padding-left: 15px;
+}
+.activity-gebucht {
+  color:#b91c1c;
+  font-size: 13px;
+  padding-left: 5px;
+}
+
+.activity-time {
+  color: #888;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 1px;
+  background-color: #338E9C;
+}
+
+.delete-icon {
+  color: rgb(255, 0, 0)!important;
+}
+
+.datum:focus {
+  border: 1px solid #e6e3e3 !important;
+}
+.time-btn:focus{
+   border: 1px solid #e6e3e3 !important;
+}
+.header-btn {
+  border: 1px solid black!important;
+  border-radius: 4px!important;
+  padding: 5px!important;
+  color: white !important;
+  background-color: #2E4155;
+  height: 32px !important;
+  margin: 5px!important;
+  cursor: pointer!important;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: white;
+  flex: 1;
+  text-align: center;
+}
+
+.taetigkeit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100% !important;
+  padding-left: 20px;
+  padding-bottom: 30px;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.anmerkung-textarea{
+  width: 265px!important;
+}
+.stempel-input{  width: 45%!important;
+}
+.gebucht-third{padding-bottom: 30px;}
+
+.level2-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 0;
+  min-height: 24px;
+  // height: 24px;
+  padding: 0;
+  margin: 0;
+  // line-height: 24px;
+  align-items: center!important;
+}
+
+.day-header {
+  display: grid;
+  grid-template-columns: 120px 120px 120px 110px; /* Fixed widths for each column */
+  align-items: center;
+  gap: 0; /* No gap between columns */
+  width: 100%;
+}
+
+.day-cell {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time-cell {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.abgeschlossen-cell {
+  color: #b91c1c;
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.day-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+  flex: 1;
+}
+.arrow-stempel{
+  position: relative;
+  bottom: 8px;
+}
+.day-header {
+  display: grid;
+  grid-template-columns: 120px 120px 120px 110px; /* Fixed widths for each column */
+  align-items: center;
+  gap: 0; /* No gap between columns */
+  width: 100%;
+}
+@media(min-width: 1920px) {
+  .form-field-group {
+    left: 8%;
+  }
+  .anmerkung-textarea{
+    width: 32%!important;
+  }
+  .time-section{
+  }
+  .stempel-input{  width: 32%!important;
+  }
+}
+
+@media (max-width: 1000px){
+    .stempel-input{  width: 100%!important;
+    }
+    .anmerkung-textarea{
+      width: 100%!important;
+    }
+}
+.field-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 130px;
+  text-align: right;
+  font-size: 16px;
+}
+
+.field-input {
+  flex: 1;
+}
+
+.time-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  // margin-left: 12%;
+}
+
+.time-section-locked {
+  pointer-events: none;
+}
+
+.anmerkung-empty {
+  ::ng-deep textarea.mat-mdc-input-element,
+  ::ng-deep textarea.mat-input-element,
+  ::ng-deep textarea {
+    background-color: #fdecec !important;
+  }
+}
+
+.jira-invalid {
+  ::ng-deep input.mat-mdc-input-element,
+  ::ng-deep input.mat-input-element,
+  ::ng-deep input {
+    background-color: #fdecec !important;
+  }
+  ::ng-deep .mat-mdc-form-field-outline,
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: #d32f2f !important;
+  }
+}
+
+.time-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 17px;
+}
+.time-btn.stempel-input {
+  width: 270px !important;
+  max-width: 270px !important;
+}
+
+
+.time-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 130px;
+  text-align: right;
+}
+
+.time-inputs-horizontal {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+}
+
+.time-column {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.mint {
+  position: relative;
+  bottom: 35%;
+}
+
+.time-unit {
+  font-weight: 500;
+  color: #333;
+  min-width: 100px;
+  text-align: right;
+  margin-bottom: 5px;
+}
+
+.time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dash {
+  color: #292929;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 4px;
+  background-color: #f9f9f9;
+  width: 40px;
+  text-align: center;
+  margin: auto !important;
+}
+
+.time-value {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 4px;
+  background-color: #f9f9f9;
+  width: 40px;
+  text-align: center;
+  margin: auto !important;
+}
+
+.time-input {
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  width: 100%;
+  position: relative;
+  left: 25%;
+
+  &:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  &:focus-visible {
+    outline: none !important;
+  }
+
+  &:read-only {
+    color: #333;
+  }
+}
+
+@media (min-width: 1920px) {
+  .time-input {
+    position: relative;
+    left: 2px;
+  }
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #e0e0e0;
+}
+
+mat-tree-node {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &.selected {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2E4155;
+  }
+}
+
+.title2 {
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.right-panel-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #338E9C;
+}
+
+.summary-container {
+  padding: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.summary-title {
+  color: #2E4155;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.summary-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 180px;
+  text-align: right;
+  font-size: 15px;
+}
+
+.summary-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: not-allowed;
+}
+
+.summary-input {
+  flex: 1;
+  max-width: 150px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  text-align: center;
+}
+
+.summary-input-wide {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.summary-container {
+  padding: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.summary-title {
+  color: #2E4155;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.summary-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 180px;
+  text-align: right;
+  font-size: 15px;
+}
+
+.summary-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: not-allowed;
+}
+
+.summary-input {
+  flex: 1;
+  max-width: 150px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  text-align: center;
+}
+
+.summary-input-wide {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.expandable-node {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.level-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.third-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.loading {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+  height: 0;
+  min-height: 0;
+}
+
+@media (min-width: 2560px) {
+  .form-field-group {
+    left: 5.5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .time-section {
+    margin-left: 0px;
+  }
+
+  .time-label {
+    font-size: 12px;
+    position: relative;
+    right: 25px;
+  }
+
+}
+.form-field-group {
+  display: flex;
+  align-items: center;
+
+}
+
+.field-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 180px;
+  text-align: right;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+
+.field-input.mat-checkbox {
+  margin-top: 8px;
+  margin-left: 8px;
+}
+
+.field-input {
+  flex: 1;
+   width: 300px !important; /* Set fixed width for all fields */
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+.field-input.full-width {
+  width: 300px !important; /* Same as other fields */
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+.time-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 180px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+
+:host ::ng-deep {
+  .right-panel .taetigkeit-form {
+    mat-checkbox {
+      .mdc-checkbox__ripple,
+      .mat-mdc-checkbox-ripple {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      &:not(.mat-mdc-checkbox-disabled) {
+        .mdc-checkbox__background {
+          background-color: white !important;
+          border-color: #666 !important;
+          border-width: 1px !important;
+          border-style: solid !important;
+
+          svg {
+            path {
+              stroke: black !important;
+              stroke-width: 2.5px !important;
+            }
+          }
+        }
+
+        &.mat-mdc-checkbox-checked {
+          .mdc-checkbox__background {
+            border-color: #000000 !important;
+            background-color: white !important;
+
+            svg.mdc-checkbox__checkmark {
+              color: black !important;
+            }
+          }
+        }
+      }
+
+      &.mat-mdc-checkbox-disabled {
+
+        cursor: not-allowed;
+
+        .mdc-checkbox__background {
+          border-color: #cccccc !important;
+
+          svg {
+            path {
+              stroke: #666 !important;
+            }
+          }
+        }
+
+        &.mat-mdc-checkbox-checked {
+          .mdc-checkbox__background {
+            border-color: #999 !important;
+          }
+        }
+      }
+    }
+  }
+}
+.check-margin{
+  margin-left: 5px;
+}
+ .dropdown {
+    width: 200px;
+margin-top: 5px!important;
+  }
+
+.date-picker-toggle{position:relative;right: 10px;}
+.form-input{width: 270px!important;}
+.form-input:focus{border :1px solid #e6e3e3 !important}
+.arrow-no-stempel{
+  position: relative;
+  top: 3px;
+}
+.month-arrow{
+  position: relative;
+  bottom: 10px;
+}
+
+::ng-deep .drop-down{
+  min-width: 90% !important;
+  width: 90% !important;
+  margin-left: 15px!important;
+}
+
+::ng-deep .drop-down-date{
+  min-width: 270px !important;
+   max-width: 270px !important;
+  width: 270px !important;
+}
+
+.stempel-field {
+  max-width: 300px !important;
+  width: 100% !important;
+  flex: 0 1 auto !important;
+}
+::ng-deep .mat-mdc-select-panel {
+  background: red;
+}
+::ng-deep  .drop-down-date .mat-datepicker-content {
+  position: relative!important;
+  right: 20px!important;
+}
+.stempel-field .mat-mdc-form-field {
+  width: 100% !important;
+}
+
+
+.stempel-textarea {
+  resize: vertical !important;
+  min-height: 70px !important;
+  max-height: 150px !important;
+  line-height: 1.5 !important;
+  padding: 8px !important;
+  font-family: inherit !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+
+.stempel-field-narrow {
+  max-width: 250px !important;
+}
+
+
+.stempel-field-custom {
+  max-width: 280px !important;
+}
+
+.stempel-textarea[readonly] {
+  background-color: #f5f5f5;
+  cursor: default;
+}
+.anmerkung-textarea-field {
+  resize: vertical !important;
+  min-height: 70px !important;
+  max-height: 200px !important;
+  line-height: 1.5 !important;
+  padding: 8px !important;
+  font-family: inherit !important;
+  width: 100% !important; /* Take full width of parent */
+  box-sizing: border-box !important;
+}
+
+/* Ensure the form field container for Anmerkung matches Jira-Ticket */
+.field-input.full-width {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+
+.field-input.full-width .mat-mdc-form-field {
+  width: 100%;
+}
+
+.field-input.full-width .mat-mdc-text-field-wrapper {
+  width: 100%;
+}
+
+
+/* Media query adjustments */
+// @media (max-width: 1000px) {
+//   .field-input,
+//   .field-input.full-width {
+//     max-width: 100%; /* Full width on mobile */
+//   }
+//   .form-field{
+//     width: 74%!important;
+//   }
+// }
+
+@media (min-width: 1920px) {
+  .field-input,
+  .field-input.full-width {
+    max-width: 350px; /* Slightly larger on big screens */
+  }
+   .form-field{
+    width: 74%!important;
+  }
+}
+.tree,
+.taetigkeit-form {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 220px); /* Adjust based on your header height */
+}

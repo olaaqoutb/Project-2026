@@ -26,6 +26,7 @@ import {
   MOCK_VERTRAEGE,
   MOCK_ABSCHLUSS_INFO,
   MOCK_FEIERTAGE,
+  MOCK_PERSONENVERMERKE,
 } from './mock-data';
 
 /**
@@ -165,6 +166,12 @@ export class MockBackendInterceptor implements HttpInterceptor {
     }
     if (endpoint.match(/^personen\/[^/]+\/abschluss\/info$/) && m === 'GET') {
       return MOCK_ABSCHLUSS_INFO;
+    }
+    if (endpoint.match(/^personen\/[^/]+\/abschluss-info$/) && m === 'GET') {
+      return MOCK_ABSCHLUSS_INFO;
+    }
+    if (endpoint.match(/^personen\/[^/]+\/personenvermerke$/) && m === 'GET') {
+      return MOCK_PERSONENVERMERKE;
     }
 
     // ── stempelzeiten ────────────────────────────────────────────────────
@@ -324,6 +331,10 @@ export class MockBackendInterceptor implements HttpInterceptor {
       m === 'POST'
     ) {
       return { ...(body as any), id: `tb-${Date.now()}`, version: 1 };
+    }
+    const taetigkeitsbuchungMatch = endpoint.match(/^taetigkeitsbuchungen\/([^/]+)$/);
+    if (taetigkeitsbuchungMatch && m === 'POST') {
+      return { ...(body as any), id: taetigkeitsbuchungMatch[1], version: 2 };
     }
 
     // ── freigabe-positionen ──────────────────────────────────────────────
