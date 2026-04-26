@@ -63,10 +63,12 @@ export class ActivityFormService {
 
   private jiraTicketPrefixValidator(control: { value: any }) {
     const value = control.value;
-    if (value === null || value === undefined) return null;
+    if (value === null || value === undefined) return { jiraRequired: true };
     const str = String(value).trim();
-    if (str === '') return null;
+    if (str === '') return { jiraRequired: true };
     if (!str.startsWith('PGETIT')) return { jiraPrefix: true };
+    const suffix = str.replace(/^PGETIT-?/, '').trim();
+    if (suffix === '') return { jiraSuffixRequired: true };
     return null;
   }
 
@@ -115,7 +117,11 @@ const taetigkeitValue = formData.taetigkeit
     : (ApiTaetigkeitTyp[formData.taetigkeit as unknown as keyof typeof ApiTaetigkeitTyp] ?? formData.taetigkeit)
   : '';
 
- const buchungsartValue = formData.buchungsart ?? '';
+ const buchungsartValue = formData.buchungsart
+  ? Object.values(ApiBuchungsart).includes(formData.buchungsart as ApiBuchungsart)
+    ? formData.buchungsart
+    : (ApiBuchungsart[formData.buchungsart as keyof typeof ApiBuchungsart] ?? formData.buchungsart)
+  : '';
 
   form.patchValue({
     datum: datumValue,

@@ -1,21 +1,45 @@
 
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .container2 {
   display: flex;
   flex-direction: row;
+  width: 100%;
   height: 100vh;
-   overflow: scroll!important;
+  overflow: hidden;
 }
 
 .left-panel, .right-panel {
   border-right: 1px solid #e0e0e0;
   background-color: #fafafa;
-  width: 50%;
-   height: 100vh;
-  height: auto!important; /* Allow natural height */
+  flex: 1 1 50%;
+  min-width: 0;
+  height: 100vh;
+  font-family: Roboto, sans-serif;
+}
+
+.right-panel,
+.right-panel input,
+.right-panel textarea,
+.right-panel select,
+.right-panel button,
+.right-panel .mat-mdc-form-field,
+.right-panel .mat-mdc-select,
+.right-panel .mat-mdc-option {
+  font-family: Roboto, sans-serif;
 }
 
 .left-panel {
-  width: 50%;
+  flex: 1 1 50%;
+  min-width: 0;
   height: 100vh; /* Fixed height */
   display: flex;
   flex-direction: column;
@@ -36,6 +60,21 @@
   cursor: pointer;
 }
 
+.left-panel-header button *,
+.level2-container-bottom button *,
+button[matTooltip] *,
+button[mattooltip] * {
+  pointer-events: none !important;
+}
+
+.left-panel-header button,
+.level2-container-bottom button,
+button[matTooltip],
+button[mattooltip] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
 .icon-header {
   border: 1px solid black;
   border-radius: 4px;
@@ -50,11 +89,63 @@
   align-items: center!important;
   justify-content: center!important;
 }
+
+i.mdi.icon-header,
+.icon-header.mdi {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+i.mdi.icon-header-alarm,
+.icon-header-alarm {
+  font-size: 22px !important;
+  line-height: 1 !important;
+    cursor: pointer!important;
+
+}
+
+.header-btn i.mdi {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-menu-panel.header-menu-panel,
+::ng-deep .header-menu-panel.mat-mdc-menu-panel {
+  min-width: 280px !important;
+  max-width: 360px !important;
+  cursor: pointer!important;
+}
+
+::ng-deep .header-menu-panel .mat-mdc-menu-item {
+  white-space: nowrap !important;
+    cursor: pointer!important;
+
+}
+
+::ng-deep .header-menu-panel .mat-mdc-menu-item .mat-icon {
+  margin-right: 8px;
+  color: #2E4155;
+    cursor: pointer!important;
+
+}
+
+.header-btn span,
+.header-btn .mat-icon,
+.header-btn i.mdi,
+.header-btn ::ng-deep .mdc-button__label,
+.header-btn ::ng-deep .mat-button-wrapper {
+  pointer-events: none;
+}
+// .icon-header-alarm{
+//     width: 65px !important;
+//   height: 54px !important;
+
+// }
 .icon-add{font-size: 15px;padding-right: 7px;color:green;}
 .icon-r{font-size: 15px;padding-right: 7px;color:#b91c1c;}
 
 .right-panel {
-  flex: 1;
+  flex: 1 1 50%;
+  min-width: 0;
   background-color: white;
   height: 100vh;
   display: flex;
@@ -130,6 +221,7 @@
 .month-name {
   font-size: 15px;
   color: #2E4155;
+  font-weight: bold;
 }
 
 .abgeschlossen-badge {
@@ -146,12 +238,13 @@
 }
 
 .gebucht-label {
- font-weight: bold;
+  font-weight: normal;
   font-size: 13px;
+  color:#502832e6!important;
 }
 
 .gebucht-value {
-  font-weight:bold;
+  font-weight: normal;
   font-size: 13px;
   min-width: 50px;
 }
@@ -202,30 +295,33 @@
   display: flex;
   gap: 15px;
 }
-.leaf-node2{gap:5px; padding-left: 48px;
+.leaf-node2{ padding-left: 48px;
   flex-direction: column;
   font-size: 14px;
   display: flex;}
 
 .activity-product {
-  font-weight: 500;
+  font-weight: bold;
   color: #2E4155;
 }
 
 .activity-position, .activity-buchungspunkt {
   color: #555;
   padding-left: 15px;
+  font-weight: bold;
 }
 .activity-gebucht {
-  color:#b91c1c;
+  color:#502832e6!important;
   font-size: 13px;
   padding-left: 5px;
+  font-weight: normal;
 }
 
 .activity-time {
   color: #888;
   font-size: 13px;
   margin-left: 10px;
+  font-weight: normal;
 }
 
 .form-header {
@@ -258,6 +354,45 @@
   height: 32px !important;
   margin: 5px!important;
   cursor: pointer!important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+
+  ::ng-deep .mdc-button__label,
+  ::ng-deep .mat-button-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+  }
+
+  mat-icon,
+  .mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    margin-right: 4px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle;
+  }
+
+  .mdi {
+    font-size: 16px !important;
+    line-height: 1 !important;
+    margin-right: 4px;
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
 }
 
 .form-header h2 {
@@ -272,7 +407,7 @@
   flex-direction: column;
   gap: 10px;
   width: 100% !important;
-  padding-left: 20px;
+  padding-left: 45px;
   padding-bottom: 30px;
   flex: 1 1 auto;
   min-height: 0;
@@ -309,7 +444,7 @@
 }
 
 .day-cell {
-  font-weight: 500;
+  font-weight: bold;
   font-size: 14px;
   color: #333;
   margin-left: 10px;
@@ -320,8 +455,9 @@
 
 .time-cell {
   font-size: 13px;
-  color: #666;
+  color: #502832e6;
   white-space: nowrap;
+  font-weight: bold;
 }
 
 .abgeschlossen-cell {
@@ -335,6 +471,25 @@
   flex-direction: column;
   margin-left: 8px;
   flex: 1;
+  gap: 0;
+  line-height: 1.1;
+}
+
+.day-content-wrapper .day-header,
+.day-content-wrapper .stempel-level2 {
+  margin: 0;
+  padding: 0;
+}
+
+.leaf-node2 {
+  gap: 2px !important;
+  line-height: 1.1;
+}
+
+.leaf-node2 .third-container-top,
+.leaf-node2 .third-container-bottom {
+  margin: 0;
+  padding: 0;
 }
 .arrow-stempel{
   position: relative;
@@ -391,19 +546,19 @@
 }
 
 .anmerkung-empty {
-  ::ng-deep textarea.mat-mdc-input-element,
-  ::ng-deep textarea.mat-input-element,
-  ::ng-deep textarea {
+  ::ng-deep .mat-mdc-form-field .mat-mdc-input-element[matInput][rows][rows="3"],
+  ::ng-deep textarea[matInput][rows="3"] {
     background-color: #fdecec !important;
+    background: #fdecec !important;
+  }
+
+  ::ng-deep .mat-mdc-text-field-wrapper,
+  ::ng-deep .mdc-text-field {
+    background-color: transparent !important;
   }
 }
 
 .jira-invalid {
-  ::ng-deep input.mat-mdc-input-element,
-  ::ng-deep input.mat-input-element,
-  ::ng-deep input {
-    background-color: #fdecec !important;
-  }
   ::ng-deep .mat-mdc-form-field-outline,
   ::ng-deep .mdc-notched-outline__leading,
   ::ng-deep .mdc-notched-outline__notch,
@@ -415,7 +570,7 @@
 .time-group {
   display: flex;
   align-items: flex-start;
-  gap: 17px;
+  gap: 6px;
 }
 .time-btn.stempel-input {
   width: 270px !important;
@@ -434,6 +589,7 @@
   display: flex;
   gap: 30px;
   flex: 1;
+  padding-left: 10px!important;
 }
 
 .time-column {
@@ -668,12 +824,13 @@ mat-tree-node {
   display: flex;
   gap: 8px;
   width: 100%;
+  margin-left:5px
 }
 
 .level-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  // gap: 5px;
 }
 
 .third-container {
@@ -707,11 +864,11 @@ mat-tree-node {
     margin-left: 0px;
   }
 
-  .time-label {
-    font-size: 12px;
-    position: relative;
-    right: 25px;
-  }
+  // .time-label {
+  //   font-size: 12px;
+  //   position: relative;
+  //   right: 25px;
+  // }
 
 }
 .form-field-group {
@@ -723,13 +880,15 @@ mat-tree-node {
 .field-label {
   font-weight: 500;
   color: #333;
-  min-width: 180px;
+  width: 160px;
+  min-width: 160px;
+  flex: 0 0 160px;
   text-align: right;
   font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 10px;
+  padding-right: 4px;
 }
 
 
@@ -754,12 +913,15 @@ mat-tree-node {
 .time-label {
   font-weight: 500;
   color: #333;
-  min-width: 180px;
+  width: 160px;
+  min-width: 160px;
+  flex: 0 0 160px;
   text-align: right;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 10px;
+  padding-right: 4px;
 }
 
 
@@ -951,4 +1113,127 @@ margin-top: 5px!important;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 220px); /* Adjust based on your header height */
+}
+
+/* Responsive: stack panels and let fields shrink on narrower screens */
+@media (max-width: 1400px) {
+  .container2 {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: auto !important;
+    width: 100% !important;
+  }
+
+  .container2 > .left-panel,
+  .container2 > .right-panel {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 50vh;
+    border-right: none !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .tree,
+  .taetigkeit-form {
+    max-height: none !important;
+  }
+}
+
+/* Tablet: keep label + input on same line but shrink input */
+@media (max-width: 1400px) and (min-width: 601px) {
+  .form-field-group {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .time-group {
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+  }
+
+  .time-group .time-label {
+    align-self: flex-start !important;
+    align-items: flex-start !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    height: auto !important;
+  }
+
+  // .field-label,
+  // .time-label {
+  //   min-width: 150px !important;
+  //   flex: 0 0 150px;
+  //   text-align: right;
+  //   justify-content: flex-end;
+  //   padding-right: 10px;
+  // }
+
+  // .field-input,
+  // .field-input.full-width,
+  // .field-input.date-field {
+  //   flex: 0 0 220px;
+  //   width: 220px !important;
+  //   max-width: 220px !important;
+  //   min-width: 220px !important;
+  // }
+}
+
+/* Phone: stack label above input */
+@media (max-width: 600px) {
+  .form-field-group {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  // .field-label,
+  // .time-label {
+  //   min-width: 0;
+  //   text-align: left;
+  //   justify-content: flex-start;
+  //   padding-right: 0;
+  //   flex: 1 1 100%;
+  // }
+
+  .field-input,
+  .field-input.full-width {
+    flex: 1 1 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .time-group {
+    flex-wrap: wrap;
+  }
+
+  .day-header {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .left-panel-header,
+  .form-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .right-header,
+  .title {
+    font-size: 16px;
+  }
+
+  .header-btn {
+    height: 30px !important;
+    padding: 4px !important;
+  }
+}
+.taetigkeit-form-check{
+height:20px!important;
+// gap:3px!important
 }

@@ -2,13 +2,24 @@
   <!-- Left Panel: Tree -->
   <div class="left-panel">
     <div class="left-panel-header">
-      <button>
-        <mat-icon class="icon-header" (click)="goBackToList()"
-          >arrow_back</mat-icon
-        >
+      <button
+        [matMenuTriggerFor]="headerMenu"
+        matTooltip="Weitere Funktionen"
+      >
+        <i class="mdi mdi-menu icon-header"></i>
       </button>
+      <mat-menu #headerMenu="matMenu" class="header-menu-panel">
+        <button mat-menu-item (click)="onHeaderMenuOption('Tätigkeiten Plan-Ist Vergleich')">
+          <mat-icon (click)="onHeaderMenuOption('Tätigkeiten Plan-Ist Vergleich')">description</mat-icon>
+          <span>Tätigkeiten Plan-Ist Vergleich</span>
+        </button>
+      </mat-menu>
+
       <h1 class="title">Tätigkeiten Buchen</h1>
-      <button (click)="addTimeEntryFromHeader()">
+      <button
+        (click)="addTimeEntryFromHeader()"
+        matTooltip="Neue Remote-Buchung"
+      >
         <mat-icon class="icon-header">R</mat-icon>
       </button>
     </div>
@@ -65,27 +76,15 @@
         [class.selected]="selectedNode === node"
         (dblclick)="onNodeDoubleClick(node, $event)"
       >
-        <button matTreeNodeToggle class="toggle-button">
-          <mat-icon
-            class="tree-toggle-icon-level1"
-            [class.arrow-no-stempel]="
-              node.level === 1 &&
-              !(node.stempelzeitenList?.length && isStempelzeitenVisible(node))
-            "
-            [class.month-arrow]="node.level === 0"
-          >
-            {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
-          </mat-icon>
-        </button>
         <!-- Level 0: Month Node -->
         <div class="tree-node expandable-node" *ngIf="node.level === 0">
-          <mat-icon class="calendar-icon">calendar_month</mat-icon>
+          <i class="mdi mdi-calendar-multiple calendar-icon"></i>
           <div class="level-container">
             <div class="month-content">
               <span class="month-name">{{ node.monthName }}</span>
             </div>
             <div class="month-gebucht">
-              <mat-icon class="gebucht-icon">drag_indicator</mat-icon>
+              <i class="mdi mdi-file-tree gebucht-icon"></i>
               <span class="gebucht-label">Gebucht [Std.Min]:</span>
               <span class="gebucht-value">{{ node.gebuchtTotal }}</span>
             </div>
@@ -94,14 +93,13 @@
         <!-- Level 1: Day Node -->
         <div class="tree-node expandable-node-level2" *ngIf="node.level === 1">
           <div class="level2-container">
-            <mat-icon
-              class="calendar-icon"
+            <i
+              class="mdi mdi-calendar-plus calendar-icon"
               [class.arrow-stempel]="
                 node.level === 1 &&
                 node.stempelzeitenList?.length && isStempelzeitenVisible(node)
               "
-              >event</mat-icon
-            >
+            ></i>
             <div class="day-content-wrapper">
               <div class="day-header">
                 <span class="day-cell">{{ node.dayName }}</span>
@@ -109,8 +107,8 @@
                 <span class="time-cell">Gebucht: {{ node.gebucht }}</span>
                 <span
                   class="abgeschlossen-cell"
-                  *ngIf="!isStempelzeitenVisible(node)"
-                  >[abgeschlossen]</span
+                  *ngIf="node.hasNotification"
+                  >[Abgeschlossen]</span
                 >
               </div>
 
@@ -123,7 +121,7 @@
                   isStempelzeitenVisible(node)
                 "
               >
-                <mat-icon class="gebucht-icon">drag_indicator</mat-icon>
+                <i class="mdi mdi-file-tree gebucht-icon"></i>
                 <span class="time-info">
                   {{ node.stempelzeitenList.join(", ") }}
                 </span>
@@ -132,8 +130,11 @@
           </div>
 
           <div class="level2-container-bottom" *ngIf="isAlarmDay(node)">
-            <button (click)="onAlarmClick(node, $event)">
-              <mat-icon class="icon-header">alarm</mat-icon>
+            <button
+              (click)="onAlarmClick(node, $event)"
+              matTooltip="Neue Buchung"
+            >
+              <i class="mdi mdi-alarm-plus icon-header icon-header-alarm"></i>
             </button>
           </div>
         </div>
@@ -162,7 +163,7 @@
   <!-- ========================================= -->
   <div
     class="right-panel"
-    *ngIf="isCreatingNewThirdLevel && showRightPanelAlarmActions && !isLoading"
+    *ngIf="isCreatingNewThirdLevel && showRightPanelAlarmActions && !isLoading && alarmNode"
   >
     <div class="form-header">
       <!-- CANCEL (X) button -->
@@ -195,7 +196,7 @@
         <mat-form-field appearance="outline" class="field-input">
           <mat-select formControlName="buchungsart" [compareWith]="compareBuchungsart" panelClass="drop-down">
             <mat-option *ngFor="let art of buchungsartOptions" [value]="art">
-              {{ art }}
+              {{ getBuchungsartDisplay(art) }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -271,9 +272,9 @@
             <div class="time-column">
               <app-taetigkeiten-time-box
                 [value]="alarmForm.get('durationStunde')?.value || 0"
-                [max]="24"
+                [max]="1"
                 [disabled]="!canEditAlarmTime"
-                (valueChange)="alarmForm.get('durationStunde')?.patchValue($event); validateAlarmTime('duration')"
+                (valueChange)="onDurationHourChange($event)"
               />
             </div>
 
@@ -282,7 +283,7 @@
               <app-taetigkeiten-time-box
                 [value]="alarmForm.get('durationMinuten')?.value || 0"
                 [max]="59"
-                [disabled]="!canEditAlarmTime || getAlarmHour('duration') === 24"
+                [disabled]="!canEditAlarmTime || getAlarmHour('duration') === 1"
                 (valueChange)="alarmForm.get('durationMinuten')?.patchValue($event); validateAlarmTime('duration')"
               />
             </div>
@@ -341,15 +342,13 @@
         </div>
       </div>
 
-      <!-- Anmerkung Field -->
-      <!-- Anmerkung Field -->
     <!-- Anmerkung Field in Alarm Form - Updated to Textarea -->
 <div class="form-field-group">
   <label class="field-label">Anmerkung</label>
   <mat-form-field
     appearance="outline"
     class="field-input full-width"
-    [class.anmerkung-empty]="isAlarmAnmerkungEmpty"
+    [class.anmerkung-empty]="isAlarmAnmerkungEmpty && alarmSaveAttempted"
   >
     <textarea
       matInput
@@ -357,6 +356,7 @@
       placeholder="Anmerkung eingeben"
       class="anmerkung-textarea-field"
       rows="3"
+      maxlength="50"
       cdkTextareaAutosize
       cdkAutosizeMinRows="3"
       cdkAutosizeMaxRows="8"
@@ -366,7 +366,7 @@
 
       <!-- Jira Ticket -->
       <div class="form-field-group">
-        <label class="field-label">Jira-Ticket Nr.:</label>
+        <label class="field-label">Jira-Ticket Nr:</label>
         <mat-form-field
           appearance="outline"
           class="field-input"
@@ -377,9 +377,11 @@
             formControlName="jiraTicket"
             placeholder="PGETIT-..."
             class="gebucht-third datum"
+            maxlength="30"
+            (input)="onJiraInput($event, alarmForm)"
           />
           <mat-error *ngIf="isAlarmJiraTicketInvalid">
-            Jira-Ticket muss mit "PGETIT" beginnen
+            {{ jiraTicketErrorMessage(alarmForm) }}
           </mat-error>
         </mat-form-field>
       </div>
@@ -436,17 +438,23 @@
         <span>Speichern</span>
       </button>
 
-      <!-- EDIT/SAVE button - Only show for existing saved entries -->
-      <!-- <button
-      mat-button
-      *ngIf="!isNewlyCreated && !isCreatingNew"
-      (click)="isEditing ? saveForm() : (isEditing = true)"
-      class="header-btn"
-      [class.primary]="isEditing"
-    >
-      <mat-icon>{{ isEditing ? "check" : "edit" }}</mat-icon>
-      <span>{{ isEditing ? "Speichern" : "Bearbeiten" }}</span>
-    </button> -->
+      <!-- EDIT/SAVE button - hidden when the parent day is locked -->
+      <button
+        mat-button
+        *ngIf="!isNewlyCreated && !isCreatingNew && !isSelectedDayLocked"
+        (click)="toggleEdit()"
+        class="header-btn"
+        [class.primary]="isEditing"
+      >
+        <ng-container *ngIf="isEditing; else editIcon">
+          <mat-icon>check</mat-icon>
+          <span>Speichern</span>
+        </ng-container>
+        <ng-template #editIcon>
+          <i class="mdi mdi-lead-pencil"></i>
+          <span>Bearbeiten</span>
+        </ng-template>
+      </button>
     </div>
 
     <!-- Form Content -->
@@ -455,9 +463,9 @@
       <div class="form-field-group">
         <label class="field-label">Buchungsart</label>
         <mat-form-field appearance="outline" class="field-input">
-          <mat-select formControlName="buchungsart" [compareWith]="compareBuchungsart" [disabled]="!isEditing || isHeaderCreated" panelClass="drop-down">
+          <mat-select formControlName="buchungsart" [compareWith]="compareBuchungsart" [disabled]="!isEditing || isHeaderCreated || (!isCreatingNew && !isNewlyCreated)" panelClass="drop-down">
             <mat-option *ngFor="let art of buchungsartOptions" [value]="art">
-              {{ art }}
+              {{ getBuchungsartDisplay(art) }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -608,7 +616,7 @@
   <mat-form-field
     appearance="outline"
     class="field-input full-width"
-    [class.anmerkung-empty]="isAnmerkungEmpty"
+    [class.anmerkung-empty]="isAnmerkungEmpty && saveAttempted"
   >
     <textarea
       matInput
@@ -616,6 +624,7 @@
       placeholder="Anmerkung eingeben"
       class="anmerkung-textarea-field"
       rows="3"
+      maxlength="50"
       cdkTextareaAutosize
       cdkAutosizeMinRows="3"
       cdkAutosizeMaxRows="8"
@@ -637,9 +646,11 @@
             [readonly]="!isEditing"
             placeholder="PGETIT-..."
             class="gebucht-third datum"
+            maxlength="30"
+            (input)="onJiraInput($event, taetigkeitForm)"
           />
           <mat-error *ngIf="isJiraTicketInvalid">
-            Jira-Ticket muss mit "PGETIT" beginnen
+            {{ jiraTicketErrorMessage(taetigkeitForm) }}
           </mat-error>
         </mat-form-field>
       </div>
@@ -649,7 +660,7 @@
   <!-- Right Panel: Month Summary (Level 0) -->
   <div
     class="right-panel"
-    *ngIf="selectedNode && selectedNode.level === 0 && !isLoading"
+    *ngIf="selectedNode && selectedNode.level === 0 && !isLoading && !showRightPanelAlarmActions"
   >
     <div class="form-header">
       <!-- <button mat-button class="header-btn" (click)="deleteEntry()">
@@ -664,8 +675,8 @@
         <span>{{ isEditing ? "Speichern" : "Bearbeiten" }}</span>
       </button> -->
     </div>
-    <form [formGroup]="monthForm" class="taetigkeit-form">
-      <div class="form-field-group">
+    <form [formGroup]="monthForm" class="taetigkeit-form ">
+      <div class="form-field-group taetigkeit-form-check">
         <label class="field-label">Abgeschlossen:</label>
         <mat-checkbox
           formControlName="abgeschlossen"
@@ -708,14 +719,19 @@
       mat-button
       class="header-btn"
       (click)="toggleDayOpenClose(selectedNode)"
+      [matTooltip]="selectedNode.hasNotification ? 'Tagesabschluss aufheben' : 'Tagesabschluss'"
     >
-      <mat-icon>{{ selectedNode.hasNotification ? 'lock' : 'lock_open' }}</mat-icon>
-      <span>{{ selectedNode.hasNotification ? 'Öffnen' : 'Schließen' }}</span>
+      <i
+        class="mdi"
+        [class.mdi-check-circle-outline]="!selectedNode.hasNotification"
+        [class.mdi-close-circle-outline]="selectedNode.hasNotification"
+      ></i>
+      <span>{{ selectedNode.hasNotification ? 'Abschluss aufheben' : 'Tagesabschluss' }}</span>
     </button>
   </div>
 
-  <form [formGroup]="dayForm" class="taetigkeit-form">
-    <div class="form-field-group">
+  <form [formGroup]="dayForm" class="taetigkeit-form taetigkeit-form-check">
+    <div class="form-field-group taetigkeit-form-check">
       <label class="field-label">Abgeschlossen:</label>
       <mat-checkbox
         formControlName="abgeschlossen"

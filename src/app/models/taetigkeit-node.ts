@@ -18,5 +18,8 @@ export interface TaetigkeitNode {
     stempelzeitData?: any;
     stempelzeitenList?: string[];
     hasEntries?: boolean;
-  
+    buchungspunkt?: string;
+    dateKey?: string;
+    monthKey?: string;
+
   }

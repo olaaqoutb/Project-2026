@@ -13,6 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TatigkeitenBuchenService } from '../../services/taetigkeiten-buchen.service';
@@ -84,6 +86,8 @@ export const DATE_FORMATS = {
     MatCheckbox,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatMenuModule,
+    MatTooltipModule,
     TaetigkeitenTimeBoxComponent,
   ],
   providers: [
@@ -105,17 +109,7 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
   buchungspunktOptions: ApiProduktPositionBuchungspunkt[] = [];
 
   get buchungsartOptions(): string[] {
-    const formValues = [
-      this.taetigkeitForm?.get('buchungsart')?.value,
-      this.alarmForm?.get('buchungsart')?.value
-    ].filter((v): v is string => !!v && typeof v === 'string');
-    const set = new Set<string>(this.baseBuchungsartOptions);
-    formValues.forEach(v => {
-      if (!this.baseBuchungsartOptions.some(o => this.compareBuchungsart(o, v))) {
-        set.add(v);
-      }
-    });
-    return Array.from(set);
+    return [...this.baseBuchungsartOptions];
   }
 
   get taetigkeitOptions(): string[] {
@@ -130,6 +124,10 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
       }
     });
     return Array.from(set);
+  }
+
+  getBuchungsartDisplay(key: string): string {
+    return ApiZeitTyp[key as keyof typeof ApiZeitTyp] ?? key;
   }
 
   dropdownOptions: string[] = ["2026","2025", "2024", "2023", "2022", "2021", "2020"];
@@ -358,6 +356,16 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
               true,
               true
             );
+
+            const naechster = abschlussInfo?.naechsterBuchbarerTag ?? null;
+            treeData.forEach((month: any) => {
+              (month.children || []).forEach((day: any) => {
+                if (!day.hasNotification && day.dateKey && naechster && day.dateKey < naechster) {
+                  day.hasNotification = true;
+                }
+              });
+            });
+
             this.dataSource.data = treeData;
             this.recomputeAlarmDayKey();
             this.isLoading = false;
@@ -391,6 +399,10 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
     this.router.navigate(['/edit-activities']);
   }
 
+  onHeaderMenuOption(name: string): void {
+    console.log(name);
+  }
+
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
 
@@ -398,6 +410,11 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
  onNodeClick(node: FlatNode) {
     if (this.showRightPanelAlarmActions && node !== this.alarmNode) {
       this.resetAlarmState();
+    }
+
+    if (node.level !== 2) {
+      this.resetAlarmState();
+      this.taetigkeitForm.reset({}, { emitEvent: false });
     }
 
     this.isNewlyCreated = false;
@@ -772,14 +789,11 @@ private formatDateForBackend(date: Date): string {
     return;
   }
 
-  const nodeName = this.selectedNode.name || '';
-  const entryDate = this.activityFormService.getEntryDateString(this.selectedNode);
-
   const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
     width: '500px',
     data: {
       title: 'Löschen einer Tätigkeitsbuchung',
-      message: `Wollen Sie den Eintrag "${nodeName}"${entryDate ? ` (${entryDate})` : ''} wirklich löschen?`
+      message: 'Wollen Sie die Tätigkeitsbuchung löschen?'
     }
   });
 
@@ -816,6 +830,12 @@ private recomputeAlarmDayKey(): void {
     : allDayKeys;
   const source = pool.length ? pool : allDayKeys;
   this.alarmDayKey = source.reduce((a, b) => (a > b ? a : b));
+}
+
+get isSelectedDayLocked(): boolean {
+  if (!this.selectedNode) return false;
+  const parentDay = this.findParentDay(this.selectedNode);
+  return !!parentDay?.hasNotification;
 }
 
 private findParentDay(node: FlatNode): FlatNode | null {
@@ -975,11 +995,53 @@ private performDelete(): void {
   }
 
   get isJiraTicketInvalid(): boolean {
-    return !!this.taetigkeitForm.get('jiraTicket')?.hasError('jiraPrefix');
+    const c = this.taetigkeitForm.get('jiraTicket');
+    return !!(c?.hasError('jiraPrefix') || c?.hasError('jiraSuffixRequired') || c?.hasError('jiraRequired'));
   }
 
   get isAlarmJiraTicketInvalid(): boolean {
-    return !!this.alarmForm.get('jiraTicket')?.hasError('jiraPrefix');
+    const c = this.alarmForm.get('jiraTicket');
+    return !!(c?.hasError('jiraPrefix') || c?.hasError('jiraSuffixRequired') || c?.hasError('jiraRequired'));
+  }
+
+  get isJiraTicketEmpty(): boolean {
+    const v = this.taetigkeitForm.get('jiraTicket')?.value;
+    return !v || String(v).trim() === '' || String(v).trim() === 'PGETIT-';
+  }
+
+  get isAlarmJiraTicketEmpty(): boolean {
+    const v = this.alarmForm.get('jiraTicket')?.value;
+    return !v || String(v).trim() === '' || String(v).trim() === 'PGETIT-';
+  }
+
+  jiraTicketErrorMessage(form: FormGroup): string {
+    const c = form.get('jiraTicket');
+    if (c?.hasError('jiraRequired')) return 'Jira-Ticket ist erforderlich';
+    if (c?.hasError('jiraSuffixRequired')) return 'Jira-Ticket darf nicht nur "PGETIT-" enthalten';
+    if (c?.hasError('jiraPrefix')) return 'Jira-Ticket muss mit "PGETIT" beginnen';
+    return '';
+  }
+
+  onJiraInput(event: Event, form: FormGroup): void {
+    const input = event.target as HTMLInputElement;
+    const prefix = 'PGETIT-';
+    let val = input.value;
+
+    if (val === '' || val === prefix) {
+      input.value = '';
+      form.get('jiraTicket')?.patchValue('', { emitEvent: false });
+      return;
+    }
+
+    if (!val.startsWith(prefix)) {
+      const tail = val.replace(/^PGETIT-?/i, '');
+      val = prefix + tail;
+    }
+
+    if (val.length > 30) val = val.slice(0, 30);
+
+    input.value = val;
+    form.get('jiraTicket')?.patchValue(val, { emitEvent: false });
   }
 
   private positionKeys(v: any): string[] {
@@ -1044,15 +1106,10 @@ private performDelete(): void {
     if (a === b) return true;
     if (a == null || b == null) return false;
     const norm = (v: any): string => {
-      const s = String(v).trim();
-      const upper = s.toUpperCase();
-      const zeitTypMap = ApiZeitTyp as unknown as Record<string, string>;
-      if (zeitTypMap[upper] !== undefined) return upper;
-      const byValue = Object.keys(zeitTypMap).find(
-        k => String(zeitTypMap[k]).toLowerCase() === s.toLowerCase()
-      );
-      if (byValue) return byValue;
-      return upper;
+      const s = String(v);
+      const enumMap = ApiBuchungsart as unknown as Record<string, string>;
+      if (enumMap[s] !== undefined) return enumMap[s].toLowerCase();
+      return s.toLowerCase();
     };
     return norm(a) === norm(b);
   };
@@ -1091,6 +1148,14 @@ private performDelete(): void {
     this.timeUtilityService.validateTime(this.alarmForm, timeType);
   }
 
+  onDurationHourChange(value: number): void {
+    this.alarmForm.get('durationStunde')?.patchValue(value);
+    if (value === 1) {
+      this.alarmForm.get('durationMinuten')?.patchValue(0);
+    }
+    this.validateAlarmTime('duration');
+  }
+
   isAlarmRemote(): boolean {
     const value = this.alarmForm?.get('buchungsart')?.value;
     return String(value || '').toUpperCase() === 'REMOTEZEIT';
@@ -1109,6 +1174,9 @@ private performDelete(): void {
     } else {
       this.isEditing = true;
       this.formValidationService.enableAllFormControls(this.taetigkeitForm, ['gestempelt', 'gebucht']);
+      if (!this.isCreatingNew && !this.isNewlyCreated) {
+        this.taetigkeitForm.get('buchungsart')?.disable({ emitEvent: false });
+      }
     }
     this.cdr.detectChanges();
   }
@@ -1164,6 +1232,7 @@ private performDelete(): void {
     this.saveAttempted = false;
 
     this.activityFormService.initializeNewEntryForm(this.taetigkeitForm, currentDate);
+    this.taetigkeitForm.patchValue({ datum: new Date() }, { emitEvent: false });
     this.formValidationService.enableAllFormControls(this.taetigkeitForm, ['gestempelt', 'gebucht', 'buchungsart']);
     this.taetigkeitForm.get('buchungsart')?.disable({ emitEvent: false });
 
