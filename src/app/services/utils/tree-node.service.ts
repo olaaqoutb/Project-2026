@@ -98,10 +98,20 @@ export class TreeNodeService {
       dayNode.children = [];
     }
 
+    const positionName =
+      typeof formData.produktposition === 'string'
+        ? formData.produktposition
+        : (formData.produktposition?.produktPositionname || '');
+    const buchungspunktName =
+      typeof formData.buchungspunkt === 'string'
+        ? formData.buchungspunkt
+        : (formData.buchungspunkt?.buchungspunkt || '');
+
     const newChild: TaetigkeitNode = {
-      name: `${formData.produkt || 'Unbenannt'} ${formData.produktposition || ''}`.trim(),
+      name: `${formData.produkt || 'Unbenannt'} ${positionName}`.trim(),
       productName: formData.produkt || 'Unbenannt',
-      positionName: formData.produktposition || '',
+      positionName: positionName,
+      buchungspunkt: buchungspunktName,
       gebuchtTime: formData.gebucht,
       timeRange: timeRange,
       formData: formData,

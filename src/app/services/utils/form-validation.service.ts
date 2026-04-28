@@ -50,6 +50,12 @@ export class FormValidationService {
             case 'jiraPrefix':
               errors.push(`${fieldName} muss mit "PGETIT" beginnen`);
               break;
+            case 'jiraRequired':
+              errors.push(`${fieldName} ist erforderlich`);
+              break;
+            case 'jiraSuffixRequired':
+              errors.push(`${fieldName} darf nicht nur "PGETIT-" enthalten`);
+              break;
             default:
               errors.push(`${fieldName} ist ungültig`);
           }

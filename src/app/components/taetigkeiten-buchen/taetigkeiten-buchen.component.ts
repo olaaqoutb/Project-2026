@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TatigkeitenBuchenService } from '../../services/taetigkeiten-buchen.service';
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+// import { MatCheckboxChange } from "@angular/material/checkbox";
 import { forkJoin } from 'rxjs';
 // import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { FlatNode } from '../../models/Flat-node';
@@ -56,6 +56,9 @@ import { ApiZeitTyp } from '../../models/ApiZeitTyp';
 import { DateUtilsService } from '../../services/utils/date-utils.service';
 import { TaetigkeitFormValue } from '../../models/TaetigkeitFormValue';
 import { TaetigkeitenTimeBoxComponent } from '../../shared/components/taetigkeiten-time-box/taetigkeiten-time-box.component';
+import { TaetigkeitenLevel1Component } from '../../shared/taetigkeiten-level1/taetigkeiten-level1.component';
+import { TaetigkeitenLevel2Component } from '../../shared/taetigkeiten-level2/taetigkeiten-level2.component';
+import { TaetigkeitenLevel3Component } from '../../shared/taetigkeiten-level3/taetigkeiten-level3.component';
 // In component.ts
 
 export const DATE_FORMATS = {
@@ -83,12 +86,14 @@ export const DATE_FORMATS = {
     MatSnackBarModule,
     ReactiveFormsModule,
     CommonModule,
-    MatCheckbox,
     MatDatepickerModule,
     MatNativeDateModule,
     MatMenuModule,
     MatTooltipModule,
     TaetigkeitenTimeBoxComponent,
+    TaetigkeitenLevel1Component,
+    TaetigkeitenLevel2Component,
+    TaetigkeitenLevel3Component,
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
@@ -838,6 +843,19 @@ get isSelectedDayLocked(): boolean {
   return !!parentDay?.hasNotification;
 }
 
+private findPreviousOpenDay(dayNode: FlatNode): FlatNode | null {
+  if (!dayNode.dateKey) return null;
+  const earlierOpen = this.treeControl.dataNodes
+    .filter(n =>
+      n.level === 1 &&
+      !!n.dateKey &&
+      n.dateKey < dayNode.dateKey! &&
+      !n.hasNotification
+    );
+  if (!earlierOpen.length) return null;
+  return earlierOpen.sort((a, b) => (a.dateKey! < b.dateKey! ? -1 : 1))[0];
+}
+
 private findParentDay(node: FlatNode): FlatNode | null {
   if (node.level === 1) return node;
   const nodes = this.treeControl.dataNodes;
@@ -853,6 +871,18 @@ toggleDayOpenClose(dayNode: FlatNode): void {
   if (!dayNode || dayNode.level !== 1) return;
 
   const isClosed = !!dayNode.hasNotification;
+
+  if (!isClosed) {
+    const previousOpenDay = this.findPreviousOpenDay(dayNode);
+    if (previousOpenDay) {
+      this.openErrorDialog(
+        'Tag kann nicht geschlossen werden',
+        `Bitte schließen Sie zuerst den vorherigen offenen Tag (${previousOpenDay.dayName}). Tage müssen in chronologischer Reihenfolge abgeschlossen werden.`
+      );
+      return;
+    }
+  }
+
   const dialogRef = this.dialog.open(CloseOpenConfirmDialogComponent, {
     width: '500px',
     data: { isClosed, dayName: dayNode.dayName }
@@ -1318,7 +1348,6 @@ onNodeDoubleClick(node: FlatNode, event: Event): void {
 
   const isExpanded = this.treeControl.isExpanded(node);
 
-  // Collapse all siblings at the same level before toggling
   this.collapseSiblings(node);
 
   if (isExpanded) {

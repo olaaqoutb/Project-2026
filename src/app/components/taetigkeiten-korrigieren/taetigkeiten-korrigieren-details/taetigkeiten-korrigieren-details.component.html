@@ -2,24 +2,13 @@
   <!-- Left Panel: Tree -->
   <div class="left-panel">
     <div class="left-panel-header">
-      <button
-        [matMenuTriggerFor]="headerMenu"
-        matTooltip="Weitere Funktionen"
-      >
-        <i class="mdi mdi-menu icon-header"></i>
+      <button (click)="goBackToList()" matTooltip="Zurück zur Liste">
+        <i class="mdi mdi-arrow-left icon-header"></i>
       </button>
-      <mat-menu #headerMenu="matMenu" class="header-menu-panel">
-        <button mat-menu-item (click)="onHeaderMenuOption('Tätigkeiten Plan-Ist Vergleich')">
-          <mat-icon (click)="onHeaderMenuOption('Tätigkeiten Plan-Ist Vergleich')">description</mat-icon>
-          <span>Tätigkeiten Plan-Ist Vergleich</span>
-        </button>
-      </mat-menu>
 
-      <h1 class="title">Tätigkeiten Buchen</h1>
-      <button
-        (click)="addTimeEntryFromHeader()"
-        matTooltip="Neue Remote-Buchung"
-      >
+      <h1 class="title"> Tätigkeiten Korrigieren - {{ personName }} </h1>
+
+      <button (click)="addTimeEntryFromHeader()" matTooltip="Neue Remote-Buchung">
         <mat-icon class="icon-header">R</mat-icon>
       </button>
     </div>
@@ -35,34 +24,23 @@
       class="tree"
       *ngIf="!isLoading"
     >
-      <!-- Leaf nodes -->
       <mat-tree-node
         *matTreeNodeDef="let node"
         matTreeNodePadding
         (click)="onNodeClick(node)"
         [class.selected]="selectedNode === node"
       >
-        <!-- Level 2: Activity Node -->
         <div class="tree-node leaf-node2">
           <div class="third-container-top">
-            <mat-icon class="icon-add" *ngIf="node.zeitTyp !== 'REMOTEZEIT'"
-              >loupe</mat-icon
-            >
-            <mat-icon class="icon-r" *ngIf="node.zeitTyp === 'REMOTEZEIT'"
-              >R</mat-icon
-            >
-
+            <mat-icon class="icon-add" *ngIf="node.zeitTyp !== 'REMOTEZEIT'">loupe</mat-icon>
+            <mat-icon class="icon-r" *ngIf="node.zeitTyp === 'REMOTEZEIT'">R</mat-icon>
             <span class="activity-product">{{ node.productName }}</span>
             <span class="activity-position">{{ node.positionName }}</span>
             <span class="activity-buchungspunkt">{{ node.buchungspunkt }}</span>
           </div>
           <div class="third-container-bottom">
-            <span class="activity-gebucht"
-              >Gebucht [Std Min] {{ node.gebuchtTime }}</span
-            >
-            <span
-              class="activity-time"
-              *ngIf="node.timeRange && !node.timeRange.startsWith('Dauer:')"
+            <span class="activity-gebucht">Gebucht [Std Min] {{ node.gebuchtTime }}</span>
+            <span class="activity-time" *ngIf="node.timeRange"
               >An-/Abmeldezeit: {{ node.timeRange }}</span
             >
           </div>
@@ -76,7 +54,6 @@
         [class.selected]="selectedNode === node"
         (dblclick)="onNodeDoubleClick(node, $event)"
       >
-        <!-- Level 0: Month Node -->
         <div class="tree-node expandable-node" *ngIf="node.level === 0">
           <i class="mdi mdi-calendar-multiple calendar-icon"></i>
           <div class="level-container">
@@ -90,14 +67,13 @@
             </div>
           </div>
         </div>
-        <!-- Level 1: Day Node -->
+
         <div class="tree-node expandable-node-level2" *ngIf="node.level === 1">
           <div class="level2-container">
             <i
               class="mdi mdi-calendar-plus calendar-icon"
               [class.arrow-stempel]="
-                node.level === 1 &&
-                node.stempelzeitenList?.length && isStempelzeitenVisible(node)
+                node.level === 1 && node.stempelzeitenList?.length
               "
             ></i>
             <div class="day-content-wrapper">
@@ -105,21 +81,12 @@
                 <span class="day-cell">{{ node.dayName }}</span>
                 <span class="time-cell">Gestempelt: {{ node.gestempelt }}</span>
                 <span class="time-cell">Gebucht: {{ node.gebucht }}</span>
-                <span
-                  class="abgeschlossen-cell"
-                  *ngIf="node.hasNotification"
-                  >[Abgeschlossen]</span
-                >
+                <span class="abgeschlossen-cell" *ngIf="node.hasNotification">[Abgeschlossen]</span>
               </div>
 
-              <!-- Stempelzeiten under the icon/date -->
               <div
                 class="stempel-level2"
-                *ngIf="
-                  node.stempelzeitenList &&
-                  node.stempelzeitenList.length > 0 &&
-                  isStempelzeitenVisible(node)
-                "
+                *ngIf="node.stempelzeitenList && node.stempelzeitenList.length > 0"
               >
                 <i class="mdi mdi-file-tree gebucht-icon"></i>
                 <span class="time-info">
@@ -129,31 +96,12 @@
             </div>
           </div>
 
-          <div class="level2-container-bottom" *ngIf="isAlarmDay(node)">
-            <button
-              (click)="onAlarmClick(node, $event)"
-              matTooltip="Neue Buchung"
-            >
+          <div class="level2-container-bottom">
+            <button (click)="onAlarmClick(node, $event)" matTooltip="Neue Buchung">
               <i class="mdi mdi-alarm-plus icon-header icon-header-alarm"></i>
             </button>
           </div>
         </div>
-
-        <!-- Level 2 Activity Node (Third Level) -->
-        <!-- <div class="leaf-node expandable-node-level3" *ngIf="node.level === 2">
-          <div class="third-container">
-            <span class="activity-product">{{ node.productName }}</span>
-            <span class="activity-position">{{ node.positionName }}</span>
-          </div>
-          <div class="third-bottom">
-            <span class="activity-gebucht"
-              >Gebucht [Std Min] {{ node.gebuchtTime }}</span
-            >
-            <span class="activity-time"
-              >An-/Abmeldezeit: {{ node.timeRange }}</span
-            >
-          </div>
-        </div> -->
       </mat-tree-node>
     </mat-tree>
   </div>
@@ -166,31 +114,20 @@
     *ngIf="isCreatingNewThirdLevel && showRightPanelAlarmActions && !isLoading && alarmNode"
   >
     <div class="form-header">
-      <!-- CANCEL (X) button -->
-      <button
-        mat-button
-        class="header-btn cancel-btn"
-        (click)="cancelNewThirdLevel()"
-      >
+      <button mat-button class="header-btn cancel-btn" (click)="cancelNewThirdLevel()">
         <mat-icon>close</mat-icon>
         <span>Abbrechen</span>
       </button>
 
       <h2 class="right-header">Tätigkeit</h2>
 
-      <button
-        mat-button
-        class="header-btn approve-btn"
-        (click)="approveNewThirdLevel()"
-      >
+      <button mat-button class="header-btn approve-btn" (click)="approveNewThirdLevel()">
         <mat-icon>check</mat-icon>
         <span>Speichern</span>
       </button>
     </div>
 
-    <!-- Alarm Form Content -->
     <form [formGroup]="alarmForm" class="taetigkeit-form">
-      <!-- Buchungsart Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Buchungsart</label>
         <mat-form-field appearance="outline" class="field-input">
@@ -202,70 +139,56 @@
         </mat-form-field>
       </div>
 
-      <!-- Produkt Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Produkt</label>
         <mat-form-field appearance="outline" class="field-input" panelClass="drop-down">
           <mat-select formControlName="produkt" [compareWith]="compareString">
-            <mat-option
-              *ngFor="let produkt of produktOptions"
-              [value]="produkt.kurzName"
-            >
+            <mat-option *ngFor="let produkt of produktOptions" [value]="produkt.kurzName">
               {{ produkt.kurzName }} - {{ produkt.produktname }}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
 
-      <!-- Produktposition Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Produktposition</label>
         <mat-form-field appearance="outline" class="field-input">
           <mat-select formControlName="produktposition" [compareWith]="comparePosition" panelClass="drop-down">
-            <mat-option
-              *ngFor="let position of produktpositionOptions"
-              [value]="position"
-            >
+            <mat-option *ngFor="let position of produktpositionOptions" [value]="position">
               {{ position.produktPositionname }}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
 
-      <!-- Buchungspunkt Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Buchungspunkt</label>
-        <mat-form-field appearance="outline" class="field-input">
+        <mat-form-field appearance="outline" class="field-input"
+          [class.field-empty]="isAlarmFieldEmpty('buchungspunkt') && alarmSaveAttempted">
           <mat-select formControlName="buchungspunkt" [compareWith]="compareBuchungspunkt" panelClass="drop-down">
-            <mat-option
-              *ngFor="let punkt of buchungspunktOptions"
-              [value]="punkt"
-            >
+            <mat-option *ngFor="let punkt of buchungspunktOptions" [value]="punkt">
               {{ punkt.buchungspunkt }}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
 
-       <!-- Tätigkeit Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Tätigkeit</label>
-        <mat-form-field appearance="outline" class="field-input">
+        <mat-form-field appearance="outline" class="field-input"
+          [class.field-empty]="isAlarmFieldEmpty('taetigkeit') && alarmSaveAttempted">
           <mat-select formControlName="taetigkeit" [compareWith]="compareTaetigkeit" panelClass="drop-down">
-            <mat-option
-              *ngFor="let taetigkeit of taetigkeitOptions"
-              [value]="taetigkeit"
-            >
+            <mat-option *ngFor="let taetigkeit of taetigkeitOptions" [value]="taetigkeit">
               {{ taetigkeit }}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
 
-      <!-- NO DATUM FIELD - it's hidden, using parent day's date -->
-
-      <!-- Duration Section: shown for ARBEITSZEIT (default) -->
-      <div class="time-section" *ngIf="!isAlarmRemote()" [class.time-section-locked]="!canEditAlarmTime">
+      <div class="time-section"
+        *ngIf="!isAlarmRemote()"
+        [class.time-section-locked]="!canEditAlarmTime"
+        [class.dauer-empty]="isAlarmDauerEmpty && alarmSaveAttempted">
         <div class="time-group">
           <label class="time-label">Dauer [Stunden]</label>
           <div class="time-inputs-horizontal">
@@ -291,7 +214,6 @@
         </div>
       </div>
 
-      <!-- Anmelde-/Abmeldezeit Section: shown for REMOTEZEIT (matches header form) -->
       <div class="time-section" *ngIf="isAlarmRemote()" [class.time-section-locked]="!canEditAlarmTime">
         <div class="time-group">
           <label class="time-label">Anmeldezeit[Stunde]</label>
@@ -342,29 +264,27 @@
         </div>
       </div>
 
-    <!-- Anmerkung Field in Alarm Form - Updated to Textarea -->
-<div class="form-field-group">
-  <label class="field-label">Anmerkung</label>
-  <mat-form-field
-    appearance="outline"
-    class="field-input full-width"
-    [class.anmerkung-empty]="isAlarmAnmerkungEmpty && alarmSaveAttempted"
-  >
-    <textarea
-      matInput
-      formControlName="anmerkung"
-      placeholder="Anmerkung eingeben"
-      class="anmerkung-textarea-field"
-      rows="3"
-      maxlength="50"
-      cdkTextareaAutosize
-      cdkAutosizeMinRows="3"
-      cdkAutosizeMaxRows="8"
-    ></textarea>
-  </mat-form-field>
-</div>
+      <div class="form-field-group">
+        <label class="field-label">Anmerkung</label>
+        <mat-form-field
+          appearance="outline"
+          class="field-input full-width"
+          [class.anmerkung-empty]="isAlarmAnmerkungEmpty && alarmSaveAttempted"
+        >
+          <textarea
+            matInput
+            formControlName="anmerkung"
+            placeholder="Anmerkung eingeben"
+            class="anmerkung-textarea-field"
+            rows="3"
+            maxlength="50"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="3"
+            cdkAutosizeMaxRows="8"
+          ></textarea>
+        </mat-form-field>
+      </div>
 
-      <!-- Jira Ticket -->
       <div class="form-field-group">
         <label class="field-label">Jira-Ticket Nr:</label>
         <mat-form-field
@@ -389,7 +309,7 @@
   </div>
 
   <!-- ========================================= -->
-  <!-- RIGHT PANEL 2: MAIN FORM (Regular Activity Form) -->
+  <!-- RIGHT PANEL 2: MAIN ACTIVITY FORM -->
   <!-- ========================================= -->
   <div
     class="right-panel"
@@ -447,10 +367,10 @@
     <app-taetigkeiten-level2
       [formGroup]="dayForm"
       [title]="getFullDayOfWeekFromNode(selectedNode) + ' ' + getDateDisplayFromNode(selectedNode)"
-      [hasStempelzeiten]="!!(selectedNode.stempelzeitenList && selectedNode.stempelzeitenList[0])"
+      [hasStempelzeiten]="true"
       [hasNotification]="!!selectedNode.hasNotification"
       [isEditing]="isEditing"
-      (toggleClose)="toggleDayOpenClose(selectedNode)"
+      [showCloseButton]="false"
     ></app-taetigkeiten-level2>
   </div>
 
@@ -467,10 +387,7 @@
     "
   >
     <div class="right-panel-header">
-      <div
-        class="selected-node-info title2"
-        *ngIf="selectedNode && !selectedNode.formData"
-      >
+      <div class="selected-node-info title2" *ngIf="selectedNode && !selectedNode.formData">
         <h2 class="selected-node-title">{{ selectedNode.name }}</h2>
       </div>
     </div>

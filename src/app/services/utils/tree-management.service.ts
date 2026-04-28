@@ -395,9 +395,7 @@ private createActivityNodeFromBuchung(activity: ActivityEntry): TaetigkeitNode {
       datum: this.dateParserService.formatToGermanDate(
         activity.type === 'stempelzeit' ? loginTime : new Date(buchung.datum!)
       ),
-      buchungsart: (activity.type === 'stempelzeit' && activity.data?.zeitTyp)
-        ? activity.data.zeitTyp
-        : produktInfo.buchungsart,
+      buchungsart: produktInfo.buchungsart,
       produkt: produktInfo.produktKurzName,
       produktposition: produktInfo.positionName,
       buchungspunkt: produktInfo.buchungspunkt,

@@ -46,9 +46,11 @@ import {
 } from './components/organisationeinheiten/organisationeinheiten-details/organisationeinheiten-details.component';
 
 import { refreshGuard } from './guards/refresh.guard';
-import { TaetigkeitenKorrigierenComponent } from './components/taetigkeiten-korrigieren/taetigkeiten-korrigieren.component';
 import { TaetigkeitenBuchenComponent } from './components/taetigkeiten-buchen/taetigkeiten-buchen.component';
-import { TaetigkeitenHistorischComponent } from './components/taetigkeiten-historisch/taetigkeiten-historisch.component';
+import { TatigkeitenHistorischListComponent } from './components/taetigkeiten-historisch/taetigkeiten-historisch-list/taetigkeiten-historisch-list.component';
+import { TaetigkeitenHistorischDetailsComponent } from './components/taetigkeiten-historisch/taetigkeiten-historisch-details/taetigkeiten-historisch-details.component';
+import { TaetigkeitenKorrigierenListComponent } from './components/taetigkeiten-korrigieren/taetigkeiten-korrigieren-list/taetigkeiten-korrigieren-list.component';
+import { TaetigkeitenKorrigierenDetailsComponent } from './components/taetigkeiten-korrigieren/taetigkeiten-korrigieren-details/taetigkeiten-korrigieren-details.component';
 import { NachverrechnungComponent } from './components/nachverrechnung/nachverrechnung.component';
 import { AuswertungenComponent } from './components/auswertungen/auswertungen.component';
 import { ExitComponent } from './components/exit/exit.component';
@@ -88,9 +90,11 @@ export const routes: Routes = [
   { path: 'organisationseinheiten/:id', component: OrganisationeinheitenDetailsComponent,  canActivate: [refreshGuard] },
 
 
-  { path: 'edit-activities', component: TaetigkeitenKorrigierenComponent },
+  { path: 'edit-activities', component: TaetigkeitenKorrigierenListComponent },
+  { path: 'edit-activities/:id', component: TaetigkeitenKorrigierenDetailsComponent, canActivate: [refreshGuard] },
   { path: 'taetigkeitebuchen', component: TaetigkeitenBuchenComponent },
-  { path: 'taetigkeitenhistorischlist', component: TaetigkeitenHistorischComponent },
+  { path: 'taetigkeitenhistorischlist', component: TatigkeitenHistorischListComponent },
+  { path: 'taetigkeitenhistorischlist/:id', component: TaetigkeitenHistorischDetailsComponent, canActivate: [refreshGuard] },
   { path: 'calculation', component: NachverrechnungComponent },
   { path: 'reports', component: AuswertungenComponent },
   { path: 'exit', component: ExitComponent },

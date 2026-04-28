@@ -1252,6 +1252,61 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     eintragungsart: ApiStempelzeitEintragungsart.SELBST },
 ];
 
+// Generate daily Arbeitszeit stempelzeiten for persons p-2..p-30 across weekdays
+// in Feb–Apr 2026 so the korrigieren-details tree shows stempelzeit values for
+// any person navigated from the list, not only the logged-in user.
+(() => {
+  const zeitTypen = [
+    ApiZeitTyp.ARBEITSZEIT,
+    ApiZeitTyp.TELEARBEIT,
+    ApiZeitTyp.REMOTEZEIT,
+  ];
+  const startTimes: Array<[string, string]> = [
+    ['08:00', '16:30'],
+    ['08:30', '17:00'],
+    ['09:00', '17:15'],
+    ['07:45', '16:00'],
+    ['08:15', '16:45'],
+  ];
+
+  let nextId = 100;
+  const targetPersons = MOCK_PERSONEN.filter(p => p.id !== 'p-me').slice(0, 29);
+
+  // Cover weekdays across 2025 and the whole 2026 so the historisch year dropdown
+  // shows data for prior years too, and korrigieren-details has year-wide entries.
+  const ranges: Array<[Date, Date]> = [
+    [new Date(2025, 0, 1), new Date(2025, 11, 31)],
+    [new Date(2026, 0, 1), new Date(2026, 11, 31)],
+  ];
+
+  for (const [start, end] of ranges) {
+    for (const person of targetPersons) {
+      const seedBase = (person.id ?? '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dow = d.getDay();
+        if (dow === 0 || dow === 6) continue; // skip weekends
+        // Skip ~20% of days so the dataset feels realistic, not robotic.
+        if ((seedBase + d.getDate() + d.getMonth()) % 5 === 0) continue;
+
+        const datePart = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const slot = startTimes[(seedBase + d.getDate()) % startTimes.length];
+        const zeitTyp = zeitTypen[(seedBase + d.getMonth()) % zeitTypen.length];
+
+        MOCK_STEMPELZEITEN.push({
+          id: `sz-gen-${nextId++}`,
+          version: 1,
+          deleted: false,
+          state: ApiState.READ,
+          person,
+          login: iso(datePart, slot[0]),
+          logoff: iso(datePart, slot[1]),
+          zeitTyp,
+        });
+      }
+    }
+  }
+})();
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Freigabe-Positionen, Tätigkeitsbuchungen, Trigger, LkDetails
 // ─────────────────────────────────────────────────────────────────────────────
