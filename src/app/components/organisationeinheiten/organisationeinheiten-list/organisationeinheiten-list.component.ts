@@ -56,6 +56,19 @@ export class OrganisationeinheitenListComponent {
   datalistoftaple: ApiOrganisationseinheit[] = [];
   selectedRows: ApiOrganisationseinheit[] = [];
 
+  private static readonly LAST_ROW_KEY = 'orgeinheiten.lastRowId';
+  selectedRowId: string | null = null;
+
+  sortState: { [key: string]: 'asc' | 'desc' | '' } = {
+    kurzbezeichnung: '',
+    bezeichnung: '',
+    leitung: '',
+    uebergeordneteEinheit: '',
+    gueltigVon: '',
+    gueltigBis: '',
+  };
+  activeSortColumn: string = '';
+
   constructor(
     private OrganisationseinheitService: OrganisationseinheitService,
     private router: Router,
@@ -64,6 +77,8 @@ export class OrganisationeinheitenListComponent {
   ) { }
 
   ngOnInit(): void {
+    this.selectedRowId = sessionStorage.getItem(OrganisationeinheitenListComponent.LAST_ROW_KEY);
+
     this.OrganisationseinheitService.getActiveData().subscribe({
       next: (data) => {
        /* const sortedData = data.sort((a, b) => {
@@ -180,6 +195,10 @@ export class OrganisationeinheitenListComponent {
 
   selectRow(row: ApiOrganisationseinheit): void {
     this.selectedRows = [row]; // Clear previous selections and select only the current row
+    this.selectedRowId = row.id ?? null;
+    if (row.id) {
+      sessionStorage.setItem(OrganisationeinheitenListComponent.LAST_ROW_KEY, row.id);
+    }
     console.log('Selected-Org', row);
     this.router.navigate(['/organisationseinheiten', row.id], {
       state: { selectedOrganisation: row }
@@ -203,6 +222,58 @@ export class OrganisationeinheitenListComponent {
     }
 
 
+  }
+
+  toggleSort(column: string): void {
+    if (this.activeSortColumn !== column) {
+      Object.keys(this.sortState).forEach(k => this.sortState[k] = '');
+      this.sortState[column] = 'desc';
+      this.activeSortColumn = column;
+    } else {
+      this.sortState[column] = this.sortState[column] === 'desc' ? 'asc' : 'desc';
+    }
+    this.applySort();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortState[column] === 'desc') return 'keyboard_arrow_down';
+    return 'keyboard_arrow_up';
+  }
+
+  private applySort(): void {
+    const column = this.activeSortColumn;
+    if (!column) return;
+    const direction = this.sortState[column];
+    if (!direction) return;
+
+    const data = [...this.dataSource.data];
+    data.sort((a, b) => {
+      const valA = this.getSortValue(a, column);
+      const valB = this.getSortValue(b, column);
+      if (valA < valB) return direction === 'asc' ? -1 : 1;
+      if (valA > valB) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    this.dataSource.data = data;
+  }
+
+  private getSortValue(row: ApiOrganisationseinheit, column: string): string | number {
+    switch (column) {
+      case 'kurzbezeichnung':
+        return (row.kurzBezeichnung ?? '').toLowerCase();
+      case 'bezeichnung':
+        return (row.bezeichnung ?? '').toLowerCase();
+      case 'leitung':
+        return `${row.leiter?.nachname ?? ''} ${row.leiter?.vorname ?? ''}`.toLowerCase();
+      case 'uebergeordneteEinheit':
+        return (row.parent?.kurzBezeichnung ?? '').toLowerCase();
+      case 'gueltigVon':
+        return row.gueltigVon ? new Date(row.gueltigVon).getTime() : 0;
+      case 'gueltigBis':
+        return row.gueltigBis ? new Date(row.gueltigBis).getTime() : 0;
+      default:
+        return '';
+    }
   }
 
 }

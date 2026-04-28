@@ -11,13 +11,16 @@ import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/
 import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DateAdapter } from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { Datalistorganizationanc } from '../../../models/datalistorganizationanc';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { PersonenService } from '../../../services/personen.service';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../dialogs/info-dialog/info-dialog.component';
+import { ErrorDialogComponent } from '../../dialogs/error-dialog/error-dialog.component';
 import { forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 import {ApiOrganisationseinheit} from '../../../models/ApiOrganisationseinheit';
 import {SharedDataServiceService} from '../../../services/shared-data-service.service';
 import {OrganisationseinheitService} from '../../../services/organisationseinheit.service';
@@ -44,7 +47,7 @@ import {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    MatSnackBarModule
+    MatProgressSpinnerModule
   ],
 
   providers: [
@@ -74,12 +77,12 @@ export class OrganisationeinheitenDetailsComponent {
     private fb: FormBuilder,
     private router: Router,
     private OrganisationseinheitService: OrganisationseinheitService,
-    private snackBar: MatSnackBar,
-    private errorHandlingService : ErrorHandlingService,
-    private personenService : PersonenService
+    private personenService : PersonenService,
+    private dialog: MatDialog
 
   ) {
     this.organisationseinheitForm = this.createForm();
+    this.isFormEditable = false;
     this.dateAdapter.setLocale('de-DE'); // Set German locale
 
   }
@@ -87,45 +90,43 @@ export class OrganisationeinheitenDetailsComponent {
 
   ngOnInit(): void {
     this.selectedOrganization = history.state?.selectedOrganisation;
+    this.loading = true;
 
-    if(this.selectedOrganization ){
+    if (this.selectedOrganization) {
       console.log('Selected-Org', this.selectedOrganization);
       this.isNewOrganisationseinheit = false;
-    }else{
+    } else {
       console.log('New Organisation ' + new Date());
       this.isNewOrganisationseinheit = true;
     }
 
     forkJoin([
-      this.OrganisationseinheitService.getActiveData(),
-      this.personenService.loadPersonen()
+      this.OrganisationseinheitService.getAllData().pipe(take(1)),
+      this.personenService.loadPersonen().pipe(take(1))
     ]).subscribe({
       next: ([orgData, personData]) => {
 
-        this.uebergeordneteEinheiten = orgData.sort((a, b) => {
+        this.uebergeordneteEinheiten = (orgData ?? []).slice().sort((a, b) => {
           const nameA = a.kurzBezeichnung?.toLowerCase() || '';
           const nameB = b.kurzBezeichnung?.toLowerCase() || '';
           return nameA.localeCompare(nameB);
         });
 
-        // Filter and sort leitungPersonen
-        this.leitungPersonen = personData
-          .filter(person => person.mitarbeiterart !== ApiMitarbeiterart.ZIVILDIENSTLEISTENDER)// 'ZIVILDIENSTLEISTENDER')
+        this.leitungPersonen = (personData ?? [])
+          .filter(person => person.mitarbeiterart !== ApiMitarbeiterart.ZIVILDIENSTLEISTENDER)
           .sort((a, b) => {
             const nameA = a.nachname?.toLowerCase() || '';
             const nameB = b.nachname?.toLowerCase() || '';
             return nameA.localeCompare(nameB);
           });
 
-        if (this.selectedOrganization) {
+        console.log('Loaded uebergeordneteEinheiten:', this.uebergeordneteEinheiten.length);
+        console.log('Loaded leitungPersonen:', this.leitungPersonen.length);
 
+        if (this.selectedOrganization) {
           this.selectedId = this.selectedOrganization.parent?.id;
           this.selectedParentId = this.selectedOrganization.leiter?.id;
-          console.log('ORG', this.selectedOrganization);
-          console.log('ORG-LEITER', this.selectedOrganization.leiter?.id);
 
-
-          console.log('selectedId-ORG', this.selectedId);
           const preselectedEinheit = this.uebergeordneteEinheiten.find(
             einheit => einheit.id === this.selectedId
           );
@@ -134,34 +135,48 @@ export class OrganisationeinheitenDetailsComponent {
             person => person.id === this.selectedParentId
           );
 
-
-
-          this.isNewOrganisationseinheit = false;
+          const emailValue = Array.isArray(this.selectedOrganization.email)
+            ? (this.selectedOrganization.email[0] ?? '')
+            : (this.selectedOrganization.email || '');
 
           this.organisationseinheitForm.patchValue({
             bezeichnung: this.selectedOrganization.bezeichnung || '',
             kurzbezeichnung: this.selectedOrganization.kurzBezeichnung || '',
             gueltigVon: this.selectedOrganization.gueltigVon ? new Date(this.selectedOrganization.gueltigVon) : null,
             gueltigBis: this.selectedOrganization.gueltigBis ? new Date(this.selectedOrganization.gueltigBis) : null,
-            leitung: preselectedLeiter,
-            uebergeordneteEinheitId: preselectedEinheit,// org.parent?.kurzBezeichnung || '',
-            testId : '',
-            email: this.selectedOrganization.email || '',
+            leitung: preselectedLeiter ?? this.selectedOrganization.leiter ?? null,
+            uebergeordneteEinheitId: preselectedEinheit ?? this.selectedOrganization.parent ?? null,
+            testId: '',
+            email: emailValue,
           });
+        }
 
-
-          this.organisationseinheitForm.disable();
-          this.isFormEditable = false;
-        } else {
+        if (this.isNewOrganisationseinheit) {
+          this.organisationseinheitForm.patchValue({
+            gueltigVon: new Date()
+          });
           this.organisationseinheitForm.enable();
           this.isFormEditable = true;
+        } else {
+          this.organisationseinheitForm.disable();
+          this.isFormEditable = false;
         }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading details data:', err);
+        if (this.isNewOrganisationseinheit) {
+          this.organisationseinheitForm.patchValue({
+            gueltigVon: new Date()
+          });
+          this.organisationseinheitForm.enable();
+          this.isFormEditable = true;
+        } else {
+          this.organisationseinheitForm.disable();
+          this.isFormEditable = false;
+        }
+        this.loading = false;
       }
-    });
-
-
-     this.OrganisationseinheitService.getActiveData().subscribe(data => {
-      this.dataSource = data; // <-- assign the emitted array to dataSource
     });
   }
 
@@ -210,17 +225,30 @@ export class OrganisationeinheitenDetailsComponent {
   onSubmit(): void {
     if (this.organisationseinheitForm.invalid) {
       this.markFormGroupTouched(this.organisationseinheitForm);
+
+      const missingFields: string[] = [];
+      const bezeichnungCtrl = this.organisationseinheitForm.get('bezeichnung');
+      const emailCtrl = this.organisationseinheitForm.get('email');
+      if (bezeichnungCtrl?.hasError('required')) {
+        missingFields.push('Bezeichnung');
+      }
+      if (emailCtrl?.hasError('email')) {
+        missingFields.push('gültige E-Mail-Adresse');
+      }
+
+      const detail = missingFields.length
+        ? `Bitte füllen Sie folgende Felder aus: ${missingFields.join(', ')}.`
+        : 'Bitte überprüfen Sie Ihre Eingaben.';
+
+      this.dialog.open(ErrorDialogComponent, {
+        data: { title: 'Pflichtfelder fehlen', detail },
+        panelClass: 'custom-dialog-width',
+      });
       return;
     }
 
     const formData = this.organisationseinheitForm.value;
     const id = this.selectedOrganization?.id;
-
-    console.log(' formData.leitung',  formData.leitung);
-    console.log(' formData.leitung-vorname',  formData.leitung.vorname);
-    console.log(' formData.leitung-nachname',  formData.leitung.nachname);
-    console.log(' formData.parent',  formData.uebergeordneteEinheitId);
-    console.log(' formData-Full',  formData);
 
 
     const newOrUpdatedOrg: ApiOrganisationseinheit = {
@@ -249,48 +277,93 @@ export class OrganisationeinheitenDetailsComponent {
     console.log('newOrUpdatedOrg', newOrUpdatedOrg);
     console.log('isNewOrganisationseinheit', this.isNewOrganisationseinheit);
 
+    const handleSaveSuccess = (savedOrg?: ApiOrganisationseinheit) => {
+      this.saving = false;
+      this.organisationseinheitForm.disable();
+      this.isFormEditable = false;
+
+      if (savedOrg) {
+        this.selectedOrganization = savedOrg;
+        this.isNewOrganisationseinheit = false;
+      }
+
+      this.dialog.open(InfoDialogComponent, {
+        data: {
+          title: 'Erfolgreich',
+          detail: 'Die Organisationseinheit wurde erfolgreich gespeichert.'
+        },
+        panelClass: 'custom-dialog-width',
+      });
+    };
+
+    const handleSaveError = (err: any, action: 'create' | 'update') => {
+      this.saving = false;
+      console.error(`Error ${action === 'create' ? 'creating' : 'updating'} Organisationseinheit:`, err);
+      this.dialog.open(ErrorDialogComponent, {
+        data: {
+          title: action === 'create' ? 'Fehler beim Erstellen' : 'Fehler beim Speichern',
+          detail: err?.error || 'Die Organisationseinheit konnte nicht gespeichert werden.'
+        },
+        panelClass: 'custom-dialog-width',
+      });
+    };
+
     if (this.isNewOrganisationseinheit) {
       this.OrganisationseinheitService.createOrganisation(newOrUpdatedOrg).subscribe({
-        next : (response : ApiOrganisationseinheit) => {
+        next: (response: ApiOrganisationseinheit) => {
           console.log('Organisationseinheit created successfully:', response);
-
+          handleSaveSuccess(response);
         },
-        error : (err) => {
-          console.error('Error by creating new Organisationseinheit: ', err);
-          this.errorHandlingService.handleAppError(err);
-        }
+        error: (err) => handleSaveError(err, 'create')
       });
     } else {
-
-      this.OrganisationseinheitService.updateOrganisation( newOrUpdatedOrg).subscribe({
+      this.OrganisationseinheitService.updateOrganisation(newOrUpdatedOrg).subscribe({
         next: (response) => {
           console.log('Organisationseinheit updated successfully:', response);
-          // Optionally refresh data or show success message
+          handleSaveSuccess(response);
         },
-        error: (err) => {
-          console.error('Error updating Organisationseinheit:', err);
-          this.errorHandlingService.handleAppError(err);
-        }
+        error: (err) => handleSaveError(err, 'update')
       });
-
-      //    this.OrganisationseinheitService.updateOrganization(newOrUpdatedOrg);
     }
-
-    this.saving = false;
-    this.organisationseinheitForm.disable();
-    this.isFormEditable = false;
-
-    this.snackBar.open('Daten wurden erfolgreich gespeichert', 'Schließen', {
-      duration: 3000,
-      verticalPosition: 'top',
-      horizontalPosition: 'center',
-    });
-
-    this.router.navigate(['/organisationseinheiten']);
   }
 
   onCancel(): void {
     this.router.navigate(['/organisationseinheiten']);
+  }
+
+  onCancelEdit(): void {
+    if (this.isNewOrganisationseinheit) {
+      this.router.navigate(['/organisationseinheiten']);
+      return;
+    }
+
+    this.organisationseinheitForm.reset();
+
+    if (this.selectedOrganization) {
+      const preselectedEinheit = this.uebergeordneteEinheiten.find(
+        einheit => einheit.id === this.selectedOrganization?.parent?.id
+      );
+      const preselectedLeiter = this.leitungPersonen.find(
+        person => person.id === this.selectedOrganization?.leiter?.id
+      );
+      const emailValue = Array.isArray(this.selectedOrganization.email)
+        ? (this.selectedOrganization.email[0] ?? '')
+        : (this.selectedOrganization.email || '');
+
+      this.organisationseinheitForm.patchValue({
+        bezeichnung: this.selectedOrganization.bezeichnung || '',
+        kurzbezeichnung: this.selectedOrganization.kurzBezeichnung || '',
+        gueltigVon: this.selectedOrganization.gueltigVon ? new Date(this.selectedOrganization.gueltigVon) : null,
+        gueltigBis: this.selectedOrganization.gueltigBis ? new Date(this.selectedOrganization.gueltigBis) : null,
+        leitung: preselectedLeiter ?? this.selectedOrganization.leiter ?? null,
+        uebergeordneteEinheitId: preselectedEinheit ?? this.selectedOrganization.parent ?? null,
+        testId: '',
+        email: emailValue,
+      });
+    }
+
+    this.organisationseinheitForm.disable();
+    this.isFormEditable = false;
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
