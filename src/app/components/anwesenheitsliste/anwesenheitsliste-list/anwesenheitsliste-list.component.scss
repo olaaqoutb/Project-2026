@@ -22,181 +22,81 @@ $tablet: 900px;
 
 .container {
   animation: fadeIn 0.4s ease-in;
+  /* Use a single font family across the whole component (header, search,
+     table, side menu, dialog menu trigger). */
+  font-family: shared.$font-family-base;
   width: 100%!important;
   max-width: 100%;
   overflow-x: hidden;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #338e9c;
-  padding: 5px 20px;
-  color: white;
-  border: 1px solid #0c4450;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-
-  @media (max-width: $phone) {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-}
-
-.menue {
-  margin: auto!important;
-  display: flex!important;
-  align-items: center!important;
-  justify-content: center!important;
-  background: rgba(255, 255, 255, 0.12) !important;
-  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
-  border-radius: 4px !important;
-  width: 40px !important;
-  height: 40px !important;
-}
-
-.menue:hover {
-  background: rgba(255, 255, 255, 0.25) !important;
-  transform: translateY(-1px)!important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15)!important;
-}
-
-.left-section, .center-section, .right-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.center-section {
-
-  .title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
-    margin: 0;
-
-    @media (max-width: $tablet) {
-      font-size: 1.2rem;
-    }
-
-    @media (max-width: $phone) {
-      font-size: 1rem;
-      text-align: center;
-    }
-  }
-}
-
-.neu-button {
-  background: linear-gradient(to right, #2c3e50, #34495e) !important;
-  transition: all 0.25s ease !important;
-  border-radius: 4px !important;
-  height: 40px !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white !important;
-
-  &:hover {
-    background: linear-gradient(to right, #3e5870, #4a5d78) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: $phone) {
-    width: 100%;
-  }
-}
-
-.right-section {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: $tablet) {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-}
-
-.checkbox-container {
-  display: flex;
-  cursor: pointer;
-
-
-  mat-checkbox {
-    color: white !important;
-
-    ::ng-deep {
-      .mdc-checkbox__background {
-        border-color: white !important;
-      }
-
-      .mdc-label {
-        color: white !important;
-        font-size: 14px;
-        white-space: nowrap;
-      }
-    }
-  }
-}
-
-.search-container {
-  display: flex;
-  border: 1px solid #FFFF;
-  align-items: center;
-  background-color: white;
-  border-radius: 6px;
-  height: 32px;
-  min-width: 200px;
-  max-width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 0 8px 0 16px;
-  transition: border-color 0.3s ease;
-
-  &:focus-within {
-    border-color: #ffffff !important;
-    box-shadow: none !important;
-  }
-
-  @media (max-width: $tablet) {
-    min-width: 180px;
-  }
-  .search-input {
-    border: none;
-    outline: none !important;
-    background: transparent;
-    font-size: 13px;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    color: #333;
-
-    &:focus {
-      outline: none !important;
-      box-shadow: none !important;
-      border-color: transparent !important;
-    }
-
-    &::placeholder {
-      color: #000;
-    }
-  }
-
-  .search-icon {
-    color: gray;
-    font-size: 20px;
-    margin-left: 6px;
-  }
-}
+/* Header / search / menue / neu-button styles unified globally
+   in src/styles/components/_list-header.scss */
 
 ::ng-deep .mat-mdc-form-field .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea) .mat-mdc-form-field-infix {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+}
+
+/* Inherit the component's font family on common Material widgets so the
+   header, search input, table cells, buttons, etc. all match. */
+.container {
+  input,
+  button,
+  .mat-mdc-button,
+  .mat-mdc-icon-button,
+  .mat-mdc-form-field,
+  .mat-mdc-cell,
+  .mat-mdc-header-cell,
+  .title,
+  .menu-button,
+  .neu-button {
+    font-family: inherit;
+  }
+}
+
+/* The mat-menu panel is rendered in a CDK overlay outside this component's
+   view tree, so we target it via its panelClass globally. Same font family
+   as the rest of the component, single uniform size for every item, with
+   a thin separator between items and MDI icons aligned with the labels. */
+::ng-deep .mat-mdc-menu-panel.attendance-menu {
+  font-family: shared.$font-family-base;
+  min-width: 220px;
+  border-radius: 6px;
+  padding: 4px 0;
+
+  .mat-mdc-menu-content { padding: 0; }
+
+  .mat-mdc-menu-item,
+  .mat-mdc-menu-item .mat-mdc-menu-item-text,
+  .mat-mdc-menu-item span {
+    font-family: shared.$font-family-base !important;
+    font-size: 14px !important;
+    line-height: 1.4;
+  }
+
+  .mat-mdc-menu-item {
+    height: 40px;
+    min-height: 40px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e5e9ec;        /* thin separator line */
+
+    &:last-child { border-bottom: none; }
+    &:hover     { background-color: #f4f7f9; }
+  }
+
+  /* MDI icon styling. */
+  .mat-mdc-menu-item .menu-icon.mdi {
+    font-size: 18px;
+    line-height: 1;
+    width: 18px;
+    height: 18px;
+    color: #2e4155;
+    flex-shrink: 0;
+  }
 }
 
 *:focus {
@@ -225,6 +125,28 @@ $tablet: 900px;
   .mat-table {
     width: 100%;
     min-width: 600px;
+    /* Force the browser to use the explicit column widths below instead of
+       auto-sizing to content — otherwise columns shift when the search
+       filter narrows the data. */
+    table-layout: fixed;
+  }
+
+  /* Fixed column widths — applied via the matColumnDef classes Angular
+     Material auto-generates on every <th>/<td> (.mat-column-<name>). */
+  ::ng-deep {
+    .mat-column-icon          { width: 40px;  min-width: 40px;  max-width: 40px; }
+    .mat-column-familienname  { width: 22%; }
+    .mat-column-vorname       { width: 18%; }
+    .mat-column-abwesendBis   { width: 18%; }
+    .mat-column-mitarbeiterart{ width: 18%; }
+    .mat-column-actions       { width: 90px; min-width: 90px; max-width: 90px; }
+
+    /* Long names shouldn't blow out the cell — clip + ellipsis. */
+    .mat-mdc-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   ::ng-deep .mat-mdc-header-cell {

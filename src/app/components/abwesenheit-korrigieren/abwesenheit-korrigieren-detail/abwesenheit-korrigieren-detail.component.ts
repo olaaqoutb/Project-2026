@@ -1,4 +1,5 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
+import {TimeBoxComponent} from '../../../shared/components/time-box/time-box.component';
 import {
   AbstractControl,
   FormBuilder,
@@ -86,9 +87,8 @@ export const DATE_FORMATS = {
     MatNativeDateModule,
 
     MatTableModule,
-     MatTooltipModule,
-
-
+    MatTooltipModule,
+    TimeBoxComponent,
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },

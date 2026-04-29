@@ -327,7 +327,7 @@ if (hideEmptyMonths && isEmpty && !isCurrentMonth && !isPrevMonth) {
     monthNode.children.sort((a, b) => {
       const dateA = a.dateKey ?? '';
       const dateB = b.dateKey ?? '';
-      return dateB.localeCompare(dateA);
+      return dateA.localeCompare(dateB);
     });
   }
 

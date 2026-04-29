@@ -120,88 +120,24 @@
           <label class="field-label start-label">Start [Stunde]:</label>
 
           <!-- Hours -->
-          <div class="time-box">
-            <button
-              type="button"
-              class="time-btn dash add"
-              (click)="adjustTime('start', 'hour', 1)"
-              [disabled]="!isEditing && !isCreatingNew"
-            >
-              {{
-                abwesenheitForm.get("startStunde")?.value + 1 > 24
-                  ? 0
-                  : abwesenheitForm.get("startStunde")?.value + 1
-              }}
-            </button>
-            <input
-              type="text"
-              inputmode="numeric"
-              class="time-value-display time-value-input"
-              [value]="abwesenheitForm.get('startStunde')?.value || 0"
-              [disabled]="!isEditing && !isCreatingNew"
-              (input)="onTimeInput('startStunde', $event, 24)"
-              (wheel)="onTimeWheel('start', 'hour', $event)"
-              maxlength="2"
-            />
-            <button
-              type="button"
-              class="time-btn dash minus"
-              (click)="adjustTime('start', 'hour', -1)"
-              [disabled]="!isEditing && !isCreatingNew"
-            >
-              {{
-                abwesenheitForm.get("startStunde")?.value - 1 < 0
-                  ? 24
-                  : abwesenheitForm.get("startStunde")?.value - 1
-              }}
-            </button>
-          </div>
+          <app-time-box
+            field="startStunde"
+            [value]="abwesenheitForm.get('startStunde')?.value || 0"
+            [max]="24"
+            [disabled]="!isEditing && !isCreatingNew"
+            (valueChange)="abwesenheitForm.get('startStunde')?.patchValue($event); abwesenheitForm.updateValueAndValidity()"
+          />
 
           <!-- Minutes -->
           <div class="minute-wrapper form-row-custom start">
             <label class="inner-label">[Minuten]:</label>
-            <div class="time-box">
-              <button
-                type="button"
-                class="time-btn dash add"
-                (click)="adjustTime('start', 'minute', 1)"
-                [disabled]="
-                  (!isEditing && !isCreatingNew) ||
-                  abwesenheitForm.get('startStunde')?.value === 24
-                "
-              >
-                {{
-                  abwesenheitForm.get("startMinuten")?.value + 1 > 59
-                    ? 0
-                    : abwesenheitForm.get("startMinuten")?.value + 1
-                }}
-              </button>
-              <input
-                type="text"
-                inputmode="numeric"
-                class="time-value-display time-value-input"
-                [value]="abwesenheitForm.get('startMinuten')?.value || 0"
-                [disabled]="(!isEditing && !isCreatingNew) || abwesenheitForm.get('startStunde')?.value === 24"
-                (input)="onTimeInput('startMinuten', $event, 59)"
-                (wheel)="onTimeWheel('start', 'minute', $event)"
-                maxlength="2"
-              />
-              <button
-                type="button"
-                class="time-btn dash minus"
-                (click)="adjustTime('start', 'minute', -1)"
-                [disabled]="
-                  (!isEditing && !isCreatingNew) ||
-                  abwesenheitForm.get('startStunde')?.value === 24
-                "
-              >
-                {{
-                  abwesenheitForm.get("startMinuten")?.value - 1 < 0
-                    ? 59
-                    : abwesenheitForm.get("startMinuten")?.value - 1
-                }}
-              </button>
-            </div>
+            <app-time-box
+              field="startMinuten"
+              [value]="abwesenheitForm.get('startMinuten')?.value || 0"
+              [max]="59"
+              [disabled]="(!isEditing && !isCreatingNew) || abwesenheitForm.get('startStunde')?.value === 24"
+              (valueChange)="abwesenheitForm.get('startMinuten')?.patchValue($event); abwesenheitForm.updateValueAndValidity()"
+            />
           </div>
         </div>
         <!-- End Date Row -->
@@ -230,88 +166,24 @@
           <label class="field-label start-label">Ende [Stunde]:</label>
 
           <!-- Hours -->
-          <div class="time-box">
-            <button
-              type="button"
-              class="time-btn dash add"
-              (click)="adjustTime('end', 'hour', 1)"
-              [disabled]="!isEditing && !isCreatingNew"
-            >
-              {{
-                abwesenheitForm.get("endeStunde")?.value + 1 > 24
-                  ? 0
-                  : abwesenheitForm.get("endeStunde")?.value + 1
-              }}
-            </button>
-            <input
-              type="text"
-              inputmode="numeric"
-              class="time-value-display time-value-input"
-              [value]="abwesenheitForm.get('endeStunde')?.value || 0"
-              [disabled]="!isEditing && !isCreatingNew"
-              (input)="onTimeInput('endeStunde', $event, 24)"
-              (wheel)="onTimeWheel('end', 'hour', $event)"
-              maxlength="2"
-            />
-            <button
-              type="button"
-              class="time-btn dash minus"
-              (click)="adjustTime('end', 'hour', -1)"
-              [disabled]="!isEditing && !isCreatingNew"
-            >
-              {{
-                abwesenheitForm.get("endeStunde")?.value - 1 < 0
-                  ? 24
-                  : abwesenheitForm.get("endeStunde")?.value - 1
-              }}
-            </button>
-          </div>
+          <app-time-box
+            field="endeStunde"
+            [value]="abwesenheitForm.get('endeStunde')?.value || 0"
+            [max]="24"
+            [disabled]="!isEditing && !isCreatingNew"
+            (valueChange)="abwesenheitForm.get('endeStunde')?.patchValue($event); abwesenheitForm.updateValueAndValidity()"
+          />
 
           <!-- Minutes -->
           <div class="minute-wrapper form-row-custom start">
             <label class="inner-label">[Minuten]:</label>
-            <div class="time-box">
-              <button
-                type="button"
-                class="time-btn dash add"
-                (click)="adjustTime('end', 'minute', 1)"
-                [disabled]="
-                  (!isEditing && !isCreatingNew) ||
-                  abwesenheitForm.get('endeStunde')?.value === 24
-                "
-              >
-                {{
-                  abwesenheitForm.get("endeMinuten")?.value + 1 > 59
-                    ? 0
-                    : abwesenheitForm.get("endeMinuten")?.value + 1
-                }}
-              </button>
-              <input
-                type="text"
-                inputmode="numeric"
-                class="time-value-display time-value-input"
-                [value]="abwesenheitForm.get('endeMinuten')?.value || 0"
-                [disabled]="(!isEditing && !isCreatingNew) || abwesenheitForm.get('endeStunde')?.value === 24"
-                (input)="onTimeInput('endeMinuten', $event, 59)"
-                (wheel)="onTimeWheel('end', 'minute', $event)"
-                maxlength="2"
-              />
-              <button
-                type="button"
-                class="time-btn dash"
-                (click)="adjustTime('end', 'minute', -1)"
-                [disabled]="
-                  (!isEditing && !isCreatingNew) ||
-                  abwesenheitForm.get('endeStunde')?.value === 24
-                "
-              >
-                {{
-                  abwesenheitForm.get("endeMinuten")?.value - 1 < 0
-                    ? 59
-                    : abwesenheitForm.get("endeMinuten")?.value - 1
-                }}
-              </button>
-            </div>
+            <app-time-box
+              field="endeMinuten"
+              [value]="abwesenheitForm.get('endeMinuten')?.value || 0"
+              [max]="59"
+              [disabled]="(!isEditing && !isCreatingNew) || abwesenheitForm.get('endeStunde')?.value === 24"
+              (valueChange)="abwesenheitForm.get('endeMinuten')?.patchValue($event); abwesenheitForm.updateValueAndValidity()"
+            />
           </div>
         </div>
 

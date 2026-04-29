@@ -205,8 +205,8 @@
       <!-- Produkt Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Produkt</label>
-        <mat-form-field appearance="outline" class="field-input" panelClass="drop-down">
-          <mat-select formControlName="produkt" [compareWith]="compareString">
+        <mat-form-field appearance="outline" class="field-input" >
+          <mat-select formControlName="produkt" [compareWith]="compareString" panelClass="drop-down">
             <mat-option
               *ngFor="let produkt of produktOptions"
               [value]="produkt.kurzName"
@@ -235,7 +235,8 @@
       <!-- Buchungspunkt Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Buchungspunkt</label>
-        <mat-form-field appearance="outline" class="field-input">
+        <mat-form-field appearance="outline" class="field-input"
+          [class.field-empty]="isAlarmFieldEmpty('buchungspunkt') && alarmSaveAttempted">
           <mat-select formControlName="buchungspunkt" [compareWith]="compareBuchungspunkt" panelClass="drop-down">
             <mat-option
               *ngFor="let punkt of buchungspunktOptions"
@@ -250,7 +251,8 @@
        <!-- Tätigkeit Dropdown -->
       <div class="form-field-group">
         <label class="field-label">Tätigkeit</label>
-        <mat-form-field appearance="outline" class="field-input">
+        <mat-form-field appearance="outline" class="field-input"
+          [class.field-empty]="isAlarmFieldEmpty('taetigkeit') && alarmSaveAttempted">
           <mat-select formControlName="taetigkeit" [compareWith]="compareTaetigkeit" panelClass="drop-down">
             <mat-option
               *ngFor="let taetigkeit of taetigkeitOptions"
@@ -265,7 +267,9 @@
       <!-- NO DATUM FIELD - it's hidden, using parent day's date -->
 
       <!-- Duration Section: shown for ARBEITSZEIT (default) -->
-      <div class="time-section" *ngIf="!isAlarmRemote()" [class.time-section-locked]="!canEditAlarmTime">
+      <div class="time-section" *ngIf="!isAlarmRemote()"
+        [class.time-section-locked]="!canEditAlarmTime"
+        [class.duration-empty]="isAlarmDauerEmpty && alarmSaveAttempted">
         <div class="time-group">
           <label class="time-label">Dauer [Stunden]</label>
           <div class="time-inputs-horizontal">

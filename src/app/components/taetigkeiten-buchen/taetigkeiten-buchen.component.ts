@@ -725,6 +725,20 @@ private formatDateForBackend(date: Date): string {
     this.alarmSaveAttempted = true;
     this.formValidationService.validateAllFields(this.alarmForm);
 
+    const missing: string[] = [];
+    if (this.isAlarmFieldEmpty('buchungspunkt')) missing.push('Buchungspunkt');
+    if (this.isAlarmFieldEmpty('taetigkeit')) missing.push('Tätigkeit');
+    if (!this.isAlarmRemote() && this.isAlarmDauerEmpty) missing.push('Dauer');
+    if (this.isAlarmAnmerkungEmpty) missing.push('Anmerkung');
+
+    if (missing.length > 0) {
+      this.openErrorDialog(
+        'Pflichtfelder fehlen',
+        `Bitte füllen Sie folgende Pflichtfelder aus: ${missing.join(', ')}.`
+      );
+      return;
+    }
+
     if (!this.alarmForm.valid) {
       this.showAlarmFormValidationErrors();
       return;
@@ -1164,6 +1178,20 @@ private performDelete(): void {
   get isAlarmAnmerkungEmpty(): boolean {
     const value = this.alarmForm.get('anmerkung')?.value;
     return !value || value.toString().trim() === '';
+  }
+
+  isAlarmFieldEmpty(name: string): boolean {
+    const v = this.alarmForm?.get(name)?.value;
+    if (v === null || v === undefined) return true;
+    if (typeof v === 'string') return v.trim() === '';
+    if (typeof v === 'object' && Object.keys(v).length === 0) return true;
+    return false;
+  }
+
+  get isAlarmDauerEmpty(): boolean {
+    const h = Number(this.alarmForm?.get('durationStunde')?.value || 0);
+    const m = Number(this.alarmForm?.get('durationMinuten')?.value || 0);
+    return h === 0 && m === 0;
   }
 
   getAlarmHour(timeType: 'anmeldezeit' | 'abmeldezeit' | 'duration' = 'duration'): number {

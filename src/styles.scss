@@ -1,6 +1,15 @@
 @use "styles/components/index" as *;
 @import "material-icons/iconfont/material-icons.css";
 @import "@mdi/font/css/materialdesignicons.css";
+
+/* mat-select panel is rendered at the CDK overlay root, outside component
+   view-encapsulation. Width rules for panelClass="drop-down" must live here. */
+.mat-mdc-select-panel.drop-down,
+.cdk-overlay-pane .drop-down.mat-mdc-select-panel {
+  min-width: 90% !important;
+  width: 90% !important;
+  margin-left: 15px !important;
+}
 // .custom-dropdown-panel {
 //   position:relative!important;
 //  top: 80px !important;
@@ -19,9 +28,15 @@ html {
 html,
 body {
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: Roboto, sans-serif;
   background-color: #f5f5f5;
   overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  font-family: Roboto, sans-serif;
 }
 
 /* Layout Structure */
@@ -86,6 +101,17 @@ app-freigabe-historisch-list .table-content {
   border-radius: 4px !important;
   color: white !important;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Disable the entrance "fadeIn" animation that several list components
+   apply to their root container. The slight upward slide on every route
+   change was distracting; remove it everywhere in one place. */
+.fade-in,
+.container.fade-in,
+.section-content {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* Material Icons Fix */

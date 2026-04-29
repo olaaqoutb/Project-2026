@@ -274,12 +274,6 @@
   box-sizing: border-box !important;
 }
 
-::ng-deep .drop-down {
-  min-width: 90% !important;
-  width: 90% !important;
-  margin-left: 15px !important;
-}
-
 ::ng-deep .drop-down-date {
   min-width: 270px !important;
   max-width: 270px !important;
@@ -323,4 +317,14 @@
   .time-group {
     flex-wrap: wrap;
   }
+}
+.drop-down.mat-mdc-select-panel {
+  min-width: 90% !important;
+  width: 90% !important;
+  margin-left: 15px !important;
+}
+.cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel{
+min-width: 90px !important;
+  width: 90px !important;
+  margin-left: 15px !important;
 }

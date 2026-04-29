@@ -54,8 +54,12 @@
 
         <div class="form-box left-box">
           <div class="form-row">
-            <label class="field-label" for="bezeichnung">Bezeichnung:</label>
-            <mat-form-field appearance="outline" class="field-input boreder">
+            <label class="field-label required" for="bezeichnung">Bezeichnung:</label>
+            <mat-form-field
+              appearance="outline"
+              class="field-input boreder"
+              [class.field-empty]="isFieldEmpty('bezeichnung')"
+            >
               <input
                 id="bezeichnung"
                 matInput
@@ -70,16 +74,22 @@
           </div>
 
           <div class="form-row">
-            <label class="field-label" for="kurzbezeichnung">Kurzbezeichnung:</label>
-            <mat-form-field appearance="outline" class="field-input boreder">
+            <label class="field-label required" for="kurzbezeichnung">Kurzbezeichnung:</label>
+            <mat-form-field
+              appearance="outline"
+              class="field-input boreder"
+              [class.field-empty]="isFieldEmpty('kurzbezeichnung')"
+            >
               <input
                 id="kurzbezeichnung"
                 matInput
                 formControlName="kurzbezeichnung"
                 placeholder="Kurzbezeichnung eingeben"
-                                class="border"
-
+                class="border"
               />
+              <mat-error *ngIf="organisationseinheitForm.get('kurzbezeichnung')?.hasError('required')">
+                Kurzbezeichnung ist erforderlich
+              </mat-error>
             </mat-form-field>
           </div>
 
@@ -123,19 +133,26 @@
 
         <div class="form-box right-box">
           <div class="form-row date-row">
-            <label class="field-label" for="gueltigVon">Gültig von:</label>
-            <mat-form-field appearance="outline" class="field-input date-input boreder">
+            <label class="field-label required" for="gueltigVon">Gültig von:</label>
+            <mat-form-field
+              appearance="outline"
+              class="field-input date-input boreder"
+              [class.field-empty]="isFieldEmpty('gueltigVon')"
+            >
               <input
                 id="gueltigVon"
                 matInput
+                appGermanDateInput
                 [matDatepicker]="startDatePicker"
                 formControlName="gueltigVon"
                 placeholder="TT.MM.JJJJ"
-                                class="border"
-
+                class="border"
               />
               <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
               <mat-datepicker #startDatePicker></mat-datepicker>
+              <mat-error *ngIf="organisationseinheitForm.get('gueltigVon')?.hasError('required')">
+                Gültig von ist erforderlich
+              </mat-error>
             </mat-form-field>
 
             <label class="field-label bis-label" for="gueltigBis">bis:</label>
@@ -143,6 +160,7 @@
               <input
                 id="gueltigBis"
                 matInput
+                appGermanDateInput
                 [matDatepicker]="endDatePicker"
                 formControlName="gueltigBis"
                 placeholder="TT.MM.JJJJ"
@@ -155,17 +173,23 @@
           </div>
 
           <div class="form-row">
-            <label class="field-label" for="email">Reporting Email:</label>
-            <mat-form-field appearance="outline" class="field-input boreder">
+            <label class="field-label required" for="email">Reporting Email:</label>
+            <mat-form-field
+              appearance="outline"
+              class="field-input boreder"
+              [class.field-empty]="isFieldEmpty('email')"
+            >
               <input
                 id="email"
                 matInput
                 type="email"
                 formControlName="email"
                 placeholder="E-Mail-Adresse eingeben"
-                                class="border"
-
+                class="border"
               />
+              <mat-error *ngIf="organisationseinheitForm.get('email')?.hasError('required')">
+                Reporting Email ist erforderlich
+              </mat-error>
               <mat-error *ngIf="organisationseinheitForm.get('email')?.hasError('email')">
                 Bitte geben Sie eine gültige E-Mail-Adresse ein
               </mat-error>

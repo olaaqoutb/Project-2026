@@ -11,7 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule, MatSort, Sort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { VertragService } from '../../../services/vertrag.service';
+import { VertraegeService } from '../../../services/vertraege.service';
 
 @Component({
   selector: 'app-vertrag-list-2',
@@ -31,14 +31,13 @@ import { VertragService } from '../../../services/vertrag.service';
   styleUrl: './vertrag-list-2.component.scss'
 })
 export class VertragList2Component {
-  dataSource = new MatTableDataSource<any>([]);
+ dataSource = new MatTableDataSource<any>([]);
 
   produkte: any[] = [];
   searchTerm = '';
   showInactive = false;
   displayedColumns: string[] = ['verbraucht-werte-laden', 'zusatz', 'geplan', 'org-Einheit', 'verbrauchtDate'];
 
-  // Custom sorting state - changed to match the first example
   sortState: { [key: string]: 'asc' | 'desc' } = {
     'verbraucht-werte-laden': 'asc',
     zusatz: 'asc',
@@ -47,13 +46,12 @@ export class VertragList2Component {
     verbrauchtDate: 'desc'
   };
 
-  constructor(private vertragservice : VertragService,
-              private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private dummyService: VertraegeService) {
     this.loadData();
   }
 
   loadData() {
-    this.vertragservice.getVetraegeData1().subscribe({
+    this.dummyService.getVertraege().subscribe({
       next: (data) => {
         console.log('Successfully fetched data:', data);
         this.produkte = data;
@@ -66,10 +64,6 @@ export class VertragList2Component {
       },
     });
   }
-
-
-
-  // Custom sort function - updated to match the first example
   toggleSort(field: string) {
     // Toggle direction
     this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
@@ -100,21 +94,19 @@ export class VertragList2Component {
       case 'org-Einheit':
         return (item.vertragsverantwortlicher?.organisationseinheit?.kurzBezeichnung || '').toString().toLowerCase();
       case 'verbrauchtDate':
-        // Add your date parsing logic here if needed
         return (item[field] || '').toString().toLowerCase();
       default:
         return (item[field] || '').toString().toLowerCase();
     }
   }
 
-  // Get sort icon based on column state
   getSortIcon(column: string): string {
     if (this.sortState[column] === 'asc') {
       return 'keyboard_arrow_up';
     } else if (this.sortState[column] === 'desc') {
       return 'keyboard_arrow_down';
     }
-    return 'swap_vert'; // Default icon
+    return 'swap_vert';
   }
 
   filterData() {
@@ -129,16 +121,12 @@ export class VertragList2Component {
     });
 
     this.dataSource.data = filtered;
-
-    // Re-apply sorting if any column is sorted
     const sortedColumns = Object.keys(this.sortState).filter(key =>
-      this.sortState[key] !== 'desc' // Only reapply if a column has a specific sort
+      this.sortState[key] !== 'desc'
     );
 
     if (sortedColumns.length > 0) {
-      // Reapply the first sorted column's sort
       this.toggleSort(sortedColumns[0]);
-      // Toggle again to get back to the original direction
       this.toggleSort(sortedColumns[0]);
     }
   }
@@ -146,19 +134,16 @@ export class VertragList2Component {
   onCheckboxChange() {
     this.filterData();
   }
-
-  // clearSearch() {
-  //   this.searchTerm = '';
-  //   this.filterData();
+  // addProduct() {
+  //   alert('Added');
   // }
-
-  addProduct() {
-    alert('Added');
-  }
 
   goToDetails(row: any) {
     this.router.navigate(['/vertraege-2', row.id], {
       state: { produktData: row }
     });
+  }
+  addProduct(): void {
+    this.router.navigate(['/vertraege-2/new']);
   }
 }

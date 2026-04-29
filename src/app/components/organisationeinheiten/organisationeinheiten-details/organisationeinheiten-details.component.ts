@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -30,6 +31,7 @@ import {CustomDateAdapter} from '../../../services/custom-date-adapter.service';
 import {
   DATE_FORMATS
 } from '../../bereitschaftszeiten/bereitschaftszeiten-details/bereitschaftszeiten-details.component';
+import { GermanDateInputDirective } from '../../../shared/directives/german-date-input.directive';
 
 
 @Component({
@@ -47,7 +49,8 @@ import {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    GermanDateInputDirective
   ],
 
   providers: [
@@ -64,6 +67,9 @@ export class OrganisationeinheitenDetailsComponent {
   isFormEditable = false;
   loading = false;
   saving = false;
+  /** Set once the user clicks Save; required-field highlighting only
+   *  appears after this becomes true. Cleared again on cancel/edit. */
+  submitted = false;
   selectedOrganization: ApiOrganisationseinheit | null = null;
 
   dataSource: ApiOrganisationseinheit[] = [];
@@ -163,7 +169,7 @@ export class OrganisationeinheitenDetailsComponent {
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error loading details data:', err);
         if (this.isNewOrganisationseinheit) {
           this.organisationseinheitForm.patchValue({
@@ -182,11 +188,14 @@ export class OrganisationeinheitenDetailsComponent {
 
 
 
-  compareOrganisationEinheit(o1: any, o2: any): boolean {
+  compareOrganisationEinheit(
+    o1: ApiOrganisationseinheit | null,
+    o2: ApiOrganisationseinheit | null
+  ): boolean {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
 
-  comparePerson(o1: any, o2: any): boolean {
+  comparePerson(o1: ApiPerson | null, o2: ApiPerson | null): boolean {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
 
@@ -196,26 +205,34 @@ export class OrganisationeinheitenDetailsComponent {
   createForm(): FormGroup {
     return this.fb.group({
       bezeichnung: ['', Validators.required],
-      kurzbezeichnung: [''],
+      kurzbezeichnung: ['', Validators.required],
       hierarchieEbene: [''],
       uebergeordneteEinheitId: [null],
       parent: [null],
 
-      gueltigVon: [''],
+      gueltigVon: ['', Validators.required],
       gueltigBis: [''],
       leitung: [null],
       kostenstelle: [''],
 
       fax: [''],
-      email: ['', Validators.email],
+      email: ['', [Validators.required, Validators.email]],
       testId : ['']
     });
+  }
+
+  /** Light-red highlight only appears after the user has clicked Save once. */
+  isFieldEmpty(name: string): boolean {
+    if (!this.submitted) return false;
+    const ctrl = this.organisationseinheitForm.get(name);
+    return !!ctrl && ctrl.invalid;
   }
 
   onEditOrSubmit(): void {
     if (!this.isFormEditable) {
       this.organisationseinheitForm.enable();
       this.isFormEditable = true;
+      this.submitted = false;
     } else {
       this.onSubmit();
     }
@@ -223,16 +240,24 @@ export class OrganisationeinheitenDetailsComponent {
 
 
   onSubmit(): void {
+    this.submitted = true;
     if (this.organisationseinheitForm.invalid) {
       this.markFormGroupTouched(this.organisationseinheitForm);
 
       const missingFields: string[] = [];
-      const bezeichnungCtrl = this.organisationseinheitForm.get('bezeichnung');
-      const emailCtrl = this.organisationseinheitForm.get('email');
-      if (bezeichnungCtrl?.hasError('required')) {
+      const f = this.organisationseinheitForm;
+      if (f.get('bezeichnung')?.hasError('required')) {
         missingFields.push('Bezeichnung');
       }
-      if (emailCtrl?.hasError('email')) {
+      if (f.get('kurzbezeichnung')?.hasError('required')) {
+        missingFields.push('Kurzbezeichnung');
+      }
+      if (f.get('gueltigVon')?.hasError('required')) {
+        missingFields.push('Gültig von');
+      }
+      if (f.get('email')?.hasError('required')) {
+        missingFields.push('Reporting Email');
+      } else if (f.get('email')?.hasError('email')) {
         missingFields.push('gültige E-Mail-Adresse');
       }
 
@@ -279,6 +304,7 @@ export class OrganisationeinheitenDetailsComponent {
 
     const handleSaveSuccess = (savedOrg?: ApiOrganisationseinheit) => {
       this.saving = false;
+      this.submitted = false;
       this.organisationseinheitForm.disable();
       this.isFormEditable = false;
 
@@ -296,7 +322,7 @@ export class OrganisationeinheitenDetailsComponent {
       });
     };
 
-    const handleSaveError = (err: any, action: 'create' | 'update') => {
+    const handleSaveError = (err: HttpErrorResponse, action: 'create' | 'update') => {
       this.saving = false;
       console.error(`Error ${action === 'create' ? 'creating' : 'updating'} Organisationseinheit:`, err);
       this.dialog.open(ErrorDialogComponent, {
@@ -332,6 +358,7 @@ export class OrganisationeinheitenDetailsComponent {
   }
 
   onCancelEdit(): void {
+    this.submitted = false;
     if (this.isNewOrganisationseinheit) {
       this.router.navigate(['/organisationseinheiten']);
       return;

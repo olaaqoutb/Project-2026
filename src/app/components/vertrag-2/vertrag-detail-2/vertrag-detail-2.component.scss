@@ -7,7 +7,7 @@
 
 @media (min-height: 1000px) {
   .form-container {
-    height: auto!important; /* يقل الطول شوية */
+    height: auto!important;
   }
   div.main-container{  height: calc(120vh - 150px);overflow: scroll!important;}
 
@@ -47,36 +47,42 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .form-content { padding: 7px 0 0 0 !important; margin-right: 50px;height: auto!important; }
 
-.form-grid-container { display: flex; gap: 4rem; max-width: 910px; margin: 0 78px; }
+.form-grid-container {
+  display: flex;
+   max-width: 1000px;
+   margin: 0 0 0 78px;
+  }
 
 .form-column { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; width: 50%;padding-bottom:10px ; }
 .form-column-second{position:relative;left:15%;}
-.field-row { display: flex!important; align-items: center!important; gap: 1rem; height: 33px; }
+.field-row { display: flex!important; align-items: center!important; gap: 1rem; height: 40px; }
 
-.field-label { width: 95px; font-weight: 500; color: #555; flex-shrink: 0; }
+.field-label { width: 110px; font-weight: 500; color: #555; flex-shrink: 0; }
 
 .field-label.required::after { content: " *"; color: #e74c3c; }
 
-.flex-field { flex: 1; min-width: 0;}
+.flex-field { min-width: 0;}
 
 .organ-isation-field { margin: 30px!important; margin-right: 40px!important; position: relative!important; right: 31px!important; }
 
 .anmerk-isation-field { margin-top: 40px!important; }
 
-.checkbox-row { height: 40px; box-sizing: border-box; align-items: center; width:200px; position: relative;right: 4%; }
-.field-label-aktiv{position: relative;left:4%;
-}
-// .input-height{height:25px!important}
+.checkbox-row { height: 40px; box-sizing: border-box; align-items: center; width:200px; }
+.checkbox-row-bottom { height: 40px; box-sizing: border-box; align-items: center; width:200px;position: relative;right:12px}
+
+// .field-label-aktiv{position: relative;left:4%;
+// }
 
 .checkbox-row2 { margin-left:100px; }
 .width{ width: 148px!important;}
-.width2{width: 122px;}
+.width2{width: 137px;}
 #width{position:relative;left:100px}
-.width3{display: inline-block ;min-width: 120px;}
-.person-input{margin-left: 20px;}
+// .width3{display: inline-block ;min-width: 125px;}
+// .person-input{margin-left: 83px;}
 .form-row input{width:300px}
 .form-field mat-select {width:300px!important}
 .form-field textarea {width:300px!important ;margin-top: 50px!important;}
+.person-width{ width: 350px!important;}
 // #volumen{width:800px!important}
 .date-pair-container {
   display: flex; align-items: center; flex: 1; min-width: 0;
@@ -85,18 +91,15 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 .check-abov{padding-left:7px}
 .date-abov-icon{position:relative;right:44px;}
-// ======================= bottom sectiion=======================
-///main container///
 .details-panes-container { display: flex; gap: 3px; padding: 0 5px 2rem 5px; background: white; }
 
-/* ======================================================= */
-/*  MEDIA QUERY FOR A STANDARD HP LAPTOP (FULL HD SCREEN)  */
-/* ======================================================= */
+
 @media screen and (width: 1920px) and (height: 1080px) {
   .details-panes-container { height: 880px!important; }
 }
 .flex-field-start{position:relative;right:2px;}
 .position-details-container .position-details-content mat-card { height: 350px!important; }
+// .person-input{margin-left: 0px;}
 .position-details-container .position-details-content{
   padding:0!important;
 }
@@ -129,120 +132,27 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .scrollable-container {
-  flex-grow: 1;
-  overflow-y: auto;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-top: 0;
-  padding: 0;
-  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-  /* Use the browser's default gray scrollbar (same as personen-detail). */
+  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: #f1f1f1; }
+  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
 }
 
-/* Dedicated spacer at the bottom of the tree, rendered as a real element so
-   it survives flex/overflow quirks where padding-bottom on a scroll container
-   can be collapsed. Guarantees the last row is fully visible at any height. */
-.tree-bottom-spacer {
-  height: 60px;
-  flex-shrink: 0;
-}
-
-.positionen-list-inner {
-  display: block;
-  padding-bottom: 0;
-}
-
-/* Tree rows styled to match personen-detail Vertragsdaten tree. */
 .position-item {
-  display: flex;
-  align-items: flex-start; /* icon lines up with the title (first line) */
-  gap: 10px;
-  padding: 4px 12px;
-  border-bottom: 1px solid #e0e0e0;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-
-  &:hover { background-color: #f4f8fa; }
-
-  .tree-level-icon {
-    font-size: 17px;
-    line-height: 1.2;      /* match .position-title line-height so baselines align */
-    margin-right: 4px;
-    color: #314559;
-    flex-shrink: 0;
-    padding-top: 1px;      /* visual nudge to sit on the title baseline */
-
-    &.icon-inactive { color: #c62828; }
+  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;height:47px;
+  &:hover { background-color: #f7f7f7; }
+  .position-icon {
+    font-size: 18px !important; margin-right: 12px;position:relative;bottom:10px;
+    &.active { color: green; }
+    &.inactive { color: darkred; }
   }
-
   .position-info {
     flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    .position-title { font-weight: 500; color: #333; }
+    .position-dates { font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
   }
-
-  .position-title {
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 1.2;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .position-extra {
-    font-size: 12px;
-    line-height: 1.2;
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    span + span { margin-left: 10px; } /* spacing between the removed-pipe segments */
-
-    .detail-icon {
-      font-size: 14px;
-      margin-right: 4px;
-      color: #666;
-      vertical-align: middle;
-    }
-  }
-
-  .sync-icon {
-    color: #555;
-    font-size: 18px;
-    line-height: 1;
-    margin-left: auto;
-    flex-shrink: 0;
-    padding: 4px;
-    border-radius: 4px;
-    align-self: center; /* keep action icon centered vertically, not top-aligned */
-
-    &.mdi-flip-h { transform: scaleX(-1); }
-
-    &:hover:not(.disabled-icon) {
-      background-color: rgba(51, 142, 156, 0.1);
-      color: #338e9c;
-    }
-    &.disabled-icon { color: #c0c0c0; cursor: not-allowed; }
-  }
-
-  &.selected-item {
-    background-color: #e3f2fd !important;
-    border-left: 4px solid #338E9C !important;
-    padding-left: 8px;
-  }
-}
-
-/* Remove the gap before the first row of the tree. */
-.positionen-list.scrollable-container > :first-child > :first-child .position-item:first-of-type,
-.positionen-list.scrollable-container > :first-child .position-item:first-of-type {
-  border-top: none;
-  margin-top: 0;
+  .sync-icon { color: #555; font-size: 25px!important;border: 1px solid black;}
+  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; }
 }
 
 .position-detail-container {
@@ -296,8 +206,33 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
 
-/* Duplicate .scrollable-container / .position-item rules removed —
-   consolidated styling lives above. */
+.scrollable-container {
+  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: #f1f1f1; }
+  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
+}
+
+.position-item {
+  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;
+  &:hover { background-color: #f7f7f7; }
+  .expand-icon { font-size: 20px; margin-right: 4px; color: #666; flex-shrink: 0; }
+  .expand-icon-placeholder { padding-left:17px; width: 24px; flex-shrink: 0; }
+  .position-icon {
+    font-size: 20px; margin-right: 8px; flex-shrink: 0;
+    &.active { color: green; }
+  }
+  .position-info {
+    flex: 1; min-width: 0;
+    .position-title { font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .position-dates {
+      font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px;
+      .inline-icon { font-size: 16px; height: 16px; width: 16px; }
+    }
+  }
+  .sync-icon { color: #555; font-size: 20px!important; flex-shrink: 0; }
+  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; padding-left: 6px; }
+}
 
 .position-detail-container {
   flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
@@ -306,7 +241,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     .field-row {
       display: flex; align-items: center; height: 10px!important;
       .field-label { width: 200px; text-align: right; font-weight: 500; color: #555; flex-shrink: 0; padding-right: 16px; opacity: 1!important; }
-      .flex-field { flex: 1; min-width: 0; color: #333;padding-bottom: 1px;}
+      .flex-field {  min-width: 0; color: #333;padding-bottom: 1px;}
     }
     .date-pair-container {
       display: flex; align-items: center; width: 100%;
@@ -318,7 +253,9 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     }
   }
 }
-
+// .form-row input {
+//   width: 3000px
+// }
 // Material overrides
 ::ng-deep {
   .mat-checkbox-layout { white-space: nowrap; }
@@ -345,11 +282,11 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     .mat-card-content { height: 100%; }
     .form.vertical-form { display: flex; flex-direction: column; height: 100%;align-items: center;}
     .form-row {
-      margin-bottom:10px;width:85%;
+      width:85%;
       mat-checkbox { margin-top: 8px; }
     }
 
-    .form-row-volumen{width:87.5%;position: relative;right:3%;}
+    // .form-row-volumen{width:87.5%;position: relative;right:3%;}
     .double-input { width: 90%; }
     .full-width { width: 100%; }
     .form-actions {
@@ -360,12 +297,11 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
 @media screen and (width: 1920px) and (height: 1080px) {
-  .form-row-volumen{width:86%!important;}
+  // .form-row-volumen{width:86%!important;}
   .checkbox-level1{position:relative;right:0}
 }
 .form-row-third {margin: 4px 0 !important;padding: 0 !important;}
-// .checkbox-level1{position:relative;right:2%}
-/* Additional form field styling */
+.third-level-form .form-row{margin-bottom: 8px!important;}
 mat-form-field {
   width: 100%;
   &.full-width, &.half-width { margin-bottom: 8px; }
@@ -374,12 +310,10 @@ mat-form-field {
   .mat-form-field-outline-thick { color: rgba(0, 0, 0, 0.38); }
 }
 
-/* Checkbox styling */
 mat-checkbox {
   &.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background { background-color: #3f51b5; }
 }
 
-/* Button styling */
 button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   &.save-btn { background-color: #3f51b5; color: white; }
   &:disabled { opacity: 0.5; }
@@ -409,7 +343,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 .bis-date { width: 5px!important; }
 
 .start-icon { position: relative; right:43px; }
-.start-icon-first{ position: relative; right:18px; }
+.start-icon-first{ position: relative; right:24px; }
 
 .start-input { margin-left:18px!important; }
 
@@ -417,7 +351,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   display: flex; flex-direction: column;align-items:center;
   // height: 500px;
   .form-row {
-    display: flex; width: 100%; height: 25px!important; align-items: center;
+    display: flex; width: 100%; height: 30px!important; align-items: center;
     mat-checkbox { margin-left: 16px; }
     .form-label { width: 250px; min-width: 150px; text-align: right; padding-right: 16px; color: #555; font-weight: 500; }
     .form-field { flex: 1; }
@@ -461,23 +395,107 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 
 
 
-.form-row-arrow{
-  width: 91%!important;
+.form-row-arrow {
+  display: flex;
+  // align-items: center;
+  width: 85%;
+  // margin-bottom: 10px;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  height:40px
+}
+.person-field-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+.person-arrow-btn {
+
+  color: rgb(0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-left:40px!important;
+}
+
+.form-row .form-field {
+  flex: 1;
+  min-width: 0;
+}
+.field-label.width {
+  width: 148px;
+  flex-shrink: 0;
+}
+.parent2-position {
+  position: relative;
+  right: 3%;
+  width: 100%;
+}
+.vertical-form .form-row {
+  display: flex;
+  width: 100%;
+  height: 30px !important;
+  align-items: center;
+  margin-bottom: 10px;
 }
 #form-field-volumen{width:90%!important}
-/* Green for active items */
 .icon-active {
-  color: #4caf50 !important; /* Green */
+  color: #4caf50 !important;
 
 }
 
-/* Red for inactive items */
 .icon-inactive {
-  color:  #b91c1c !important; /* Red */
+  color:  #b91c1c !important;
 }
 
-/* Legacy .position-icon dot/inline-icon/position-extra styles removed —
-   replaced by the consolidated .position-item block above. */
+
+.position-icon {
+  position: relative;
+}
+
+.position-icon::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+.position-item .position-icon{
+  font-size: 20px!important;
+
+}
+.icon-active::after {
+  background-color: #265227;
+}
+
+.icon-inactive::after {
+  background-color: #b91c1c ;
+}
+
+
+.inline-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.position-extra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
 .volumen, .geplant{
   color: #b91c1c ;
   padding-right: 10px;
@@ -489,16 +507,12 @@ margin-left: 10px;
   display: none;
 }
 .field-label2{width:164px;}
-#flex-field-rahmen{width:313px!important}
+// #flex-field-rahmen{width:377px!important}
 @media(min-height: 1000px){#flex-field-rahmen{width:311px!important}}
 .field-row-rahmen{position:relative;right:69px}
 
 
 
-
-// 69
-// 457
-/* Add this to your CSS */
 .select-height {
   height: 25px !important;
 }
@@ -519,3 +533,197 @@ mat-form-field .child-input{width:300px!important;}
 
 .parent2-position{position:relative;right: 3%;}
 .parent-position3{position:relative;right: 6%;}
+// .erstell-width{width:377px!important}
+// .Gültig-width{width: 180px!important;}
+
+@media (max-width: 768px) {
+.position-item{
+  height: auto;
+}
+.form-grid-container{gap: 0;}
+.erstell-width{width: 228px!important;}
+.Gültig-width{width:  93px!important;font-size: 10px;}
+#flex-field-rahmen{width:231px!important}
+.start-icon { position: relative; left:5px; }
+.start-icon-first{ position: relative;left:23px; }
+.bis-date{width: 14px!important;}
+.form-column-second{left: 5%;}
+
+
+}
+// No ::ng-deep needed in global styles
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+  background-color: white !important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__background {
+  border: 2px solid #666 !important;
+  border-radius: 2px !important;
+  background-color: white !important;
+  transition: none !important;
+}
+
+/* Keep the original SVG checkmark but make it black */
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__checkmark {
+  color: #555 !important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__checkmark-path {
+  stroke: #555 !important;
+  stroke-width: 3px !important;
+}
+
+/* Hide mixedmark */
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__mixedmark {
+  display: none !important;
+}
+
+/* Black border when checked */
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
+  border-color: #555 !important;
+  background-color: white !important;
+  /* NO ::after here */
+}
+
+/* Remove ripple */
+.mat-mdc-checkbox .mdc-checkbox__ripple,
+.mat-mdc-checkbox .mat-mdc-checkbox-ripple,
+.mat-mdc-checkbox .mat-ripple-element {
+  display: none !important;
+}
+/* Add to your CSS */
+.field-row:has([formControlName="vertragstype"]) {
+  position: relative;
+  z-index: 100;
+  overflow: visible;
+}
+
+.field-row:has([formControlName="vertragstype"]) .mat-form-field {
+  overflow: visible !important;
+}
+
+.field-row:has([formControlName="vertragstype"]) .mat-select-arrow-wrapper {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Ensure the dropdown panel appears properly */
+::ng-deep .cdk-overlay-pane {
+  z-index: 9999 !important;
+}
+
+::ng-deep .mat-select-panel {
+  transform: translateY(30px) !important;
+  background: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+div.mat-mdc-select-panel {
+    width: 92%!important;
+    position: relative!important;
+    left: 16px!important;
+}
+
+div.mat-mdc-select-drop-down-bottom {
+    width: 85%!important;
+    position: relative!important;
+    left: 16px!important;
+}
+
+.cdk-overlay-pane:has(.drop-down-bottom)
+ {
+      width:329px!important;
+
+  min-width: 329px!important;
+  max-width:329px!important;
+}
+/* ======================= DYNAMIC CHECKBOX STYLES ======================= */
+/* Checkbox changes based on edit mode */
+
+/* When in VIEW MODE (disabled/readonly) - matches disabled input */
+.mat-mdc-checkbox.mat-mdc-checkbox-disabled {
+  .mdc-checkbox {
+    .mdc-checkbox__background {
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 4px !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    .mdc-checkbox__checkmark {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    .mdc-checkbox__checkmark-path {
+      stroke: #bbb !important;
+      stroke-width: 3px !important;
+    }
+  }
+
+  /* Checked state in view mode */
+  &.mat-mdc-checkbox-checked {
+    .mdc-checkbox {
+      .mdc-checkbox__background {
+        border-color: #ccc !important;
+      }
+    }
+  }
+
+  /* Label text in view mode */
+  .mdc-checkbox__label {
+    color: #aaa !important;
+  }
+}
+
+/* When in EDIT MODE (enabled) - matches enabled input */
+.mat-mdc-checkbox:not(.mat-mdc-checkbox-disabled) {
+  .mdc-checkbox {
+    .mdc-checkbox__background {
+      border: 1px solid #ccc !important;
+      border-radius: 4px !important;
+      background-color: white !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    .mdc-checkbox__checkmark {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    .mdc-checkbox__checkmark-path {
+      stroke: #555 !important;
+      stroke-width: 3px !important;
+    }
+  }
+
+  /* Checked state in edit mode */
+  &.mat-mdc-checkbox-checked {
+    .mdc-checkbox {
+      .mdc-checkbox__background {
+        border-color: #2E4155 !important;
+        background-color: white !important;
+      }
+
+      .mdc-checkbox__checkmark-path {
+        stroke: #2E4155 !important;
+      }
+    }
+  }
+
+  /* Hover effect in edit mode */
+  &:hover:not(.mat-mdc-checkbox-disabled) {
+    .mdc-checkbox {
+      .mdc-checkbox__background {
+        border-color: #2E4155 !important;
+      }
+    }
+  }
+}
+
+/* Remove ripple effects */
+.mat-mdc-checkbox .mdc-checkbox__ripple,
+.mat-mdc-checkbox .mat-mdc-checkbox-ripple {
+  display: none !important;
+}

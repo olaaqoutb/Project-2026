@@ -27,6 +27,7 @@ import {
   MOCK_ABSCHLUSS_INFO,
   MOCK_FEIERTAGE,
   MOCK_PERSONENVERMERKE,
+  MOCK_PERSON_HISTORY,
 } from './mock-data';
 
 /**
@@ -172,6 +173,9 @@ export class MockBackendInterceptor implements HttpInterceptor {
     }
     if (endpoint.match(/^personen\/[^/]+\/personenvermerke$/) && m === 'GET') {
       return MOCK_PERSONENVERMERKE;
+    }
+    if (endpoint.match(/^personen\/[^/]+\/historyAuswertung$/) && m === 'GET') {
+      return MOCK_PERSON_HISTORY;
     }
 
     // ── stempelzeiten ────────────────────────────────────────────────────
@@ -365,6 +369,31 @@ export class MockBackendInterceptor implements HttpInterceptor {
 
     // ── feiertage ────────────────────────────────────────────────────────
     if (endpoint === 'feiertage' && m === 'GET') return MOCK_FEIERTAGE;
+
+    // ── geschaeftszahlen / rollenbezeichnungen ──────────────────────────
+    if (endpoint === 'geschaeftszahlen' && m === 'GET') {
+      return {
+        geschaeftszahl: [
+          'GZ-2024-001',
+          'GZ-2024-002',
+          'GZ-2025-001',
+          'GZ-2025-002',
+          'GZ-2026-001',
+        ],
+      };
+    }
+    if (endpoint === 'rollenbezeichnungen' && m === 'GET') {
+      return {
+        rollenbezeichnung: [
+          'Entwickler',
+          'Tester',
+          'Projektleiter',
+          'Architekt',
+          'Analyst',
+          'Servicemanager',
+        ],
+      };
+    }
 
     // Unknown endpoint — indicate pass-through.
     return undefined;
