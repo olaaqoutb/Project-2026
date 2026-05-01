@@ -88,7 +88,7 @@
   <div class="form-field-group">
     <label class="field-label">Buchungspunkt</label>
     <mat-form-field appearance="outline" class="field-input"
-      [class.field-empty]="isFieldEmpty('buchungspunkt') && saveAttempted && !isHeaderCreated">
+      [class.field-empty]="isFieldEmpty('buchungspunkt') && saveAttempted">
       <mat-select
         formControlName="buchungspunkt"
         [compareWith]="compareBuchungspunkt"
@@ -105,7 +105,7 @@
   <div class="form-field-group">
     <label class="field-label">Tätigkeit</label>
     <mat-form-field appearance="outline" class="field-input"
-      [class.field-empty]="isFieldEmpty('taetigkeit') && saveAttempted && !isHeaderCreated">
+      [class.field-empty]="isFieldEmpty('taetigkeit') && saveAttempted">
       <mat-select
         formControlName="taetigkeit"
         [compareWith]="compareTaetigkeit"

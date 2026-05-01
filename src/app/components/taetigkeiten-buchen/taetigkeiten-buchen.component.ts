@@ -454,6 +454,26 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
   saveForm() {
     this.saveAttempted = true;
+
+    if (this.isHeaderCreated) {
+      const missing: string[] = [];
+      if (this.isFieldEmpty('buchungspunkt')) missing.push('Buchungspunkt');
+      if (this.isFieldEmpty('taetigkeit')) missing.push('Tätigkeit');
+      if (this.isAnmerkungEmpty) missing.push('Anmerkung');
+
+      if (missing.length > 0) {
+        this.openErrorDialog(
+          'Pflichtfelder fehlen',
+          `Bitte füllen Sie folgende Pflichtfelder aus: ${missing.join(', ')}.`
+        );
+        return;
+      }
+
+      const formValue = this.taetigkeitForm.getRawValue();
+      this.validate(formValue);
+      return;
+    }
+
     this.formValidationService.validateAllFields(this.taetigkeitForm);
 
     if (!this.taetigkeitForm.valid) {
@@ -463,6 +483,14 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
     const formValue = this.taetigkeitForm.getRawValue();
     this.validate(formValue);
+  }
+
+  private isFieldEmpty(name: string): boolean {
+    const v = this.taetigkeitForm?.get(name)?.value;
+    if (v === null || v === undefined) return true;
+    if (typeof v === 'string') return v.trim() === '';
+    if (typeof v === 'object' && Object.keys(v).length === 0) return true;
+    return false;
   }
 
 
@@ -879,6 +907,35 @@ private findParentDay(node: FlatNode): FlatNode | null {
     if (nodes[i].level === 0) return null;
   }
   return null;
+}
+
+toggleMonthOpenClose(monthNode: FlatNode): void {
+  if (!monthNode || monthNode.level !== 0) return;
+
+  const isClosed = !!monthNode.hasNotification;
+
+  const dialogRef = this.dialog.open(CloseOpenConfirmDialogComponent, {
+    width: '500px',
+    data: { isClosed, dayName: monthNode.monthName }
+  });
+
+  dialogRef.afterClosed().subscribe(confirmed => {
+    if (!confirmed) return;
+
+    const willBeClosed = !isClosed;
+    monthNode.hasNotification = willBeClosed;
+    this.monthForm.patchValue({ abgeschlossen: willBeClosed }, { emitEvent: false });
+
+    if (willBeClosed) {
+      this.treeControl.collapseDescendants(monthNode);
+      this.treeControl.collapse(monthNode);
+    } else {
+      this.treeControl.expand(monthNode);
+    }
+
+    this.recomputeAlarmDayKey();
+    this.openInfoDialog(willBeClosed ? 'Der Monat wurde geschlossen.' : 'Der Monat wurde geöffnet.');
+  });
 }
 
 toggleDayOpenClose(dayNode: FlatNode): void {
@@ -1369,6 +1426,13 @@ private validateTimeEntryOverlap(
     this.abschlussInfo?.naechsterBuchbarerTag
   );
 }
+
+private forcedStempelzeitenKeys = new Set<string>();
+
+isStempelzeitenForcedVisible(node: FlatNode): boolean {
+  return !!node.dateKey && this.forcedStempelzeitenKeys.has(node.dateKey);
+}
+
 onNodeDoubleClick(node: FlatNode, event: Event): void {
   event.stopPropagation();
 
@@ -1377,6 +1441,18 @@ onNodeDoubleClick(node: FlatNode, event: Event): void {
   const isExpanded = this.treeControl.isExpanded(node);
 
   this.collapseSiblings(node);
+
+  if (node.level === 1 && node.hasNotification && node.dateKey) {
+    const hasChildren = this.treeControl.getDescendants(node).length > 0;
+    if (this.forcedStempelzeitenKeys.has(node.dateKey)) {
+      this.forcedStempelzeitenKeys.delete(node.dateKey);
+      if (hasChildren) this.treeControl.collapse(node);
+    } else {
+      this.forcedStempelzeitenKeys.add(node.dateKey);
+      if (hasChildren) this.treeControl.expand(node);
+    }
+    return;
+  }
 
   if (isExpanded) {
     this.treeControl.collapse(node);

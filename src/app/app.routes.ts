@@ -79,8 +79,8 @@ export const routes: Routes = [
   { path: 'personen/neu', component: PersonenDetailComponent,  canActivate: [refreshGuard] },
 
   { path: 'produkte', component: ProdukteListComponent },
-  { path: 'produkte/:id', component: ProdukteDetailsComponent,  canActivate: [refreshGuard] },
   { path: 'produkte/neu', component: ProdukteDetailsComponent },
+  { path: 'produkte/:id', component: ProdukteDetailsComponent },
 
 
   { path: 'abwesenheit-korrigieren', component: AbwesenheitKorrigierenListComponent },

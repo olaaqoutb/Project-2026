@@ -32,6 +32,34 @@
   align-items: center;
 }
 
+.header-btn {
+  border: 1px solid black !important;
+  border-radius: 4px !important;
+  padding: 5px !important;
+  color: white !important;
+  background-color: #2e4155;
+  height: 32px !important;
+  margin: 5px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+
+  i.mdi {
+    color: white !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    margin-right: 4px;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+}
+
 .taetigkeit-form {
   display: flex;
   flex-direction: column;

@@ -54,7 +54,7 @@
 
         <div class="form-box left-box">
           <div class="form-row">
-            <label class="field-label required" for="bezeichnung">Bezeichnung:</label>
+            <label class="field-label" for="bezeichnung">Bezeichnung:</label>
             <mat-form-field
               appearance="outline"
               class="field-input boreder"
@@ -74,7 +74,7 @@
           </div>
 
           <div class="form-row">
-            <label class="field-label required" for="kurzbezeichnung">Kurzbezeichnung:</label>
+            <label class="field-label" for="kurzbezeichnung">Kurzbezeichnung:</label>
             <mat-form-field
               appearance="outline"
               class="field-input boreder"
@@ -173,7 +173,7 @@
           </div>
 
           <div class="form-row">
-            <label class="field-label required" for="email">Reporting Email:</label>
+            <label class="field-label" for="email">Reporting Email:</label>
             <mat-form-field
               appearance="outline"
               class="field-input boreder"
@@ -187,9 +187,6 @@
                 placeholder="E-Mail-Adresse eingeben"
                 class="border"
               />
-              <mat-error *ngIf="organisationseinheitForm.get('email')?.hasError('required')">
-                Reporting Email ist erforderlich
-              </mat-error>
               <mat-error *ngIf="organisationseinheitForm.get('email')?.hasError('email')">
                 Bitte geben Sie eine gültige E-Mail-Adresse ein
               </mat-error>

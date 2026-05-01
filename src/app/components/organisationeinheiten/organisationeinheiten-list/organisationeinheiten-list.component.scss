@@ -42,7 +42,7 @@ $tablet: 900px;
   }
 
   .btn-icon {
-    margin: 0 !important;
+    margin: 0 8px 0 0 !important;
     font-size: 16px;
     line-height: 16px;
     width: 16px;
@@ -85,9 +85,11 @@ $tablet: 900px;
     height: 100vh;
   }
 
-  .mat-table {
+  .mat-table,
+  .fixed-table {
     width: 100%;
     min-width: 600px;
+    table-layout: fixed;
   }
 
   ::ng-deep .mat-mdc-header-cell {
@@ -107,6 +109,40 @@ $tablet: 900px;
     &:hover {
       background-color: #f0f0f0;
     }
+  }
+}
+
+/* Fixed column widths so the layout doesn't shift while filtering. */
+::ng-deep .fixed-table {
+  th.col-kurzbez,
+  td.col-kurzbez {
+    width: 12% !important;
+    min-width: 12% !important;
+    max-width: 12% !important;
+  }
+  th.col-bezeichnung,
+  td.col-bezeichnung {
+    width: 30% !important;
+    min-width: 30% !important;
+    max-width: 30% !important;
+  }
+  th.col-leitung,
+  td.col-leitung {
+    width: 18% !important;
+    min-width: 18% !important;
+    max-width: 18% !important;
+  }
+  th.col-uebergeordnet,
+  td.col-uebergeordnet {
+    width: 14% !important;
+    min-width: 14% !important;
+    max-width: 14% !important;
+  }
+  th.col-date,
+  td.col-date {
+    width: 13% !important;
+    min-width: 13% !important;
+    max-width: 13% !important;
   }
 }
 
@@ -190,3 +226,6 @@ $tablet: 900px;
 //   position: relative;
 //   top: 8px;
 // }
+.inkl{
+  color:white;
+}

@@ -192,6 +192,10 @@ i.mdi.icon-header-alarm,
   padding: 3px 0;
 }
 
+.tree-node.expandable-node-level2 {
+  padding: 2px 0;
+}
+
 .mat-tree-node {
   border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
@@ -261,7 +265,7 @@ i.mdi.icon-header-alarm,
   margin-right: 15px;
   margin-left:10px
 }
-.expandable-node-level2{display: flex;flex-direction: row;justify-content: space-between;min-height: 39px!important;align-items: center!important;}
+.expandable-node-level2{display: flex;flex-direction: row;justify-content: space-between;min-height: 0!important;height: auto!important;align-items: center!important;padding: 0;}
 .expandable-node-level3{display: flex;flex-direction: column;}
 
 .stempel-level2 .gebucht-icon {
@@ -292,6 +296,29 @@ i.mdi.icon-header-alarm,
   cursor: pointer;
   min-height: 35px !important;
   height: auto !important;
+}
+
+::ng-deep mat-tree-node.mat-tree-node {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.day-node-closed .day-content-wrapper {
+  padding: 0;
+}
+
+.day-node-closed .day-content-wrapper:has(.stempel-level2) {
+  padding-bottom: 2px;
+}
+
+.day-node-closed:has(.stempel-level2),
+.day-node-closed:has(.stempel-level2) .level2-container {
+  align-items: flex-start !important;
+}
+
+.day-node-closed:has(.stempel-level2) .level2-container > .calendar-icon {
+  align-self: flex-start !important;
+  margin-top: 0 !important;
 }
 .leaf-node {
   padding-left: 16px;
@@ -526,6 +553,27 @@ i.mdi.icon-header-alarm,
 .arrow-stempel{
   position: relative;
   bottom: 8px;
+}
+
+.day-node-closed {
+  align-items: flex-start !important;
+}
+
+// .day-node-closed .level2-container {
+//   align-items: flex-start !important;
+// }
+
+.day-header-closed-row1 {
+  display: flex;
+  width: 100%;
+}
+
+.day-header-closed-row2 {
+  display: grid;
+  grid-template-columns: 120px 120px 120px 110px;
+  align-items: center;
+  gap: 0;
+  width: 100%;
 }
 .day-header {
   display: grid;

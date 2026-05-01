@@ -20,7 +20,7 @@
         (click)="addTimeEntryFromHeader()"
         matTooltip="Neue Remote-Buchung"
       >
-        <mat-icon class="icon-header">R</mat-icon>
+        <i class="mdi mdi-24px mdi-read icon-header"></i>
       </button>
     </div>
 
@@ -91,7 +91,8 @@
           </div>
         </div>
         <!-- Level 1: Day Node -->
-        <div class="tree-node expandable-node-level2" *ngIf="node.level === 1">
+        <div class="tree-node expandable-node-level2" *ngIf="node.level === 1"
+             [class.day-node-closed]="node.hasNotification">
           <div class="level2-container">
             <i
               class="mdi mdi-calendar-plus calendar-icon"
@@ -101,31 +102,46 @@
               "
             ></i>
             <div class="day-content-wrapper">
-              <div class="day-header">
-                <span class="day-cell">{{ node.dayName }}</span>
-                <span class="time-cell">Gestempelt: {{ node.gestempelt }}</span>
-                <span class="time-cell">Gebucht: {{ node.gebucht }}</span>
-                <span
-                  class="abgeschlossen-cell"
-                  *ngIf="node.hasNotification"
-                  >[Abgeschlossen]</span
+              <!-- Closed day: 1 line (day name | gestempelt | gebucht | abgeschlossen) -->
+              <ng-container *ngIf="node.hasNotification; else openDayHeader">
+                <div class="day-header day-header-closed-row2">
+                  <span class="day-cell">{{ node.dayName }}</span>
+                  <span class="time-cell">Gestempelt: {{ node.gestempelt }}</span>
+                  <span class="time-cell">Gebucht: {{ node.gebucht }}</span>
+                  <span class="abgeschlossen-cell">[Abgeschlossen]</span>
+                </div>
+                <!-- Stempelzeiten only on double-click -->
+                <div
+                  class="stempel-level2"
+                  *ngIf="
+                    node.stempelzeitenList &&
+                    node.stempelzeitenList.length > 0 &&
+                    isStempelzeitenForcedVisible(node)
+                  "
                 >
-              </div>
-
-              <!-- Stempelzeiten under the icon/date -->
-              <div
-                class="stempel-level2"
-                *ngIf="
-                  node.stempelzeitenList &&
-                  node.stempelzeitenList.length > 0 &&
-                  isStempelzeitenVisible(node)
-                "
-              >
-                <i class="mdi mdi-file-tree gebucht-icon"></i>
-                <span class="time-info">
-                  {{ node.stempelzeitenList.join(", ") }}
-                </span>
-              </div>
+                  <i class="mdi mdi-file-tree gebucht-icon"></i>
+                  <span class="time-info">
+                    {{ node.stempelzeitenList.join(", ") }}
+                  </span>
+                </div>
+              </ng-container>
+              <ng-template #openDayHeader>
+                <!-- Open day: 2 lines (line 1: name+gestempelt+gebucht | line 2: stempelzeiten value) -->
+                <div class="day-header">
+                  <span class="day-cell">{{ node.dayName }}</span>
+                  <span class="time-cell">Gestempelt: {{ node.gestempelt }}</span>
+                  <span class="time-cell">Gebucht: {{ node.gebucht }}</span>
+                </div>
+                <div
+                  class="stempel-level2"
+                  *ngIf="node.stempelzeitenList && node.stempelzeitenList.length > 0"
+                >
+                  <i class="mdi mdi-file-tree gebucht-icon"></i>
+                  <span class="time-info">
+                    {{ node.stempelzeitenList.join(", ") }}
+                  </span>
+                </div>
+              </ng-template>
             </div>
           </div>
 
@@ -435,6 +451,8 @@
       [formGroup]="monthForm"
       [title]="selectedNode.monthName || ''"
       [isEditing]="isEditing"
+      [hasNotification]="!!selectedNode.hasNotification"
+      (toggleClose)="toggleMonthOpenClose(selectedNode)"
     ></app-taetigkeiten-level1>
   </div>
 

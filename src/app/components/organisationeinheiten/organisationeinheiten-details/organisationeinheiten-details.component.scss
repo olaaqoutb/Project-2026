@@ -259,6 +259,7 @@ $wide: 1920px;
   font-weight: 500;
   color: #333;
   padding-right: 4px;
+  margin-right: 0;
   white-space: nowrap;
 
   &.required::after {
@@ -370,7 +371,7 @@ $wide: 1920px;
     flex: 0 0 180px;
     width: 180px;
     text-align: right;
-    padding-right: 8px;
+    // padding-right: 8px;
   }
 
   .field-input {
@@ -419,7 +420,7 @@ $wide: 1920px;
     flex: 0 0 130px;
     width: 130px;
     text-align: right;
-    padding-right: 6px;
+    // padding-right: 6px;
     font-size: 0.78rem;
     margin-bottom: 0;
   }
@@ -579,11 +580,11 @@ $wide: 1920px;
 }
 
 #gueltigBis{
-  width: 115px!important;
+  width: 125px!important;
 }
 
 #gueltigVon{
-   width: 115px!important;
+   width: 125px!important;
 }
 .border:focus{
   border: 1px solid #E0E0E0 !important;
@@ -601,3 +602,7 @@ $wide: 1920px;
 //   width:273px !important;
 //   margin-left:15px!important
 // }
+::ng-deep .field-input .mdc-text-field {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}

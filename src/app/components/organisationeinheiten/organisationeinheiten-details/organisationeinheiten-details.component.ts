@@ -158,9 +158,6 @@ export class OrganisationeinheitenDetailsComponent {
         }
 
         if (this.isNewOrganisationseinheit) {
-          this.organisationseinheitForm.patchValue({
-            gueltigVon: new Date()
-          });
           this.organisationseinheitForm.enable();
           this.isFormEditable = true;
         } else {
@@ -172,9 +169,6 @@ export class OrganisationeinheitenDetailsComponent {
       error: (err: HttpErrorResponse) => {
         console.error('Error loading details data:', err);
         if (this.isNewOrganisationseinheit) {
-          this.organisationseinheitForm.patchValue({
-            gueltigVon: new Date()
-          });
           this.organisationseinheitForm.enable();
           this.isFormEditable = true;
         } else {
@@ -216,7 +210,7 @@ export class OrganisationeinheitenDetailsComponent {
       kostenstelle: [''],
 
       fax: [''],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       testId : ['']
     });
   }
@@ -255,9 +249,7 @@ export class OrganisationeinheitenDetailsComponent {
       if (f.get('gueltigVon')?.hasError('required')) {
         missingFields.push('Gültig von');
       }
-      if (f.get('email')?.hasError('required')) {
-        missingFields.push('Reporting Email');
-      } else if (f.get('email')?.hasError('email')) {
+      if (f.get('email')?.hasError('email')) {
         missingFields.push('gültige E-Mail-Adresse');
       }
 

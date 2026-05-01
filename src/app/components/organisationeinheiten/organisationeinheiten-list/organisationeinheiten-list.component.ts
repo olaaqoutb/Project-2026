@@ -199,12 +199,19 @@ export class OrganisationeinheitenListComponent {
   }
 
   selectRow(row: ApiOrganisationseinheit): void {
-    this.selectedRows = [row]; // Clear previous selections and select only the current row
+    this.selectedRows = [row];
     this.selectedRowId = row.id ?? null;
     if (row.id) {
       sessionStorage.setItem(OrganisationeinheitenListComponent.LAST_ROW_KEY, row.id);
     }
-    console.log('Selected-Org', row);
+  }
+
+  goToDetails(row: ApiOrganisationseinheit): void {
+    this.selectedRows = [row];
+    this.selectedRowId = row.id ?? null;
+    if (row.id) {
+      sessionStorage.setItem(OrganisationeinheitenListComponent.LAST_ROW_KEY, row.id);
+    }
     this.router.navigate(['/organisationseinheiten', row.id], {
       state: { selectedOrganisation: row }
     });
