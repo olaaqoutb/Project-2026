@@ -51,12 +51,7 @@ export class CustomDateAdapter extends NativeDateAdapter {
     return super.format(date, displayFormat);
   }
 
-  /**
-   * Accept German-formatted dates ("dd.MM.yyyy", "d.M.yy", "d M yyyy", etc.).
-   * NativeDateAdapter.parse() falls back to Date.parse() which fails on
-   * "20.03.2025" because the format is locale-ambiguous, so the form control
-   * ends up null and required-validation fires.
-   */
+ 
   override parse(value: any): Date | null {
     if (value instanceof Date) return value;
     if (value == null || value === '') return null;

@@ -1,25 +1,35 @@
-.form-container { background: white; height:auto!important; }
-
-.main-container{  height: calc(120vh - 100px);overflow: scroll!important;}
-
-.details-panes-container{ height:530px!important;overflow: scroll!important;}
-.form-column-container{position:relative;bottom:13px;}
-
-@media (min-height: 1000px) {
-  .form-container {
-    height: auto!important;
-  }
-  div.main-container{  height: calc(120vh - 150px);overflow: scroll!important;}
-
+:host {
+  display: block;
+  background: white;
 }
+
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: white; flex-shrink: 0;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+.form-container { background: white; flex-shrink: 0; }
+
+.main-container {
+  height: auto;
+  overflow-y: auto;
+  background: white;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
+}
+
+.form-column-container { position: relative; bottom: 13px; }
 
 
 
 .form-header { padding: 5px 15px !important; border-bottom: 1px solid #eee; background-color: #338e9c; }
 
 .form-toolbar {
-  display: flex; justify-content: space-between; align-items: center; width: 100%;
-  .form-title { margin: 0; font-size: 20px; color: white; font-weight: bold; }
+  display: flex; justify-content: space-between; align-items: center; width: 100%;height:37px;
+  .form-title { margin: 0; font-size: 20px; color: white;  }
   .flex-gap { display: flex; gap: 10px; }
 }
 
@@ -55,13 +65,12 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .form-column { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; width: 50%;padding-bottom:10px ; }
 .form-column-second{position:relative;left:15%;}
-.field-row { display: flex!important; align-items: center!important; gap: 1rem; height: 40px; }
+.field-row { display: flex!important; align-items: center!important; height: 40px; }
 
 .field-label { width: 110px; font-weight: 500; color: #555; flex-shrink: 0; }
 
-.field-label.required::after { content: " *"; color: #e74c3c; }
+.field-label.required::after { content: ""; }
 
-.flex-field { min-width: 0;}
 
 .organ-isation-field { margin: 30px!important; margin-right: 40px!important; position: relative!important; right: 31px!important; }
 
@@ -85,17 +94,58 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .person-width{ width: 350px!important;}
 // #volumen{width:800px!important}
 .date-pair-container {
-  display: flex; align-items: center; flex: 1; min-width: 0;
-  mat-form-field { flex: 1; }
+  display: flex; align-items: center; flex: 1; width: 50%!important;
+  mat-form-field { flex: 0 0 150px !important; width: 150px !important; max-width: 150px !important; }
   .field-label-bis { margin: 0 0.5rem; }
+}
+
+/* Narrow Erstellungsdatum / Gültig von / Bis date fields */
+mat-form-field.narrow-date,
+.field-row mat-form-field.narrow-date,
+.date-pair-container mat-form-field.narrow-date {
+  width: 190px !important;
+  max-width: 190px !important;
+  min-width: 190px !important;
+  flex: 0 0 190px !important;
+}
+mat-form-field.narrow-date .mat-mdc-text-field-wrapper {
+  width: 190px !important;
+  max-width: 190px !important;
+}
+mat-form-field.narrow-date input.mat-mdc-input-element {
+  width: 100% !important;
 }
 .check-abov{padding-left:7px}
 .date-abov-icon{position:relative;right:44px;}
-.details-panes-container { display: flex; gap: 3px; padding: 0 5px 2rem 5px; background: white; }
+.details-panes-container {
+  display: flex; gap: 3px; padding: 0 5px 2rem 5px; background: white;
+  height: calc(100vh - 600px) !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
+  *, *::before, *::after {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  *::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+}
 
 @media screen and (width: 1920px) and (height: 1080px) {
-  .details-panes-container { height: 880px!important; }
+  .details-panes-container { height: 880px !important; }
+    .form-grid-container { gap: 25rem !important; }
+
+}
+
+/* From 1920px and up: add a 25rem gap between the two form columns */
+@media screen and (min-width: 1940px) {
+  .form-grid-container { gap: 64rem !important; }
+  .third-level-form { margin-right: 25rem !important; }
+  .Produktposition-margin {margin-left:1px!important}
 }
 .flex-field-start{position:relative;right:2px;}
 .position-details-container .position-details-content mat-card { height: 350px!important; }
@@ -109,9 +159,13 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 ///left section///
-.vertragspositionen-container { width:50%; display: flex; flex-direction: column; border:1px solid #c7c7c7;
-// @media (min-width: 1920px) { height:100%!important; }
- }
+.vertragspositionen-container {
+  flex: 0 0 50%; width: 50%; min-width: 0; max-width: 50%; box-sizing: border-box;
+  display: flex; flex-direction: column; min-height: 0;
+  height: calc(100vh - 300px) !important;
+  border: 1px solid #c7c7c7;
+  overflow: hidden;
+}
 /* ======================================================= */
 
 // .start-date { margin-left: 17px!important; }
@@ -119,7 +173,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 ////header of the menu////
 .positionen-header {
   display: flex; justify-content: space-between; align-items: center; background-color: #338e9c; height: 40px !important; padding: 0 10px; flex-shrink: 0; color: white;
-  .header-title { font-weight: bold; font-size: 1.1rem; color: #ffffff; margin:auto!important; }
+  .header-title { font-size: 1.1rem; color: #ffffff; margin:auto!important; }
   .header-icons {
     display: flex; align-items: center; gap: 0px;
     button { background: none; color: white; font-size: 14px; gap: 4px; padding: 6px 10px; }
@@ -133,45 +187,96 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .scrollable-container {
   flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
 }
 
 .position-item {
-  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;height:47px;
+  display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; height: 42px;
   &:hover { background-color: #f7f7f7; }
   .position-icon {
-    font-size: 18px !important; margin-right: 12px;position:relative;bottom:10px;
+    font-size: 18px !important; line-height: 16.8px !important; margin-right: 0 !important;
+    display: inline-flex; align-items: center; justify-content: center;
+    align-self: flex-start;
+    height: 16.8px;
+    position: relative; bottom: 3px;
     &.active { color: green; }
     &.inactive { color: darkred; }
   }
+  i.mdi.position-icon { font-size: 18px !important; margin-right: 0 !important; align-self: flex-start; line-height: 16.8px !important; height: 16.8px; position: relative; bottom: 3px; }
+  i.mdi.position-icon.mdi-account-plus,
+  i.mdi.position-icon.mdi-alarm { margin-right: 4px !important; }
   .position-info {
     flex: 1;
-    .position-title { font-weight: 500; color: #333; }
-    .position-dates { font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    .position-title { font-weight: 500; color: #333; font-size: 14px; line-height: 1.2; }
+    .position-dates { font-size: 13px; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
   }
-  .sync-icon { color: #555; font-size: 25px!important;border: 1px solid black;}
+  .sync-icon { color: #555; font-size: 25px !important; border: 1px solid black; }
   &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; }
+  .add-buchungspunkt-btn { align-self: center; margin-top: 0 !important; margin-bottom: 0 !important; }
+}
+
+/* Level-3 second-line: tighter gap below the title */
+.position-extra-l3 {
+  margin-top: 0 !important;
+  line-height: 1.1;
+}
+
+/* Produkt-style action button used in the tree header (Vertragsposition+) and on
+   level-1/level-2 rows to add Verbraucher / Buchungspunkt. Vertically aligned. */
+.add-buchungspunkt-btn {
+  background-color: #2E4155;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 45px !important;
+  height: 34px !important;
+  margin: 3px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+
+  i.mdi {
+    color: white !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+  }
+
+  &:hover:not(:disabled):not(.disabled-btn) {
+    background-color: #3e5870;
+  }
+
+  &.disabled-btn {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .position-detail-container {
   flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
   .position-detail-content {
     padding: 1.5rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
     .field-label { width: 200px; }
     .date-pair-container {
-      width: 100%;
+      width: 50%!important;
       label { margin-left: 5px; margin-right: 5px; }
     }
   }
 }
 
 
-#form-field-margin{
-  height:50px!important;
-  margin-top:39px!important;
-}
+// #form-field-margin{
+//   height:50px!important;
+//   margin-top:39px!important;
+// }
 .margin{
   margin-top:60px!important
 }
@@ -192,7 +297,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 // Enhanced styles for the tree and details
 .positionen-header {
-  .header-title { font-weight: bold; font-size: 1.1rem; }
+  .header-title {  font-size: 1.1rem; }
   .header-icons {
     display: flex; align-items: center; gap: 4px;
     button {
@@ -208,18 +313,18 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .scrollable-container {
   flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { background: #338e9c; border-radius: 4px; }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
 }
 
 .position-item {
-  display: flex; align-items: center; padding: 4px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;
+  display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;
   &:hover { background-color: #f7f7f7; }
   .expand-icon { font-size: 20px; margin-right: 4px; color: #666; flex-shrink: 0; }
   .expand-icon-placeholder { padding-left:17px; width: 24px; flex-shrink: 0; }
   .position-icon {
-    font-size: 20px; margin-right: 8px; flex-shrink: 0;
+    font-size: 20px; margin-right:5px !important; flex-shrink: 0;
     &.active { color: green; }
   }
   .position-info {
@@ -238,13 +343,16 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
   .position-detail-content {
     padding: 1.5rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
     .field-row {
       display: flex; align-items: center; height: 10px!important;
       .field-label { width: 200px; text-align: right; font-weight: 500; color: #555; flex-shrink: 0; padding-right: 16px; opacity: 1!important; }
       .flex-field {  min-width: 0; color: #333;padding-bottom: 1px;}
     }
     .date-pair-container {
-      display: flex; align-items: center; width: 100%;
+      display: flex; align-items: center; width: 50%!important;
       .field-label-bis { margin: 0 8px; color: #555; }
     }
     .last-check {
@@ -264,7 +372,8 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Position Details Section Styling */
 .position-details-container {
-  flex: 1; display: flex; flex-direction: column; background-color: white; height: auto!important; border:1px solid #F8F8F8;
+  flex: 1; display: flex; flex-direction: column; background-color: white;
+  height: calc(100vh - 300px); border:1px solid #F8F8F8;
   .header-container {
     display: flex; justify-content: space-between; padding: 0 16px; background-color:#338E9C; height:40px; flex-shrink: 0;
     .header-left, .header-right { display: flex; align-items: center; }
@@ -277,7 +386,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   }
   .parent-container { border:1px solid black; }
   .position-details-content {
-    flex: 1; overflow-y: auto; padding: 27px;
+    flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 27px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
     mat-card { box-shadow: none; height: 100%; }
     .mat-card-content { height: 100%; }
     .form.vertical-form { display: flex; flex-direction: column; height: 100%;align-items: center;}
@@ -343,9 +455,9 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 .bis-date { width: 5px!important; }
 
 .start-icon { position: relative; right:43px; }
-.start-icon-first{ position: relative; right:24px; }
+.start-icon-first{ position: relative; right:43px; }
 
-.start-input { margin-left:18px!important; }
+.start-input { margin-left:0 !important; }
 
 .vertical-form {
   display: flex; flex-direction: column;align-items:center;
@@ -358,9 +470,12 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
     mat-datepicker-toggle { margin-left: 8px; }
   }
 }
-.Produktposition-margin{margin-left:40px!important;}
+.Produktposition-margin{margin-left:30px!important;}
 .child-detail-form {
-  padding: 16px;margin-top: 10px;height:400px!important;overflow:scroll;
+  padding: 16px; margin-top: 10px; height: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
  display: flex; flex-direction: column; align-items: center;
   .form-row {
     display: flex; align-items: center; margin-bottom: 16px;
@@ -394,6 +509,47 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix .mat-mdc-input-element:focus { border:1px  solid  #E0E0E0!important; }
 
 
+
+.header-btn {
+  border: 1px solid #2E4155;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: #2E4155;
+  color: black;
+  height: 32px !important;
+  margin: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-loeschen {
+  background-color: #b91c1c !important;
+  color: white !important;
+  border-color: #b91c1c !important;
+  height: 34px !important;
+  padding: 7px 10px 7px 15px !important;
+
+  mat-icon {
+    color: white !important;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: #b92222 !important;
+    color: white !important;
+    border-color: #b92222 !important;
+
+    mat-icon {
+      color: white !important;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
 
 .form-row-arrow {
   display: flex;
@@ -449,7 +605,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 }
 
 .icon-inactive {
-  color:  #b91c1c !important;
+  color:  #502832e6 !important;
 }
 
 
@@ -458,25 +614,15 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 }
 
 .position-icon::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 2px solid white;
+  content: none;
 }
 .position-item .position-icon{
-  font-size: 20px!important;
+  font-size: 18px!important;
 
 }
-.icon-active::after {
-  background-color: #265227;
-}
-
+.icon-active::after,
 .icon-inactive::after {
-  background-color: #b91c1c ;
+  content: none;
 }
 
 
@@ -486,22 +632,46 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   width: 16px;
   margin-right: 4px;
   vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+i.mdi.inline-icon {
+  font-size: 16px !important;
+  line-height: 1 !important;
 }
 
 .position-extra {
-  display: flex;
+  display: grid !important;
+  grid-template-columns: 18px 160px 145px 115px;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
+  gap: 2px;
+  font-size: 13px;
+  color: #502832e6;
+  line-height: 1.2;
+}
+.position-extra > span,
+.position-extra .volumen,
+.position-extra .geplant {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.position-extra-l3 {
+  /* Level-3 only shows "Geplant" — render it as a plain block under the title. */
+  display: block !important;
+  grid-template-columns: none;
+}
+.position-extra-l3 .geplant {
+  grid-column: auto;
+  display: inline-block;
 }
 .volumen, .geplant{
-  color: #b91c1c ;
-  padding-right: 10px;
-}
-.volumen{
-margin-left: 10px;
+  color: #502832e6 ;
+  font-size: 13px;
+  padding-right: 0;
+  margin-left: 0;
 }
 #display-none{
   display: none;
@@ -542,7 +712,7 @@ mat-form-field .child-input{width:300px!important;}
 }
 .form-grid-container{gap: 0;}
 .erstell-width{width: 228px!important;}
-.Gültig-width{width:  93px!important;font-size: 10px;}
+.Gültig-width{width:  73px!important;font-size: 10px;}
 #flex-field-rahmen{width:231px!important}
 .start-icon { position: relative; left:5px; }
 .start-icon-first{ position: relative;left:23px; }
@@ -618,25 +788,12 @@ mat-form-field .child-input{width:300px!important;}
   background: white !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
 }
-div.mat-mdc-select-panel {
-    width: 92%!important;
-    position: relative!important;
-    left: 16px!important;
-}
+/* Let Angular Material's CDK size each select panel to match its trigger.
+   No custom width/positioning here — overrides were stretching the top-form
+   panel and shrinking the bottom-form panels. */
 
-div.mat-mdc-select-drop-down-bottom {
-    width: 85%!important;
-    position: relative!important;
-    left: 16px!important;
-}
 
-.cdk-overlay-pane:has(.drop-down-bottom)
- {
-      width:329px!important;
 
-  min-width: 329px!important;
-  max-width:329px!important;
-}
 /* ======================= DYNAMIC CHECKBOX STYLES ======================= */
 /* Checkbox changes based on edit mode */
 
@@ -727,3 +884,460 @@ div.mat-mdc-select-drop-down-bottom {
 .mat-mdc-checkbox .mat-mdc-checkbox-ripple {
   display: none !important;
 }
+.jahr-check{
+  position: relative;
+  bottom: 10px;
+  right:12px;
+}
+.jahr-filed{
+    margin-bottom: 1px!important;
+}
+
+/* Jahresübertrag row: align with the input rows (85% width, no right offset)
+   instead of inheriting the narrow 200px / right:12px from .checkbox-row-bottom */
+.position-details-container .position-details-content .form-row.checkbox-row-bottom.jahr-filed {
+  width: 85% !important;
+  position: static !important;
+  right: auto !important;
+  justify-content: flex-start !important;
+}
+
+/* Verbraucher form: widen the label column so "Stundenkontingent jährlich"
+   stays on one line, and align the Aktiv label (.width2) to the same column. */
+.parent2-position .field-label.width,
+.parent2-position .field-label.width2,
+.position-details-container .position-details-content .vertical-form.parent2-position .field-label.width,
+.position-details-container .position-details-content .vertical-form.parent2-position .field-label.width2 {
+  width: 180px !important;
+  min-width: 180px !important;
+  white-space: nowrap !important;
+}
+
+/* Uniform input/dropdown width across all bottom forms — matches the Produkt field (300px) */
+.position-details-container .position-details-content .form-row mat-form-field,
+.position-details-container .position-details-content .form-row-third mat-form-field,
+.position-details-container .position-details-content .form-row-arrow mat-form-field {
+  width: 300px !important;
+  max-width: 300px !important;
+  flex: 0 0 300px !important;
+}
+.position-details-container .position-details-content .form-row mat-form-field input.mat-mdc-input-element,
+.position-details-container .position-details-content .form-row mat-form-field textarea.mat-mdc-input-element,
+.position-details-container .position-details-content .form-row mat-form-field .mat-mdc-select,
+.position-details-container .position-details-content .form-row mat-form-field .mat-mdc-select-trigger,
+.position-details-container .position-details-content .form-row-third mat-form-field input.mat-mdc-input-element,
+.position-details-container .position-details-content .form-row-third mat-form-field .mat-mdc-select,
+.position-details-container .position-details-content .form-row-third mat-form-field .mat-mdc-select-trigger {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Required-field error: paint ONLY the input element itself, no parent wrappers */
+.invalid-required,
+.invalid-required .mat-mdc-text-field-wrapper,
+.invalid-required .mat-mdc-form-field-flex,
+.invalid-required .mat-mdc-form-field-infix,
+.invalid-required .mat-mdc-form-field-subscript-wrapper {
+  background-color: transparent !important;
+}
+.invalid-required input.mat-mdc-input-element,
+.invalid-required input.mdc-text-field__input,
+.invalid-required textarea.mat-mdc-input-element,
+.invalid-required .mat-mdc-select-trigger {
+  background-color: #ffe6e6 !important;
+}
+.invalid-required .mdc-text-field--outlined .mdc-notched-outline__leading,
+.invalid-required .mdc-text-field--outlined .mdc-notched-outline__notch,
+.invalid-required .mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-color: #e57373 !important;
+}
+/* Stundensatz-Änderung row: keep label vertically centered, match standard form-row spacing */
+.position-details-container .position-details-content .form-row.stundensatz-row {
+  align-items: center !important;
+  height: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+.position-details-container .position-details-content .form-row.stundensatz-row .field-label {
+  align-self: center !important;
+}
+.position-details-container .position-details-content .form-row.stundensatz-row textarea.mat-mdc-input-element {
+  min-height: 36px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+.flex-field { min-width: 280px!important;max-width: 280px!important;width:280px!important}
+.field-vertrag{ min-width: 280px!important;max-width: 280px!important;width:280px!important}
+.date-pair-container{
+   min-width: 280px!important;max-width: 280px!important;width:280px!important
+}
+// .account-icon{
+//   position: relative;
+//   bottom: 40px;
+// }
+
+/* =========================================================================
+   Responsive layout — mirrors produkt-detai=========================================================================ls approach.
+   - <=1400px: collapse the two-column form into one column,
+               stack the bottom (list + detail) panes vertically,
+               let inputs shrink to fit available width.
+   - <=900px:  shrink the form-content side margins, normalize indented rows.
+   - <=600px:  stack labels above inputs and let fields fill width.
+    */
+@media (max-width: 1400px) {
+  /* This component uses ViewEncapsulation.None — :host doesn't apply.
+     Scroll on the component host; let .main-container flow naturally. */
+  app-vertrage-details {
+    display: block !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin !important;
+    -ms-overflow-style: auto !important;
+  }
+  app-vertrage-details::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+    display: block !important;
+  }
+  app-vertrage-details::-webkit-scrollbar-thumb {
+    background: #b0b0b0;
+    border-radius: 5px;
+  }
+
+  .main-container {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .form-grid-container {
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin: 0 12px 0 24px !important;
+    max-width: 100% !important;
+  }
+
+  .form-column {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+  }
+
+  .form-column-second {
+    position: static !important;
+    left: 0 !important;
+  }
+
+  .field-row {
+    width: 100%;
+  }
+
+  .field-label {
+    width: 200px !important;
+    min-width: 200px !important;
+    flex-shrink: 0 !important;
+    text-align: right;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  .field-label.bis-date {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 8px !important;
+    text-align: center;
+  }
+
+  .checkbox-row,
+  .checkbox-row-bottom {
+    margin-left: 0 !important;
+    width: auto !important;
+    position: static !important;
+    right: auto !important;
+  }
+
+  /* Bottom Vertragsposition form: align checkbox rows with input rows */
+  .position-details-container .position-details-content .form-row.checkbox-row-bottom {
+    width: 85% !important;
+    justify-content: flex-start !important;
+    position: static !important;
+    right: auto !important;
+  }
+  .position-details-container .position-details-content .form-row.checkbox-row-bottom .field-label {
+    width: 190px !important;
+    min-width: 190px !important;
+    text-align: right;
+    padding-right: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Verbraucher form: line everything up — same row width, same label width,
+     same control width regardless of Aktiv (checkbox) / Verbrauchertyp / Person. */
+  .position-details-container .position-details-content .vertical-form.parent2-position {
+    position: static !important;
+    right: auto !important;
+    width: 100% !important;
+  }
+  .position-details-container .position-details-content .vertical-form .form-row,
+  .position-details-container .position-details-content .vertical-form .form-row-arrow {
+    width: 85% !important;
+  }
+  .position-details-container .position-details-content .vertical-form .form-row .field-label,
+  .position-details-container .position-details-content .vertical-form .form-row .field-label.width,
+  .position-details-container .position-details-content .vertical-form .form-row .field-label.width2 {
+    width: 190px !important;
+    min-width: 190px !important;
+    text-align: right;
+    padding-right: 16px;
+    flex-shrink: 0;
+  }
+  .position-details-container .position-details-content .vertical-form .form-row .form-field,
+  .position-details-container .position-details-content .vertical-form .form-row mat-form-field,
+  .position-details-container .position-details-content .vertical-form .form-row mat-form-field.person-width,
+  .position-details-container .position-details-content .vertical-form .form-row .flex-field {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  /* Aktiv row: indent the checkbox so its visible square lines up with the
+     left edge of the outlined inputs above/below it. */
+  .position-details-container .position-details-content .vertical-form .form-row .flex-field mat-checkbox {
+    margin-left: 5px !important;
+  }
+  /* Lift the >> arrow out of Person's flex space so Person input matches others */
+  .position-details-container .position-details-content .vertical-form .form-row-arrow {
+    position: relative;
+  }
+  .position-details-container .position-details-content .vertical-form .form-row-arrow .person-arrow-btn {
+    position: absolute !important;
+    right: -55px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+  }
+
+
+  .flex-field,
+  .field-vertrag {
+    flex: 0 0 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    min-width: 0 !important;
+  }
+
+  .date-pair-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-wrap: nowrap;
+  }
+
+  .date-pair-container mat-form-field,
+  mat-form-field.narrow-date,
+  .field-row mat-form-field.narrow-date,
+  .date-pair-container mat-form-field.narrow-date {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  .details-panes-container {
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    gap: 8px !important;
+  }
+  /* The base rules hide scrollbars on every descendant of details-panes-container.
+     Re-enable visible scrollbars under responsive so the tree pane is scrollable. */
+  .details-panes-container *,
+  .details-panes-container *::before,
+  .details-panes-container *::after {
+    scrollbar-width: thin !important;
+    -ms-overflow-style: auto !important;
+  }
+  .details-panes-container *::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+    display: block !important;
+  }
+
+  .vertragspositionen-container {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 320px;
+    max-height: 480px;
+    overflow-y: auto !important;
+  }
+
+  .position-details-container {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 360px;
+    overflow: visible !important;
+  }
+
+  /* Let the bottom form grow with its content instead of being clipped to 350px */
+  .position-details-container .position-details-content {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .position-details-container .position-details-content mat-card {
+    height: auto !important;
+    min-height: 360px;
+  }
+  .position-details-container .position-details-content .vertical-form,
+  .position-details-container .position-details-content .child-detail-form {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .position-detail-container {
+    min-width: 0 !important;
+  }
+
+  /* Bottom-form fields: let them follow available width */
+  .position-details-container .position-details-content .form-row mat-form-field,
+  .position-details-container .position-details-content .form-row-third mat-form-field,
+  .position-details-container .position-details-content .form-row-arrow mat-form-field {
+    flex: 0 0 60% !important;
+    width: 60% !important;
+    max-width: 60% !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-content {
+    margin-right: 0 !important;
+  }
+
+  .form-grid-container {
+    margin: 0 12px !important;
+  }
+
+  .checkbox-row,
+  .checkbox-row-bottom {
+    margin-left: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    position: static !important;
+  }
+
+  .field-label {
+    width: 140px !important;
+    min-width: 140px !important;
+  }
+
+  .position-details-container .position-details-content .form-row mat-form-field,
+  .position-details-container .position-details-content .form-row-third mat-form-field,
+  .position-details-container .position-details-content .form-row-arrow mat-form-field {
+    flex: 0 0 70% !important;
+    width: 70% !important;
+    max-width: 70% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-toolbar {
+    flex-wrap: wrap;
+    height: auto !important;
+    gap: 6px;
+
+    .form-title {
+      font-size: 16px;
+      flex: 1 1 100%;
+      text-align: center;
+    }
+  }
+
+  .field-row {
+    flex-wrap: wrap;
+    height: auto !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+
+  .field-label {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    padding-right: 0 !important;
+  }
+
+  .flex-field,
+  .field-vertrag,
+  .position-details-container .position-details-content .form-row mat-form-field,
+  .position-details-container .position-details-content .form-row-third mat-form-field,
+  .position-details-container .position-details-content .form-row-arrow mat-form-field {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .date-pair-container {
+    flex-wrap: wrap;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  mat-form-field.narrow-date,
+  .field-row mat-form-field.narrow-date,
+  .date-pair-container mat-form-field.narrow-date {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+  }
+
+  .position-detail-container {
+    min-width: 0 !important;
+  }
+}
+// ::ng-deep div.mat-mdc-select-drop-down-bottom {
+//     width: 120px!important;
+//     position: relative!important;
+//     right: 26px!important;
+// }
+
+
+
+
+
+
+
+
+
+
+.cdk-overlay-pane:has(.drop-down-bottom) {
+  width: 268px !important;
+  min-width: 268px !important;
+  max-width: 268px !important;
+  position: relative!important;
+  left:9px!important;
+}
+
+div.mat-mdc-select-panel.drop-down-bottom,
+.cdk-overlay-pane .mat-mdc-select-panel.drop-down-bottom {
+  width: 268px !important;
+  min-width: 268px !important;
+  max-width: 268px !important;
+  box-sizing: border-box !important;
+   position: relative!important;
+  left:9px!important;
+}
+.aktiv-bottom{position: relative;right: 11px;}
+.field-label-position{position: relative;right: 5px;}

@@ -57,13 +57,26 @@ export class TaetigkeitenKorrigierenListComponent {
    };
 
    private static readonly LAST_ROW_KEY = 'taetkor.lastRowId';
+   private static readonly SEARCH_KEY = 'taetkor.search';
+   private static readonly SHOW_INACTIVE_KEY = 'taetkor.showInactive';
+   private static readonly SORT_COLUMN_KEY = 'taetkor.sortColumn';
+   private static readonly SORT_DIRECTION_KEY = 'taetkor.sortDirection';
    selectedRowId: string | null = null;
+   activeSortColumn: string | null = null;
 
    constructor(
      private renderer: Renderer2,
      private router: Router,
      private taetigkeitenKorrigierenService: TaetigkeitenKorrigierenService,
-   ) {}
+   ) {
+     this.searchTerm = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SEARCH_KEY) ?? '';
+     this.showInactive = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SHOW_INACTIVE_KEY) === 'true';
+     this.activeSortColumn = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SORT_COLUMN_KEY);
+     const storedDir = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SORT_DIRECTION_KEY) as 'asc' | 'desc' | null;
+     if (this.activeSortColumn && storedDir) {
+       this.sortState[this.activeSortColumn] = storedDir;
+     }
+   }
 
    ngOnInit(): void {
      window.scrollTo(0, 0);
@@ -92,6 +105,9 @@ export class TaetigkeitenKorrigierenListComponent {
 
    onRowClick(row: ApiPerson): void {
      this.selectedRowId = row.id ?? null;
+     if (row.id) {
+       sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.LAST_ROW_KEY, row.id);
+     }
    }
 
    private restoreAndScrollToLastRow(): void {
@@ -121,10 +137,12 @@ export class TaetigkeitenKorrigierenListComponent {
 
    ngOnDestroy(): void {}
    onCheckboxChange(): void {
+     sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SHOW_INACTIVE_KEY, String(this.showInactive));
      this.applyFilter();
    }
 
    filterdata(): void {
+     sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SEARCH_KEY, this.searchTerm);
      this.applyFilter();
    }
 
@@ -148,10 +166,7 @@ export class TaetigkeitenKorrigierenListComponent {
      this.dataSource.data = this.filteredData;
    }
  private applySorting(data: ApiPerson[]): ApiPerson[] {
-   const sortedField = Object.keys(this.sortState).find(field =>
-     this.sortState[field] === 'asc' || this.sortState[field] === 'desc'
-   );
-
+   const sortedField = this.activeSortColumn;
    if (!sortedField) return data;
 
    const direction = this.sortState[sortedField];
@@ -169,7 +184,12 @@ export class TaetigkeitenKorrigierenListComponent {
      return row.aktiv === false ? 'inactive-row' : '';
    }
   toggleSort(field: string) {
-   this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+   if (this.activeSortColumn === field) {
+     this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+   }
+   this.activeSortColumn = field;
+   sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SORT_COLUMN_KEY, field);
+   sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SORT_DIRECTION_KEY, this.sortState[field]);
 
    const direction = this.sortState[field];
    const sorted = [...this.filteredData].sort((a, b) => {

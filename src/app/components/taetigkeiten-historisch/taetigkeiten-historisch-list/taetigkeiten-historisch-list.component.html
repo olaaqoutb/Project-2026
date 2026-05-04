@@ -58,7 +58,7 @@
         <th mat-header-cell *matHeaderCellDef >
           <div class="sort-header" (click)="toggleSort('nachname')">
           Familienname
-              <mat-icon class="sort-arrow">{{ getSortIcon('nachname') }}</mat-icon>
+              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'nachname'">{{ getSortIcon('nachname') }}</mat-icon>
 </div>
  </th>
 
@@ -72,7 +72,7 @@
           Vorname
 
 
-              <mat-icon class="sort-arrow">{{ getSortIcon('vorname') }}</mat-icon>
+              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'vorname'">{{ getSortIcon('vorname') }}</mat-icon>
               </div>
  </th>
         <td mat-cell *matCellDef="let element">{{ element.vorname || "" }}</td>
@@ -83,7 +83,7 @@
           <div class="sort-header" (click)="toggleSort('mitarbeiterart')">
           Mitarbeiterart
 
-              <mat-icon class="sort-arrow">{{getSortIcon('mitarbeiterart')}}</mat-icon>
+              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'mitarbeiterart'">{{getSortIcon('mitarbeiterart')}}</mat-icon>
             </div>
         </th>
         <td mat-cell *matCellDef="let element">{{ element.mitarbeiterart || "" }}</td>
@@ -96,7 +96,8 @@
         [class]="getRowClass(row)"
         [class.selected-row]="selectedRowId === row.id"
         [attr.data-row-id]="row.id"
-        (click)="goToDetails(row)"
+        (click)="onRowClick(row)"
+        (dblclick)="goToDetails(row)"
         class="list-row"
       ></tr>
     </table>
