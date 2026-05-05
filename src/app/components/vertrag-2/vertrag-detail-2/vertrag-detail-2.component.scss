@@ -10,7 +10,7 @@ html, body {
 }
 html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
-.form-container { background: white; flex-shrink: 0; }
+.form-container { background: white; flex-shrink: 0; border-radius: 0!important;}
 
 .main-container {
   height: auto;
@@ -23,7 +23,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 .form-column-container { position: relative; bottom: 13px; }
 
-.form-header { padding: 5px 15px !important; border-bottom: 1px solid #eee; background-color: #338e9c; }
+.form-header { padding: 5px 15px !important; border-bottom: 1px solid #eee; background-color: #338e9c; border-radius: 0 !important; }
 
 .form-toolbar {
   display: flex; justify-content: space-between; align-items: center; width: 100%; height: 37px;
@@ -31,21 +31,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .flex-gap { display: flex; gap: 10px; }
 }
 
-.menu-icon-right-top { background: #2E4155; height: 40px; margin-right: 20px !important; }
-.custom-menu-header { height: 32px !important; }
+.menu-icon-right-top { background: #2E4155; height: 35px; margin-right: 20px !important; }
+.custom-menu-header { height: 35px !important; }
 
 button { border-radius: 4px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 16px; color: white; border: none; }
 
 .save-btn {
   border-radius: 5px;
   background-color: #2E4155 !important;
-  &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+  // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
 .save-btn-header { height: 35px !important; }
 .cancel-btn {
   border-radius: 5px;
   background: #2E4155; color: white !important;
-  &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+  // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
 .cancel-btn-header { height: 35px !important; }
 
@@ -138,7 +138,7 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 #menu-icon-right {
   color: white !important; background: #2E4155; height: 33px;
-  &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+  // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
 
 .vertragspositionen-container {
@@ -147,6 +147,20 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
   height: calc(100vh - 300px) !important;
   border: 1px solid #c7c7c7;
   overflow: hidden;
+
+  /* Only the row icons (level 1/2/3 marker, account, alarm and the
+     inline file-tree icon) should be 10pt. Button icons such as the
+     header "map-marker-plus" or the inline "account-plus" / "alarm"
+     buttons keep their original sizing. */
+  .position-item i.mdi.position-icon,
+  .position-item i.mdi.position-icon::before,
+  .position-item .inline-icon,
+  .position-item .inline-icon::before {
+    font-size: 10pt !important;
+    line-height: 10pt !important;
+    width: auto !important;
+    height: auto !important;
+  }
 }
 
 .positionen-header {
@@ -158,13 +172,13 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
     mat-icon { color: white; }
     .save-btn {
       background-color: #455B75;
-      &:hover:not(:disabled) { background: #455B75; }
+      // &:hover:not(:disabled) { background: #455B75; }
     }
   }
 }
 
 .scrollable-container {
-  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
+  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { width: 0; height: 0; display: none; }
@@ -174,15 +188,26 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
   display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; height: auto; min-height: 0;
   &:hover { background-color: #f7f7f7; }
   .position-icon {
-    font-size: 16px !important; line-height: 16px !important; margin-right: 0 !important;
+    margin-right: 0 !important;
     display: inline-flex; align-items: center; justify-content: center;
     align-self: flex-start;
-    height: 16px;
-    position: relative; bottom: 3px;
+    /* Match the title's first-line box (font-size 14px × line-height 1.2 = 16.8px)
+       so the icon is vertically centered with the first line of text. */
+    line-height: 1.2 !important;
+    height: calc(14px * 1.2);
+    position: static;
+    bottom: auto;
     &.active { color: green; }
     &.inactive { color: darkred; }
   }
-  i.mdi.position-icon { font-size: 16px !important; margin-right: 0 !important; align-self: flex-start; line-height: 16px !important; height: 16px; position: relative; bottom: 3px; }
+  i.mdi.position-icon {
+    margin-right: 3px !important;
+    align-self: flex-start;
+    line-height: 1.2 !important;
+    height: calc(14px * 1.2);
+    position: static;
+    bottom: auto;
+  }
   i.mdi.position-icon.mdi-account-plus,
   i.mdi.position-icon.mdi-alarm { margin-right: 4px !important; }
   .position-info {
@@ -190,7 +215,7 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
     .position-title { font-weight: 500; color: #333; font-size: 14px; line-height: 1.2; }
     .position-dates { font-size: 13px; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
   }
-  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; }
+  &.selected-item { background-color: #eaf6f8; }
   .add-buchungspunkt-btn { align-self: center; margin-top: 0 !important; margin-bottom: 0 !important; }
 }
 
@@ -216,9 +241,9 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
     line-height: 1 !important;
   }
 
-  &:hover:not(:disabled):not(.disabled-btn) {
-    background-color: #3e5870;
-  }
+  // &:hover:not(:disabled):not(.disabled-btn) {
+  //   background-color: #3e5870;
+  // }
 
   &.disabled-btn {
     opacity: 0.5;
@@ -239,7 +264,7 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
   }
   .cancel-btn-bottom {
     background: #2E4155; color: white !important; height: 34px; border-radius: 5px;
-    &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+    // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
   }
   .parent-container { border: 1px solid #c7c7c7; }
   .position-details-content {
@@ -292,7 +317,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   justify-content: center !important;
   padding: 0 10px !important;
   line-height: 1 !important;
-  &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+  // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
   i.mdi {
     display: inline-flex !important;
     align-items: center !important;
@@ -370,7 +395,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 
 .delete-btn {
   background-color: #2c3e50 !important; color: white !important;
-  &:hover:not(:disabled) { background: #3e5870 !important; }
+  // &:hover:not(:disabled) { background: #3e5870 !important; }
 }
 
 .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix .mat-mdc-input-element:focus {
@@ -1063,3 +1088,16 @@ div.mat-mdc-select-panel.drop-down-bottom,
   position: relative;
   right: 4px;
 }
+
+// .getit-TreeItem-Icon {
+// 	padding: 0 5px 0 5px;
+// 	font-size: 10pt!important;
+// }
+
+// .getit-TreeItem-Icon-Aktiv {
+// 	color: #30A030;
+// }
+
+// .getit-TreeItem-Icon-Inaktiv {
+// 	color: #A03030;
+// }

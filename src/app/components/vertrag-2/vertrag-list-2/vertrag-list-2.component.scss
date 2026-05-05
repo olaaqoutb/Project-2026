@@ -76,15 +76,18 @@ $tablet: 900px;
 
 .center-section {
   .title {
-    font-size: 1.5rem;
+    font-size: 24px;
+    font-weight: bold;
     color: white;
     margin: 0;
 
     @media (max-width: $tablet) {
-      font-size: 1.2rem;
+      font-size: 24px;
+      font-weight: bold;
     }
     @media (max-width: $phone) {
-      font-size: 1rem;
+      font-size: 24px;
+      font-weight: bold;
       text-align: center;
     }
   }
@@ -273,8 +276,7 @@ $tablet: 900px;
   ::ng-deep .mat-mdc-header-cell {
     background-color: #d4dce0 !important;
     color: black !important;
-    font-weight: normal !important;
-    font-size: 14px !important;
+    font-weight: bold !important;
     position: sticky !important;
     top: 0;
     z-index: 100;
@@ -376,7 +378,7 @@ $tablet: 900px;
   align-items: center;
   cursor: pointer;
   user-select: none;
-  font-weight: normal;
+  font-weight: 700;
   font-size: 14px;
 }
 

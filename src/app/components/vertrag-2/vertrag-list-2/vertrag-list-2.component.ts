@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -11,8 +11,11 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { VertraegeService } from '../../../services/vertraege.service';
+import { NavigationRefreshService } from '../../../services/navigation-refresh.service';
 import { ApiVertrag } from '../../../models/ApiVertrag';
 
 @Component({
@@ -34,7 +37,7 @@ import { ApiVertrag } from '../../../models/ApiVertrag';
   templateUrl: './vertrag-list-2.component.html',
   styleUrl: './vertrag-list-2.component.scss',
 })
-export class VertragList2Component implements AfterViewInit {
+export class VertragList2Component implements AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   dataSource = new MatTableDataSource<ApiVertrag>([]);
 
@@ -43,11 +46,23 @@ export class VertragList2Component implements AfterViewInit {
   showInactive = false;
   displayedColumns: string[] = ['vertragsname', 'zusatz', 'geplan', 'org-Einheit', 'verbrauchtDate'];
 
-  private static readonly LAST_ROW_KEY = 'vertraege.lastRowId';
-  private static readonly SEARCH_KEY = 'vertraege.search';
-  private static readonly SHOW_INACTIVE_KEY = 'vertraege.showInactive';
-  private static readonly SORT_COLUMN_KEY = 'vertraege.sortColumn';
-  private static readonly SORT_DIRECTION_KEY = 'vertraege.sortDirection';
+  /**
+   * In-memory state that survives detail-back navigation but NOT a round-trip
+   * to a different component. Static so it persists across this component's
+   * own destroy/recreate cycle when navigating to /vertraege-2/:id and back.
+   * Cleared via Router events (nav away from /vertraege-2) and via the
+   * NavigationRefreshService (sidebar "Verträge" click).
+   */
+  private static savedState: {
+    searchTerm: string;
+    showInactive: boolean;
+    activeSortColumn: string | null;
+    sortState: { [key: string]: 'asc' | 'desc' };
+    selectedRowId: string | null;
+  } | null = null;
+  private static routerSubInstalled = false;
+  private refreshSub?: Subscription;
+
   selectedRowId: string | null = null;
   activeSortColumn: string | null = null;
 
@@ -63,16 +78,55 @@ export class VertragList2Component implements AfterViewInit {
     private vertraegeService: VertraegeService,
     private router: Router,
     private host: ElementRef<HTMLElement>,
+    private refreshService: NavigationRefreshService,
   ) {
-    this.selectedRowId = sessionStorage.getItem(VertragList2Component.LAST_ROW_KEY);
-    this.searchTerm = sessionStorage.getItem(VertragList2Component.SEARCH_KEY) ?? '';
-    this.showInactive = sessionStorage.getItem(VertragList2Component.SHOW_INACTIVE_KEY) === 'true';
-    this.activeSortColumn = sessionStorage.getItem(VertragList2Component.SORT_COLUMN_KEY);
-    const storedDir = sessionStorage.getItem(VertragList2Component.SORT_DIRECTION_KEY) as 'asc' | 'desc' | null;
-    if (this.activeSortColumn && storedDir) {
-      this.sortState[this.activeSortColumn] = storedDir;
+    // Install the router listener once (root-level cleanup logic). It nukes
+    // savedState whenever the user navigates outside the /vertraege-2 area.
+    if (!VertragList2Component.routerSubInstalled) {
+      VertragList2Component.routerSubInstalled = true;
+      this.router.events
+        .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+        .subscribe((e) => {
+          if (!/^\/vertraege-2(?:\/|$)/.test(e.urlAfterRedirects)) {
+            VertragList2Component.savedState = null;
+          }
+        });
     }
 
+    // Restore state from the previous instance (back-arrow from detail).
+    const saved = VertragList2Component.savedState;
+    if (saved) {
+      this.searchTerm = saved.searchTerm;
+      this.showInactive = saved.showInactive;
+      this.activeSortColumn = saved.activeSortColumn;
+      this.sortState = { ...this.sortState, ...saved.sortState };
+      this.selectedRowId = saved.selectedRowId;
+    }
+
+    this.loadVertraege();
+
+    // Sidebar click on "Verträge" — refresh from the top, even if the URL
+    // didn't actually change.
+    this.refreshSub = this.refreshService.refresh$.subscribe((route) => {
+      if (route === '/vertraege-2') {
+        this.resetAndReload();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Persist current view state for the back-arrow trip from the detail page.
+    VertragList2Component.savedState = {
+      searchTerm: this.searchTerm,
+      showInactive: this.showInactive,
+      activeSortColumn: this.activeSortColumn,
+      sortState: { ...this.sortState },
+      selectedRowId: this.selectedRowId,
+    };
+    this.refreshSub?.unsubscribe();
+  }
+
+  private loadVertraege(): void {
     this.vertraegeService.getVertraege().subscribe({
       next: (data) => {
         this.vertraege = this.sortData(data ?? []);
@@ -86,6 +140,15 @@ export class VertragList2Component implements AfterViewInit {
         console.error('Error fetching vertraege list:', err);
       },
     });
+  }
+
+  private resetAndReload(): void {
+    this.searchTerm = '';
+    this.showInactive = false;
+    this.activeSortColumn = null;
+    this.selectedRowId = null;
+    VertragList2Component.savedState = null;
+    this.loadVertraege();
   }
 
   ngAfterViewInit() {
@@ -123,8 +186,6 @@ export class VertragList2Component implements AfterViewInit {
       this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
     }
     this.activeSortColumn = field;
-    sessionStorage.setItem(VertragList2Component.SORT_COLUMN_KEY, field);
-    sessionStorage.setItem(VertragList2Component.SORT_DIRECTION_KEY, this.sortState[field]);
     this.applySort(field);
   }
 
@@ -162,7 +223,6 @@ export class VertragList2Component implements AfterViewInit {
   }
 
   filterData() {
-    sessionStorage.setItem(VertragList2Component.SEARCH_KEY, this.searchTerm);
     const term = this.searchTerm.toLowerCase();
     const filtered = this.vertraege.filter((p) => {
       const matchesSearch =
@@ -181,7 +241,6 @@ export class VertragList2Component implements AfterViewInit {
   }
 
   onCheckboxChange() {
-    sessionStorage.setItem(VertragList2Component.SHOW_INACTIVE_KEY, String(this.showInactive));
     this.filterData();
   }
 
@@ -196,15 +255,9 @@ export class VertragList2Component implements AfterViewInit {
 
   selectRow(row: ApiVertrag): void {
     this.selectedRowId = row.id ?? null;
-    if (row.id) {
-      sessionStorage.setItem(VertragList2Component.LAST_ROW_KEY, row.id);
-    }
   }
 
   goToDetails(row: ApiVertrag) {
-    if (row.id) {
-      sessionStorage.setItem(VertragList2Component.LAST_ROW_KEY, row.id);
-    }
     this.selectedRowId = row.id ?? null;
     this.router.navigate(['/vertraege-2', row.id], {
       state: { produktData: row },

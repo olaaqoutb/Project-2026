@@ -354,7 +354,7 @@
           matTooltip="Vertragsposition hinzufügen"
           (click)="addVertragsposition()"
         >
-          <i class="mdi mdi-map-marker-plus mdi-24px"></i>
+          <i class="mdi mdi-map-marker-plus mdi-24px getit-TreeItem-Icon"></i>
         </button>
       </div>
       <div class="positionen-list scrollable-container">
@@ -378,7 +378,7 @@
               <!-- Custom icons for each level with dynamic color -->
               <i
                 *ngIf="node.level === 1"
-                class="mdi mdi-map-marker mdi-16px position-icon location-row-icon"
+                class="mdi mdi-map-marker mdi-16px position-icon location-row-icon getit-TreeItem-Icon"
                 [ngClass]="{
                   'icon-active': node.aktiv,
                   'icon-inactive': !node.aktiv

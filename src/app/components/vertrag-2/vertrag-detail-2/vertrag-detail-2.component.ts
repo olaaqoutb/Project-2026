@@ -666,7 +666,7 @@ onSubmit(): void {
     this.vertragForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.vertragForm, this.vertragLabelMap),
-      'Validierung'
+      'Es sind Eingabefehler aufgetreten'
     );
     return;
   }
@@ -966,7 +966,7 @@ private savePositionDetails(): void {
       this.positionDetailForm.markAllAsTouched();
       this.showErrorDialog(
         this.buildRequiredErrorMessage(this.positionDetailForm, this.positionLabelMap),
-        'Validierung'
+        'Es sind Eingabefehler aufgetreten'
       );
       return;
     }
@@ -1070,7 +1070,7 @@ private savePositionDetails(): void {
     this.verbraucherDetailForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.verbraucherDetailForm, this.verbraucherLabelMap),
-      'Validierung'
+      'Es sind Eingabefehler aufgetreten'
     );
     return;
   }
@@ -1195,7 +1195,7 @@ private finalizeVerbraucherSave(): void {
     this.childDetailForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.childDetailForm, this.childLabelMap),
-      'Validierung'
+      'Es sind Eingabefehler aufgetreten'
     );
     return;
   }
@@ -1523,8 +1523,9 @@ private showErrorDialog(detail: string, title: string = 'Fehler'): void {
 }
 
 /** Build a validation message that enumerates every required field that is
- *  still empty in the given form. The error dialog renders with
- *  white-space: pre-wrap, so newlines are preserved. */
+ *  still empty, one "Das Feld 'X' darf nicht leer sein." line per field.
+ *  The error dialog renders with white-space: pre-wrap, so newlines are
+ *  preserved. */
 private buildRequiredErrorMessage(form: FormGroup, labelMap: Record<string, string>): string {
   const missing: string[] = [];
   Object.keys(form.controls).forEach((key) => {
@@ -1536,7 +1537,7 @@ private buildRequiredErrorMessage(form: FormGroup, labelMap: Record<string, stri
   if (missing.length === 0) {
     return 'Bitte füllen Sie alle Pflichtfelder aus.';
   }
-  return 'Bitte füllen Sie folgende Pflichtfelder aus:\n• ' + missing.join('\n• ');
+  return missing.map((label) => `Das Feld '${label}' darf nicht leer sein.`).join('\n');
 }
 
 private vertragLabelMap: Record<string, string> = {

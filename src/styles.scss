@@ -1,6 +1,7 @@
 @use "styles/components/index" as *;
 @import "material-icons/iconfont/material-icons.css";
 @import "@mdi/font/css/materialdesignicons.css";
+// @import "styles/getit.scss";
 
 /* mat-select panel is rendered at the CDK overlay root, outside component
    view-encapsulation. Width rules for panelClass="drop-down" must live here. */
@@ -20,6 +21,7 @@
   width: 16px !important;
   height: 16px !important;
   line-height: 16px !important;
+  margin-right: 4px !important;
 }
 .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi::before,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi::before,

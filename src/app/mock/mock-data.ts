@@ -4784,7 +4784,79 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
     ],
   },
+  ...buildExtraVertraege(45),
 ];
+
+function buildExtraVertraege(count: number): ApiVertrag[] {
+  const namesPool = [
+    'Cloud-Migration AWS', 'Service-Desk Outsourcing', 'Identity-Management Upgrade',
+    'Datenschutz-Audit', 'Backup-Lösung Renewal', 'Mobile App Refactoring',
+    'API-Gateway Einführung', 'KI-Pilot Aktenverarbeitung', 'SAP S/4HANA Vorbereitung',
+    'Schulungsplattform Hosting', 'BI-Reporting Modernisierung', 'Sicherheits-Penetrationstest',
+    'WAF-Erneuerung', 'Container-Plattform OpenShift', 'GIS-Modul Erweiterung',
+    'Monitoring Konsolidierung', 'Telefonie-Migration MS Teams', 'Außenstellen-VPN Ersatz',
+    'Bürger-Portal Redesign', 'Compliance-Tool Einführung', 'Disaster-Recovery Test',
+    'Active-Directory Bereinigung', 'IT-Asset-Management', 'Drucker-Flotten-Service',
+    'Schwachstellen-Scanner', 'Videokonferenz-Lizenzen', 'eSignatur-Plattform',
+    'DevOps-Toolchain', 'Storage-Erweiterung NetApp', 'Netzwerk-Refresh Cisco',
+    'Helpdesk-Bots Pilot', 'Datenbank-Konsolidierung Oracle', 'Web-Filter Renewal',
+    'Antivirus-Plattform', 'Software-Verteilung Intune', 'Patch-Management',
+    'Endpoint-Detection EDR', 'PKI-Erneuerung', 'Workflow-Automatisierung',
+    'Public-Cloud Beratung', 'Linux-Plattform Hardening', 'BCM-Workshop Reihe',
+    'Server-Refresh DC1', 'Server-Refresh DC2', 'IPv6 Roll-out Phase 2',
+  ];
+  const partner = [
+    'CloudPartners GmbH', 'ITService Consulting', 'SecureLine AG', 'NetWorks AT',
+    'ConsulTec GmbH', 'DataMinds AG', 'OpenSystems', 'ElevateIT', 'Integra Solutions',
+    'BlueRiver IT', 'HoraWare GmbH', 'MetaCode AG', 'NorthLink Tech', 'OmegaSoft',
+    'PrimeStack', 'QuintaCloud', 'RhinoNetworks', 'SkySigma', 'TerraDigital',
+    'UpStreamLabs', 'VertixIT', 'WaveStack', 'XenForge AG', 'YellowOrbit',
+    'ZenithBridge',
+  ];
+  const out: ApiVertrag[] = [];
+  for (let i = 0; i < count; i++) {
+    const idx = i + 21;
+    const id = `v-${idx}`;
+    const aktiv = i % 9 !== 0;
+    const isProjekt = i % 3 !== 0;
+    const startYear = 2024 + (i % 3);
+    const endYear = startYear + 1 + (i % 2);
+    const stundenGeplant = 600 + (i * 173) % 6000;
+    const stundenGebucht = Math.floor(stundenGeplant * (0.1 + (i % 6) * 0.12));
+    const vertragssumme = (stundenGeplant * (90 + (i % 5) * 15)).toFixed(2);
+    const verantwortlicher = MOCK_PERSONEN[i % MOCK_PERSONEN.length];
+    const name = namesPool[i % namesPool.length];
+    out.push({
+      id,
+      version: 1,
+      deleted: false,
+      state: ApiState.READ,
+      vertragsname: `${name} ${startYear}`,
+      vertragspartner: partner[i % partner.length],
+      gueltigVon: `${startYear}-${String((i % 12) + 1).padStart(2, '0')}-01`,
+      gueltigBis: `${endYear}-12-31`,
+      aktiv,
+      auftraggeber: 'BMI',
+      vertragssumme,
+      vertragsTyp: isProjekt ? ApiVertragsTyp.PROJEKT : ApiVertragsTyp.BETRIEB,
+      bezugsart: isProjekt
+        ? ApiVertragBezugsart.BMI_AUSSCHREIBUNG
+        : ApiVertragBezugsart.DIREKTVERGABE,
+      vertragsverantwortlicher: verantwortlicher,
+      stundenGeplant: String(stundenGeplant),
+      stundenGebucht: String(stundenGebucht),
+      vertragszusatz: `Generierter Test-Vertrag #${idx} – ${isProjekt ? 'Projekt' : 'Betrieb'}`,
+      auftragsreferenz: `AR-${startYear}-${String(idx).padStart(4, '0')}`,
+      erstelldatum: `${startYear - 1}-11-${String(((i % 28) + 1)).padStart(2, '0')}`,
+      beschaffungsnummer: `BN-GEN-${idx}-${startYear}`,
+      elak: `BMI-IT/0117/${String(idx).padStart(4, '0')}-IT2/${startYear}`,
+      geschaeftszahl: `GZ-${startYear}-${String(idx).padStart(3, '0')}`,
+      anmerkung: `Automatisch generierter Vertrag #${idx} für Listen-Scrollverhalten und Sortier-Tests.`,
+      vertragPosition: buildExtraVertragPositionen(2, id),
+    });
+  }
+  return out;
+}
 
 // Assign contracts to each person (post-hoc to avoid circular initialization).
 // v-1..v-3 are active; v-4..v-6 are inactive (shown in red when "inkl. inaktive" is checked).
