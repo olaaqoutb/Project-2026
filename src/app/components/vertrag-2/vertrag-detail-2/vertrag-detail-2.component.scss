@@ -47,7 +47,7 @@ button { border-radius: 4px; font-size: 0.9rem; cursor: pointer; display: flex; 
   background: #2E4155; color: white !important;
   &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
-.cancel-btn-header { height: 32px !important; }
+.cancel-btn-header { height: 35px !important; }
 
 button:disabled { opacity: 0.6; cursor: not-allowed; }
 
