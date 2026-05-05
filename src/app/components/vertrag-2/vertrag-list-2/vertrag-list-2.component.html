@@ -5,9 +5,15 @@
         class="custom-menu menue-btn"
         aria-label="Optionen"
         type="button"
+        [matMenuTriggerFor]="listMenu"
       >
-        <mat-icon>menu</mat-icon>
+        <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
       </button>
+      <mat-menu #listMenu="matMenu" class="option-menu">
+        <button mat-menu-item>
+          <i class="mdi mdi-download-box-outline mdi-24px" aria-hidden="true"></i>Verbraucht-Werte laden
+        </button>
+      </mat-menu>
       <button
         mat-raised-button
         class="neu-button"
@@ -16,7 +22,7 @@
         matTooltip="Neuen Vertrag anlegen"
         matTooltipPosition="below"
       >
-        <i class="mdi mdi-cards-outline mdi-24px btn-icon" aria-hidden="true"></i>
+        <i class="mdi mdi-file-document mdi-24px btn-icon" aria-hidden="true"></i>
         <span class="btn-label">Neu</span>
       </button>
     </div>
@@ -44,7 +50,7 @@
           (input)="filterData()"
           class="search-input"
         />
-        <mat-icon class="search-icon">search</mat-icon>
+        <i class="mdi mdi-magnify mdi-24px search-icon" aria-hidden="true"></i>
       </div>
     </div>
   </div>

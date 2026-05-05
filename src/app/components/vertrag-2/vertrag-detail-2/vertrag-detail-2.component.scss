@@ -23,83 +23,68 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 .form-column-container { position: relative; bottom: 13px; }
 
-
-
 .form-header { padding: 5px 15px !important; border-bottom: 1px solid #eee; background-color: #338e9c; }
 
 .form-toolbar {
-  display: flex; justify-content: space-between; align-items: center; width: 100%;height:37px;
-  .form-title { margin: 0; font-size: 20px; color: white;  }
+  display: flex; justify-content: space-between; align-items: center; width: 100%; height: 37px;
+  .form-title { margin: 0; font-size: 18px; color: white; }
   .flex-gap { display: flex; gap: 10px; }
 }
 
 .menu-icon-right-top { background: #2E4155; height: 40px; margin-right: 20px !important; }
-.custom-menu-header{height: 32px!important;}
+.custom-menu-header { height: 32px !important; }
 
 button { border-radius: 4px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 16px; color: white; border: none; }
 
 .save-btn {
-  border-radius:5px;
-  background-color: #2E4155!important;
+  border-radius: 5px;
+  background-color: #2E4155 !important;
   &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
-.save-btn-header{height: 35px!important;}
+.save-btn-header { height: 35px !important; }
 .cancel-btn {
-  border-radius:5px;
-  background: #2E4155; color:white!important;
+  border-radius: 5px;
+  background: #2E4155; color: white !important;
   &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
-.cancel-btn-header{height: 32px!important;}
+.cancel-btn-header { height: 32px !important; }
 
 button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.arrow-back { width:100px!important; z-index: 4!important; }
+.arrow-back { width: 100px !important; z-index: 4 !important; }
 
-.form-content { padding: 7px 0 0 0 !important; margin-right: 50px;height: auto!important; }
+.form-content { padding: 7px 0 0 0 !important; margin-right: 50px; height: auto !important; }
 
 .form-grid-container {
   display: flex;
-   max-width: 1000px;
-   margin: 0 0 0 78px;
-  }
+  max-width: 1000px;
+  margin: 0 0 0 78px;
+}
 
-.form-column { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; width: 50%;padding-bottom:10px ; }
-.form-column-second{position:relative;left:15%;}
-.field-row { display: flex!important; align-items: center!important; height: 40px; }
+.form-column { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; width: 50%; padding-bottom: 10px; }
+.form-column-second { position: relative; left: 15%; }
+.field-row { display: flex !important; align-items: center !important; height: 40px; }
 
 .field-label { width: 110px; font-weight: 500; color: #555; flex-shrink: 0; }
-
 .field-label.required::after { content: ""; }
 
+.checkbox-row { height: 40px; box-sizing: border-box; align-items: center; width: 200px; }
+.checkbox-row-bottom { height: 40px; box-sizing: border-box; align-items: center; width: 200px; position: relative; right: 12px; }
 
-.organ-isation-field { margin: 30px!important; margin-right: 40px!important; position: relative!important; right: 31px!important; }
+.width { width: 148px !important; }
+.width2 { position: relative; right: 4px; }
 
-.anmerk-isation-field { margin-top: 40px!important; }
+.form-row input { width: 300px; }
+.form-field mat-select { width: 300px !important; }
+.form-field textarea { width: 300px !important; margin-top: 50px !important; }
+.person-width { width: 350px !important; }
 
-.checkbox-row { height: 40px; box-sizing: border-box; align-items: center; width:200px; }
-.checkbox-row-bottom { height: 40px; box-sizing: border-box; align-items: center; width:200px;position: relative;right:12px}
-
-// .field-label-aktiv{position: relative;left:4%;
-// }
-
-.checkbox-row2 { margin-left:100px; }
-.width{ width: 148px!important;}
-.width2{width: 137px;}
-#width{position:relative;left:100px}
-// .width3{display: inline-block ;min-width: 125px;}
-// .person-input{margin-left: 83px;}
-.form-row input{width:300px}
-.form-field mat-select {width:300px!important}
-.form-field textarea {width:300px!important ;margin-top: 50px!important;}
-.person-width{ width: 350px!important;}
-// #volumen{width:800px!important}
 .date-pair-container {
-  display: flex; align-items: center; flex: 1; width: 50%!important;
+  display: flex; align-items: center; flex: 1; width: 50% !important;
   mat-form-field { flex: 0 0 150px !important; width: 150px !important; max-width: 150px !important; }
   .field-label-bis { margin: 0 0.5rem; }
 }
 
-/* Narrow Erstellungsdatum / Gültig von / Bis date fields */
 mat-form-field.narrow-date,
 .field-row mat-form-field.narrow-date,
 .date-pair-container mat-form-field.narrow-date {
@@ -115,15 +100,15 @@ mat-form-field.narrow-date .mat-mdc-text-field-wrapper {
 mat-form-field.narrow-date input.mat-mdc-input-element {
   width: 100% !important;
 }
-.check-abov{padding-left:7px}
-.date-abov-icon{position:relative;right:44px;}
+.check-abov { padding-left: 7px; }
+.date-abov-icon { position: relative; right: 44px; }
+
 .details-panes-container {
   display: flex; gap: 3px; padding: 0 5px 2rem 5px; background: white;
   height: calc(100vh - 600px) !important;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { width: 0; height: 0; display: none; }
-
   *, *::before, *::after {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
@@ -137,28 +122,25 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 @media screen and (width: 1920px) and (height: 1080px) {
   .details-panes-container { height: 880px !important; }
-    .form-grid-container { gap: 25rem !important; }
-
+  .form-grid-container { gap: 25rem !important; }
+  .parent-position3 { position: relative !important; right: 15% !important; }
 }
 
-/* From 1920px and up: add a 25rem gap between the two form columns */
 @media screen and (min-width: 1940px) {
   .form-grid-container { gap: 64rem !important; }
-  .third-level-form { margin-right: 25rem !important; }
-  .Produktposition-margin {margin-left:1px!important}
+  .third-level-form { margin-right: 27rem !important; }
+  .Produktposition-margin { margin-left: -5px !important; }
 }
-.flex-field-start{position:relative;right:2px;}
-.position-details-container .position-details-content mat-card { height: 350px!important; }
-// .person-input{margin-left: 0px;}
-.position-details-container .position-details-content{
-  padding:0!important;
-}
+
+.flex-field-start { position: relative; right: 2px; }
+.position-details-container .position-details-content mat-card { height: 350px !important; }
+.position-details-container .position-details-content { padding: 0 !important; }
+
 #menu-icon-right {
-  color:white!important; background: #2E4155; height:33px;
+  color: white !important; background: #2E4155; height: 33px;
   &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
 
-///left section///
 .vertragspositionen-container {
   flex: 0 0 50%; width: 50%; min-width: 0; max-width: 50%; box-sizing: border-box;
   display: flex; flex-direction: column; min-height: 0;
@@ -166,14 +148,10 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
   border: 1px solid #c7c7c7;
   overflow: hidden;
 }
-/* ======================================================= */
 
-// .start-date { margin-left: 17px!important; }
-
-////header of the menu////
 .positionen-header {
   display: flex; justify-content: space-between; align-items: center; background-color: #338e9c; height: 40px !important; padding: 0 10px; flex-shrink: 0; color: white;
-  .header-title { font-size: 1.1rem; color: #ffffff; margin:auto!important; }
+  .header-title { font-size: 18px; color: #ffffff; margin: auto !important; font-weight: bold; }
   .header-icons {
     display: flex; align-items: center; gap: 0px;
     button { background: none; color: white; font-size: 14px; gap: 4px; padding: 6px 10px; }
@@ -193,38 +171,29 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 }
 
 .position-item {
-  display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; height: 42px;
+  display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; height: auto; min-height: 0;
   &:hover { background-color: #f7f7f7; }
   .position-icon {
-    font-size: 18px !important; line-height: 16.8px !important; margin-right: 0 !important;
+    font-size: 16px !important; line-height: 16px !important; margin-right: 0 !important;
     display: inline-flex; align-items: center; justify-content: center;
     align-self: flex-start;
-    height: 16.8px;
+    height: 16px;
     position: relative; bottom: 3px;
     &.active { color: green; }
     &.inactive { color: darkred; }
   }
-  i.mdi.position-icon { font-size: 18px !important; margin-right: 0 !important; align-self: flex-start; line-height: 16.8px !important; height: 16.8px; position: relative; bottom: 3px; }
+  i.mdi.position-icon { font-size: 16px !important; margin-right: 0 !important; align-self: flex-start; line-height: 16px !important; height: 16px; position: relative; bottom: 3px; }
   i.mdi.position-icon.mdi-account-plus,
   i.mdi.position-icon.mdi-alarm { margin-right: 4px !important; }
   .position-info {
-    flex: 1;
+    flex: 1; min-width: 0;
     .position-title { font-weight: 500; color: #333; font-size: 14px; line-height: 1.2; }
     .position-dates { font-size: 13px; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
   }
-  .sync-icon { color: #555; font-size: 25px !important; border: 1px solid black; }
   &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; }
   .add-buchungspunkt-btn { align-self: center; margin-top: 0 !important; margin-bottom: 0 !important; }
 }
 
-/* Level-3 second-line: tighter gap below the title */
-.position-extra-l3 {
-  margin-top: 0 !important;
-  line-height: 1.1;
-}
-
-/* Produkt-style action button used in the tree header (Vertragsposition+) and on
-   level-1/level-2 rows to add Verbraucher / Buchungspunkt. Vertically aligned. */
 .add-buchungspunkt-btn {
   background-color: #2E4155;
   color: white;
@@ -257,134 +226,22 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
   }
 }
 
-.position-detail-container {
-  flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
-  .position-detail-content {
-    padding: 1.5rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 8px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
-    .field-label { width: 200px; }
-    .date-pair-container {
-      width: 50%!important;
-      label { margin-left: 5px; margin-right: 5px; }
-    }
-  }
-}
-
-
-// #form-field-margin{
-//   height:50px!important;
-//   margin-top:39px!important;
-// }
-.margin{
-  margin-top:60px!important
-}
-#form-field-margin2{margin-top:30px!important}
-
-// #form-field-margin2{margin-top: 100px!important;}
-// .mat-mdc-form-field .mat-mdc-input-element[matInput][rows]:disabled, textarea[matInput]{margin-top:20px;}/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ::ng-deep .mat-mdc-menu-panel { z-index: 1000 !important; }
 
-#dropDownContainer { background-color: gainsboro !important; }
-
-#dropDownContainer button { color: black!important; }
-
-.mat-mdc-menu { background-color: red !important; }
-
-.last-check { margin-top: 40px; }
-
-// Enhanced styles for the tree and details
-.positionen-header {
-  .header-title {  font-size: 1.1rem; }
-  .header-icons {
-    display: flex; align-items: center; gap: 4px;
-    button {
-      background: none; color: white; font-size: 14px; padding: 6px 10px; display: flex; align-items: center; gap: 4px;
-      mat-icon { font-size: 18px; height: 18px; width: 18px; }
-    }
-    .save-btn {
-      background-color: #2c3e50;
-      &:hover:not(:disabled) { background: #3e5870; }
-    }
-  }
-}
-
-.scrollable-container {
-  flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar { width: 0; height: 0; display: none; }
-}
-
-.position-item {
-  display: flex; align-items: flex-start; padding: 4px; padding-right: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s;
-  &:hover { background-color: #f7f7f7; }
-  .expand-icon { font-size: 20px; margin-right: 4px; color: #666; flex-shrink: 0; }
-  .expand-icon-placeholder { padding-left:17px; width: 24px; flex-shrink: 0; }
-  .position-icon {
-    font-size: 20px; margin-right:5px !important; flex-shrink: 0;
-    &.active { color: green; }
-  }
-  .position-info {
-    flex: 1; min-width: 0;
-    .position-title { font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .position-dates {
-      font-size: 0.85em; color: #666; display: flex; align-items: center; gap: 6px; margin-top: 4px;
-      .inline-icon { font-size: 16px; height: 16px; width: 16px; }
-    }
-  }
-  .sync-icon { color: #555; font-size: 20px!important; flex-shrink: 0; }
-  &.selected-item { background-color: #eaf6f8; border-left: 4px solid #338e9c; padding-left: 6px; }
-}
-
-.position-detail-container {
-  flex: 1.2; min-width: 450px; border: 1px solid #ddd; border-radius: 4px; background-color: #fdfdfd; display: flex; flex-direction: column; height: 100%;
-  .position-detail-content {
-    padding: 1.5rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 8px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
-    .field-row {
-      display: flex; align-items: center; height: 10px!important;
-      .field-label { width: 200px; text-align: right; font-weight: 500; color: #555; flex-shrink: 0; padding-right: 16px; opacity: 1!important; }
-      .flex-field {  min-width: 0; color: #333;padding-bottom: 1px;}
-    }
-    .date-pair-container {
-      display: flex; align-items: center; width: 50%!important;
-      .field-label-bis { margin: 0 8px; color: #555; }
-    }
-    .last-check {
-      margin-top: 40px;
-      .field-row:first-child { margin-bottom: 8px; }
-    }
-  }
-}
-// .form-row input {
-//   width: 3000px
-// }
-// Material overrides
-::ng-deep {
-  .mat-checkbox-layout { white-space: nowrap; }
-  .mat-checkbox-inner-container { margin-right: 8px; }
-}
-
-/* Position Details Section Styling */
 .position-details-container {
   flex: 1; display: flex; flex-direction: column; background-color: white;
-  height: calc(100vh - 300px); border:1px solid #F8F8F8;
+  height: calc(100vh - 300px); border: 1px solid #F8F8F8;
   .header-container {
-    display: flex; justify-content: space-between; padding: 0 16px; background-color:#338E9C; height:40px; flex-shrink: 0;
+    display: flex; justify-content: space-between; padding: 0 16px; background-color: #338E9C; height: 40px; flex-shrink: 0;
     .header-left, .header-right { display: flex; align-items: center; }
-    .title { font-size: 1.2rem; font-weight: 500; color: white; }
+    .title { font-size: 18px; font-weight: 700; color: white; }
     button { color: white; }
   }
   .cancel-btn-bottom {
-    background: #2E4155; color:white!important;height:34px;border-radius:5px;
+    background: #2E4155; color: white !important; height: 34px; border-radius: 5px;
     &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
   }
-  .parent-container { border:1px solid black; }
+  .parent-container { border: 1px solid #c7c7c7; }
   .position-details-content {
     flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 27px;
     scrollbar-width: none;
@@ -392,13 +249,11 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
     &::-webkit-scrollbar { width: 0; height: 0; display: none; }
     mat-card { box-shadow: none; height: 100%; }
     .mat-card-content { height: 100%; }
-    .form.vertical-form { display: flex; flex-direction: column; height: 100%;align-items: center;}
+    .form.vertical-form { display: flex; flex-direction: column; height: 100%; align-items: center; }
     .form-row {
-      width:85%;
+      width: 85%;
       mat-checkbox { margin-top: 8px; }
     }
-
-    // .form-row-volumen{width:87.5%;position: relative;right:3%;}
     .double-input { width: 90%; }
     .full-width { width: 100%; }
     .form-actions {
@@ -408,12 +263,15 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
     }
   }
 }
+
 @media screen and (width: 1920px) and (height: 1080px) {
-  // .form-row-volumen{width:86%!important;}
-  .checkbox-level1{position:relative;right:0}
+  .checkbox-level1 { position: relative; right: 0; }
+  .Produktposition-margin { margin-left: 12px; }
 }
-.form-row-third {margin: 4px 0 !important;padding: 0 !important;}
-.third-level-form .form-row{margin-bottom: 8px!important;}
+
+.form-row-third { margin: 4px 0 !important; padding: 0 !important; }
+.third-level-form .form-row { margin-bottom: 8px !important; }
+
 mat-form-field {
   width: 100%;
   &.full-width, &.half-width { margin-bottom: 8px; }
@@ -422,93 +280,102 @@ mat-form-field {
   .mat-form-field-outline-thick { color: rgba(0, 0, 0, 0.38); }
 }
 
-mat-checkbox {
-  &.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background { background-color: #3f51b5; }
-}
-
 button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   &.save-btn { background-color: #3f51b5; color: white; }
   &:disabled { opacity: 0.5; }
 }
 
-.child-icon { color: red; }
-
 .menu-icon-left {
-  background: #2E4155; height:33px; margin-right: 20px !important;
+  background: #2E4155; height: 33px; margin-right: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 10px !important;
+  line-height: 1 !important;
   &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
+  i.mdi {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+  }
 }
 
-#option-menu { background-color: gainsboro !important; }
+.mat-mdc-menu-content,
+.mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text {
+  color: #666666 !important;
+  background-color: rgb(241, 246, 246) !important;
+  cursor: pointer !important;
+  border-radius: 5px !important;
+  font-size: 15px !important;
+}
+.mat-mdc-menu-item:hover { background-color: #ffffff !important; cursor: pointer !important; }
+.mat-mdc-menu-item .mat-icon { font-size: 15px !important; }
 
-.mat-menu-item { background-color: #2c3e50!important; }
+.mat-mdc-menu-item i.mdi,
+.option-menu .mat-mdc-menu-item i.mdi,
+::ng-deep .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi,
+::ng-deep .option-menu .mat-mdc-menu-item i.mdi,
+::ng-deep .mat-mdc-menu-content .mat-mdc-menu-item i.mdi {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  margin-right: 8px;
+}
+.mat-mdc-menu-item i.mdi::before,
+.option-menu .mat-mdc-menu-item i.mdi::before,
+::ng-deep .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi::before,
+::ng-deep .option-menu .mat-mdc-menu-item i.mdi::before,
+::ng-deep .mat-mdc-menu-content .mat-mdc-menu-item i.mdi::before {
+  font-size: 16px !important;
+  line-height: 16px !important;
+}
 
-.mat-mdc-menu-content, .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-tex { background-color: rgb(241, 246, 246) !important; cursor: pointer!important; border-radius: 5px!important; }
-
-.mat-mdc-menu-item:hover { background-color: #ffffff !important; cursor: pointer!important; }
-
-.mat-mdc-menu-item { font: 140px !important; }
-
-.mat-mdc-menu-content, .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text { color:#666666 !important; font-size: 15px!important; }
-
-.mat-mdc-menu-item .mat-icon { font-size:15px!important; }
-
-.bis-date { width: 5px!important; }
-
-.start-icon { position: relative; right:43px; }
-.start-icon-first{ position: relative; right:43px; }
-
-.start-input { margin-left:0 !important; }
+.bis-date { width: 5px !important; }
+.start-icon { position: relative; right: 43px; }
+.start-icon-first { position: relative; right: 43px; }
+.start-input { margin-left: 0 !important; }
 
 .vertical-form {
-  display: flex; flex-direction: column;align-items:center;
-  // height: 500px;
+  display: flex; flex-direction: column; align-items: center;
   .form-row {
-    display: flex; width: 100%; height: 30px!important; align-items: center;
+    display: flex; width: 100%; height: 30px !important; align-items: center; margin-bottom: 10px;
     mat-checkbox { margin-left: 16px; }
     .form-label { width: 250px; min-width: 150px; text-align: right; padding-right: 16px; color: #555; font-weight: 500; }
     .form-field { flex: 1; }
     mat-datepicker-toggle { margin-left: 8px; }
   }
 }
-.Produktposition-margin{margin-left:30px!important;}
+
+.Produktposition-margin { margin-left: 30px; }
+
 .child-detail-form {
   padding: 16px; margin-top: 10px; height: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { width: 0; height: 0; display: none; }
- display: flex; flex-direction: column; align-items: center;
+  display: flex; flex-direction: column; align-items: center;
   .form-row {
     display: flex; align-items: center; margin-bottom: 16px;
     &:first-child { padding-left: 16px; }
-    .form-label { width:95px!important; min-width: 150px; text-align: right; padding-right: 1px!important; color: #555; font-weight: 500; }
+    .form-label { width: 95px !important; min-width: 150px; text-align: right; padding-right: 1px !important; color: #555; font-weight: 500; }
     mat-form-field { flex: 1; }
   }
 }
 
-
-
-.service-label { width: 95px!important; }
-
-.position-details-container .parent-container { border:1px solid #c7c7c7; }
-
 @media screen and (width: 1920px) and (height: 1080px) {
-  .vertical-form { height: auto!important; }
+  .vertical-form { height: auto !important; }
 }
-
-.delete-message { line-height: 2; }
 
 .delete-btn {
-  background-color: #2c3e50!important; color: white!important;
-  &:hover:not(:disabled) { background: #3e5870!important; }
+  background-color: #2c3e50 !important; color: white !important;
+  &:hover:not(:disabled) { background: #3e5870 !important; }
 }
 
-.delete-container { height:120px; align-content: center; }
-
-.delete-btn-ja { border:1px  solid #2c3e50; }
-
-.mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix .mat-mdc-input-element:focus { border:1px  solid  #E0E0E0!important; }
-
-
+.mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix .mat-mdc-input-element:focus {
+  border: 1px solid #E0E0E0 !important;
+}
 
 .header-btn {
   border: 1px solid #2E4155;
@@ -530,36 +397,23 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   border-color: #b91c1c !important;
   height: 34px !important;
   padding: 7px 10px 7px 15px !important;
-
-  mat-icon {
-    color: white !important;
-  }
-
+  mat-icon { color: white !important; }
   &:hover:not(:disabled) {
     background-color: #b92222 !important;
     color: white !important;
     border-color: #b92222 !important;
-
-    mat-icon {
-      color: white !important;
-    }
+    mat-icon { color: white !important; }
   }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .form-row-arrow {
   display: flex;
-  // align-items: center;
   width: 85%;
-  // margin-bottom: 10px;
   gap: 8px;
   margin-left: auto;
   margin-right: auto;
-  height:40px
+  height: 40px;
 }
 .person-field-container {
   display: flex;
@@ -568,14 +422,13 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   margin-bottom: 0 !important;
 }
 .person-arrow-btn {
-
   color: rgb(0, 0, 0);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   flex-shrink: 0;
-  margin-left:40px!important;
+  margin-left: 40px !important;
 }
 
 .form-row .form-field {
@@ -586,45 +439,16 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   width: 148px;
   flex-shrink: 0;
 }
+
 .parent2-position {
-  position: relative;
-  right: 3%;
+  position: relative !important;
+  right: 7% !important;
   width: 100%;
 }
-.vertical-form .form-row {
-  display: flex;
-  width: 100%;
-  height: 30px !important;
-  align-items: center;
-  margin-bottom: 10px;
-}
-#form-field-volumen{width:90%!important}
-.icon-active {
-  color: #4caf50 !important;
+.parent-position3 { position: relative; right: 5%; }
 
-}
-
-.icon-inactive {
-  color:  #502832e6 !important;
-}
-
-
-.position-icon {
-  position: relative;
-}
-
-.position-icon::after {
-  content: none;
-}
-.position-item .position-icon{
-  font-size: 18px!important;
-
-}
-.icon-active::after,
-.icon-inactive::after {
-  content: none;
-}
-
+.icon-active { color: #4caf50 !important; }
+.icon-inactive { color: #d32f2f !important; }
 
 .inline-icon {
   font-size: 16px;
@@ -636,7 +460,6 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   align-items: center;
   justify-content: center;
 }
-
 i.mdi.inline-icon {
   font-size: 16px !important;
   line-height: 1 !important;
@@ -659,7 +482,6 @@ i.mdi.inline-icon {
   text-overflow: ellipsis;
 }
 .position-extra-l3 {
-  /* Level-3 only shows "Geplant" — render it as a plain block under the title. */
   display: block !important;
   grid-template-columns: none;
 }
@@ -667,137 +489,82 @@ i.mdi.inline-icon {
   grid-column: auto;
   display: inline-block;
 }
-.volumen, .geplant{
-  color: #502832e6 ;
+.volumen, .geplant {
+  color: #502832e6;
   font-size: 13px;
   padding-right: 0;
   margin-left: 0;
 }
-#display-none{
-  display: none;
-}
-.field-label2{width:164px;}
-// #flex-field-rahmen{width:377px!important}
-@media(min-height: 1000px){#flex-field-rahmen{width:311px!important}}
-.field-row-rahmen{position:relative;right:69px}
 
+#display-none { display: none; }
 
-
-.select-height {
-  height: 25px !important;
-}
-
+.select-height { height: 25px !important; }
 ::ng-deep .select-height .mat-mdc-select-trigger {
   height: 25px !important;
   align-items: center !important;
 }
-
 ::ng-deep .select-height .mat-mdc-select-value {
   height: 25px !important;
   align-items: center !important;
   font-size: 14px !important;
 }
-.mat-select-trigger{ height: 25px !important;}
-.field-label-margin{margin-top: -3px;}
-mat-form-field .child-input{width:300px!important;}
+.mat-select-trigger { height: 25px !important; }
 
-.parent2-position{position:relative;right: 3%;}
-.parent-position3{position:relative;right: 6%;}
-// .erstell-width{width:377px!important}
-// .Gültig-width{width: 180px!important;}
+mat-form-field .child-input { width: 300px !important; }
 
 @media (max-width: 768px) {
-.position-item{
-  height: auto;
+  .position-item { height: auto; }
+  .form-grid-container { gap: 0; }
+  .start-icon { position: relative; left: 5px; }
+  .start-icon-first { position: relative; left: 23px; }
+  .bis-date { width: 14px !important; }
+  .form-column-second { left: 5%; }
 }
-.form-grid-container{gap: 0;}
-.erstell-width{width: 228px!important;}
-.Gültig-width{width:  73px!important;font-size: 10px;}
-#flex-field-rahmen{width:231px!important}
-.start-icon { position: relative; left:5px; }
-.start-icon-first{ position: relative;left:23px; }
-.bis-date{width: 14px!important;}
-.form-column-second{left: 5%;}
 
-
-}
-// No ::ng-deep needed in global styles
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
   background-color: white !important;
 }
-
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__background {
   border: 2px solid #666 !important;
   border-radius: 2px !important;
   background-color: white !important;
   transition: none !important;
 }
-
-/* Keep the original SVG checkmark but make it black */
-.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__checkmark {
-  color: #555 !important;
-}
-
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__checkmark { color: #555 !important; }
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__checkmark-path {
   stroke: #555 !important;
   stroke-width: 3px !important;
 }
-
-/* Hide mixedmark */
-.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__mixedmark {
-  display: none !important;
-}
-
-/* Black border when checked */
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__mixedmark { display: none !important; }
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
   border-color: #555 !important;
   background-color: white !important;
-  /* NO ::after here */
 }
-
-/* Remove ripple */
 .mat-mdc-checkbox .mdc-checkbox__ripple,
 .mat-mdc-checkbox .mat-mdc-checkbox-ripple,
 .mat-mdc-checkbox .mat-ripple-element {
   display: none !important;
 }
-/* Add to your CSS */
+
 .field-row:has([formControlName="vertragstype"]) {
   position: relative;
   z-index: 100;
   overflow: visible;
 }
-
-.field-row:has([formControlName="vertragstype"]) .mat-form-field {
-  overflow: visible !important;
-}
-
+.field-row:has([formControlName="vertragstype"]) .mat-form-field { overflow: visible !important; }
 .field-row:has([formControlName="vertragstype"]) .mat-select-arrow-wrapper {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
 
-/* Ensure the dropdown panel appears properly */
-::ng-deep .cdk-overlay-pane {
-  z-index: 9999 !important;
-}
-
+::ng-deep .cdk-overlay-pane { z-index: 9999 !important; }
 ::ng-deep .mat-select-panel {
   transform: translateY(30px) !important;
   background: white !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
-/* Let Angular Material's CDK size each select panel to match its trigger.
-   No custom width/positioning here — overrides were stretching the top-form
-   panel and shrinking the bottom-form panels. */
 
-
-
-/* ======================= DYNAMIC CHECKBOX STYLES ======================= */
-/* Checkbox changes based on edit mode */
-
-/* When in VIEW MODE (disabled/readonly) - matches disabled input */
 .mat-mdc-checkbox.mat-mdc-checkbox-disabled {
   .mdc-checkbox {
     .mdc-checkbox__background {
@@ -806,34 +573,21 @@ mat-form-field .child-input{width:300px!important;}
       width: 20px !important;
       height: 20px !important;
     }
-
     .mdc-checkbox__checkmark {
       width: 18px !important;
       height: 18px !important;
     }
-
     .mdc-checkbox__checkmark-path {
       stroke: #bbb !important;
       stroke-width: 3px !important;
     }
   }
-
-  /* Checked state in view mode */
   &.mat-mdc-checkbox-checked {
-    .mdc-checkbox {
-      .mdc-checkbox__background {
-        border-color: #ccc !important;
-      }
-    }
+    .mdc-checkbox .mdc-checkbox__background { border-color: #ccc !important; }
   }
-
-  /* Label text in view mode */
-  .mdc-checkbox__label {
-    color: #aaa !important;
-  }
+  .mdc-checkbox__label { color: #aaa !important; }
 }
 
-/* When in EDIT MODE (enabled) - matches enabled input */
 .mat-mdc-checkbox:not(.mat-mdc-checkbox-disabled) {
   .mdc-checkbox {
     .mdc-checkbox__background {
@@ -843,58 +597,32 @@ mat-form-field .child-input{width:300px!important;}
       width: 20px !important;
       height: 20px !important;
     }
-
     .mdc-checkbox__checkmark {
       width: 18px !important;
       height: 18px !important;
     }
-
     .mdc-checkbox__checkmark-path {
       stroke: #555 !important;
       stroke-width: 3px !important;
     }
   }
-
-  /* Checked state in edit mode */
   &.mat-mdc-checkbox-checked {
     .mdc-checkbox {
       .mdc-checkbox__background {
         border-color: #2E4155 !important;
         background-color: white !important;
       }
-
-      .mdc-checkbox__checkmark-path {
-        stroke: #2E4155 !important;
-      }
+      .mdc-checkbox__checkmark-path { stroke: #2E4155 !important; }
     }
   }
-
-  /* Hover effect in edit mode */
   &:hover:not(.mat-mdc-checkbox-disabled) {
-    .mdc-checkbox {
-      .mdc-checkbox__background {
-        border-color: #2E4155 !important;
-      }
-    }
+    .mdc-checkbox .mdc-checkbox__background { border-color: #2E4155 !important; }
   }
 }
 
-/* Remove ripple effects */
-.mat-mdc-checkbox .mdc-checkbox__ripple,
-.mat-mdc-checkbox .mat-mdc-checkbox-ripple {
-  display: none !important;
-}
-.jahr-check{
-  position: relative;
-  bottom: 10px;
-  right:12px;
-}
-.jahr-filed{
-    margin-bottom: 1px!important;
-}
+.jahr-check { position: relative; bottom: 10px; right: 12px; }
+.jahr-filed { margin-bottom: 1px !important; }
 
-/* Jahresübertrag row: align with the input rows (85% width, no right offset)
-   instead of inheriting the narrow 200px / right:12px from .checkbox-row-bottom */
 .position-details-container .position-details-content .form-row.checkbox-row-bottom.jahr-filed {
   width: 85% !important;
   position: static !important;
@@ -902,8 +630,6 @@ mat-form-field .child-input{width:300px!important;}
   justify-content: flex-start !important;
 }
 
-/* Verbraucher form: widen the label column so "Stundenkontingent jährlich"
-   stays on one line, and align the Aktiv label (.width2) to the same column. */
 .parent2-position .field-label.width,
 .parent2-position .field-label.width2,
 .position-details-container .position-details-content .vertical-form.parent2-position .field-label.width,
@@ -913,7 +639,6 @@ mat-form-field .child-input{width:300px!important;}
   white-space: nowrap !important;
 }
 
-/* Uniform input/dropdown width across all bottom forms — matches the Produkt field (300px) */
 .position-details-container .position-details-content .form-row mat-form-field,
 .position-details-container .position-details-content .form-row-third mat-form-field,
 .position-details-container .position-details-content .form-row-arrow mat-form-field {
@@ -932,7 +657,6 @@ mat-form-field .child-input{width:300px!important;}
   min-width: 0 !important;
 }
 
-/* Required-field error: paint ONLY the input element itself, no parent wrappers */
 .invalid-required,
 .invalid-required .mat-mdc-text-field-wrapper,
 .invalid-required .mat-mdc-form-field-flex,
@@ -951,7 +675,7 @@ mat-form-field .child-input{width:300px!important;}
 .invalid-required .mdc-text-field--outlined .mdc-notched-outline__trailing {
   border-color: #e57373 !important;
 }
-/* Stundensatz-Änderung row: keep label vertically centered, match standard form-row spacing */
+
 .position-details-container .position-details-content .form-row.stundensatz-row {
   align-items: center !important;
   height: auto !important;
@@ -967,27 +691,11 @@ mat-form-field .child-input{width:300px!important;}
   padding-bottom: 2px !important;
 }
 
-.flex-field { min-width: 280px!important;max-width: 280px!important;width:280px!important}
-.field-vertrag{ min-width: 280px!important;max-width: 280px!important;width:280px!important}
-.date-pair-container{
-   min-width: 280px!important;max-width: 280px!important;width:280px!important
-}
-// .account-icon{
-//   position: relative;
-//   bottom: 40px;
-// }
+.flex-field { min-width: 280px !important; max-width: 280px !important; width: 280px !important; }
+.field-vertrag { min-width: 280px !important; max-width: 280px !important; width: 280px !important; }
+.date-pair-container { min-width: 280px !important; max-width: 280px !important; width: 280px !important; }
 
-/* =========================================================================
-   Responsive layout — mirrors produkt-detai=========================================================================ls approach.
-   - <=1400px: collapse the two-column form into one column,
-               stack the bottom (list + detail) panes vertically,
-               let inputs shrink to fit available width.
-   - <=900px:  shrink the form-content side margins, normalize indented rows.
-   - <=600px:  stack labels above inputs and let fields fill width.
-    */
 @media (max-width: 1400px) {
-  /* This component uses ViewEncapsulation.None — :host doesn't apply.
-     Scroll on the component host; let .main-container flow naturally. */
   app-vertrage-details {
     display: block !important;
     height: 100vh !important;
@@ -1032,9 +740,7 @@ mat-form-field .child-input{width:300px!important;}
     left: 0 !important;
   }
 
-  .field-row {
-    width: 100%;
-  }
+  .field-row { width: 100%; }
 
   .field-label {
     width: 200px !important;
@@ -1049,9 +755,11 @@ mat-form-field .child-input{width:300px!important;}
     width: auto !important;
     min-width: 0 !important;
     padding: 0 !important;
-    margin: 0 8px !important;
+    margin: 0 2px !important;
     text-align: center;
   }
+
+  .date-pair-container .flex-field-start { margin-right: 0 !important; right: 0 !important; }
 
   .checkbox-row,
   .checkbox-row-bottom {
@@ -1061,7 +769,6 @@ mat-form-field .child-input{width:300px!important;}
     right: auto !important;
   }
 
-  /* Bottom Vertragsposition form: align checkbox rows with input rows */
   .position-details-container .position-details-content .form-row.checkbox-row-bottom {
     width: 85% !important;
     justify-content: flex-start !important;
@@ -1076,13 +783,6 @@ mat-form-field .child-input{width:300px!important;}
     flex-shrink: 0;
   }
 
-  /* Verbraucher form: line everything up — same row width, same label width,
-     same control width regardless of Aktiv (checkbox) / Verbrauchertyp / Person. */
-  .position-details-container .position-details-content .vertical-form.parent2-position {
-    position: static !important;
-    right: auto !important;
-    width: 100% !important;
-  }
   .position-details-container .position-details-content .vertical-form .form-row,
   .position-details-container .position-details-content .vertical-form .form-row-arrow {
     width: 85% !important;
@@ -1105,12 +805,9 @@ mat-form-field .child-input{width:300px!important;}
     max-width: none !important;
     min-width: 0 !important;
   }
-  /* Aktiv row: indent the checkbox so its visible square lines up with the
-     left edge of the outlined inputs above/below it. */
   .position-details-container .position-details-content .vertical-form .form-row .flex-field mat-checkbox {
     margin-left: 5px !important;
   }
-  /* Lift the >> arrow out of Person's flex space so Person input matches others */
   .position-details-container .position-details-content .vertical-form .form-row-arrow {
     position: relative;
   }
@@ -1121,7 +818,6 @@ mat-form-field .child-input{width:300px!important;}
     transform: translateY(-50%) !important;
     margin: 0 !important;
   }
-
 
   .flex-field,
   .field-vertrag {
@@ -1155,8 +851,6 @@ mat-form-field .child-input{width:300px!important;}
     overflow: visible !important;
     gap: 8px !important;
   }
-  /* The base rules hide scrollbars on every descendant of details-panes-container.
-     Re-enable visible scrollbars under responsive so the tree pane is scrollable. */
   .details-panes-container *,
   .details-panes-container *::before,
   .details-panes-container *::after {
@@ -1188,7 +882,6 @@ mat-form-field .child-input{width:300px!important;}
     overflow: visible !important;
   }
 
-  /* Let the bottom form grow with its content instead of being clipped to 350px */
   .position-details-container .position-details-content {
     flex: 1 1 auto !important;
     height: auto !important;
@@ -1206,11 +899,6 @@ mat-form-field .child-input{width:300px!important;}
     min-height: 0 !important;
   }
 
-  .position-detail-container {
-    min-width: 0 !important;
-  }
-
-  /* Bottom-form fields: let them follow available width */
   .position-details-container .position-details-content .form-row mat-form-field,
   .position-details-container .position-details-content .form-row-third mat-form-field,
   .position-details-container .position-details-content .form-row-arrow mat-form-field {
@@ -1218,16 +906,31 @@ mat-form-field .child-input{width:300px!important;}
     width: 60% !important;
     max-width: 60% !important;
   }
+
+  /* Make level-3 inputs follow their mat-form-field width instead of the
+     fixed 300px, so all three levels align at narrow widths. */
+  .position-details-container .position-details-content .form-row-third mat-form-field .child-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Level-3 uses .child-detail-form whose rows have no explicit width and the
+     form is centered, so rows shrank to content. Force full-width rows like
+     level 1/2 (.vertical-form) so the 60% form-field actually equals 60% of
+     the form, matching levels 1 and 2. */
+  .child-detail-form { align-items: stretch !important; }
+  .child-detail-form .form-row,
+  .child-detail-form .form-row-third {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .child-detail-form .third-level-form { width: 100% !important; }
+  .child-detail-form.parent-position3 { right: 0 !important; }
 }
 
 @media (max-width: 900px) {
-  .form-content {
-    margin-right: 0 !important;
-  }
-
-  .form-grid-container {
-    margin: 0 12px !important;
-  }
+  .form-content { margin-right: 0 !important; }
+  .form-grid-container { margin: 0 12px !important; }
 
   .checkbox-row,
   .checkbox-row-bottom {
@@ -1256,7 +959,6 @@ mat-form-field .child-input{width:300px!important;}
     flex-wrap: wrap;
     height: auto !important;
     gap: 6px;
-
     .form-title {
       font-size: 16px;
       flex: 1 1 100%;
@@ -1302,32 +1004,14 @@ mat-form-field .child-input{width:300px!important;}
     min-width: 0 !important;
     flex: 1 1 100% !important;
   }
-
-  .position-detail-container {
-    min-width: 0 !important;
-  }
 }
-// ::ng-deep div.mat-mdc-select-drop-down-bottom {
-//     width: 120px!important;
-//     position: relative!important;
-//     right: 26px!important;
-// }
-
-
-
-
-
-
-
-
-
 
 .cdk-overlay-pane:has(.drop-down-bottom) {
   width: 268px !important;
   min-width: 268px !important;
   max-width: 268px !important;
-  position: relative!important;
-  left:9px!important;
+  position: relative !important;
+  left: 9px !important;
 }
 
 div.mat-mdc-select-panel.drop-down-bottom,
@@ -1336,8 +1020,46 @@ div.mat-mdc-select-panel.drop-down-bottom,
   min-width: 268px !important;
   max-width: 268px !important;
   box-sizing: border-box !important;
-   position: relative!important;
-  left:9px!important;
+  position: relative !important;
+  left: 9px !important;
 }
-.aktiv-bottom{position: relative;right: 11px;}
-.field-label-position{position: relative;right: 5px;}
+
+.aktiv-bottom { position: relative; right: 11px; }
+.field-label-position { position: relative; right: 5px; }
+
+@media (max-width: 1400px) {
+  .checkbox-level1 { position: relative; right: 10px; }
+  .aktiv-bottom { position: relative; left: 5px; }
+}
+
+.field-label,
+.field-label.required,
+.field-label.width,
+.field-label.width2,
+.field-label.field-label-aktiv,
+.field-label.bis-date,
+.position-details-container .position-details-content .form-row .field-label,
+.position-details-container .position-details-content .form-row-third .field-label,
+.position-details-container .position-details-content .vertical-form .form-row .field-label {
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+
+.position-item .position-info .position-title { font-size: 14px !important; }
+.position-extra,
+.position-extra > span,
+.position-extra .volumen,
+.position-extra .geplant,
+.position-extra-l3 .geplant {
+  font-size: 13px !important;
+}
+
+.position-item .position-info .position-extra,
+.position-item .position-info .position-extra-l3 {
+  margin-top: 3px !important;
+}
+.anmerkung-label, .produkt-label{
+  position: relative;
+  right: 4px;
+}

@@ -1,5 +1,5 @@
 // import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -124,8 +124,8 @@ vertragForm!: FormGroup;
   selectedPosition: any | null = null;
 verantwortlicherOptions: { id: string; fullName: string }[] = [];
   servicemanagerOptions: string[] = [];
-    vertragList: any[] = [];
-  vertragPositionTypenList: any[] = [];
+    vertragList: { id: string; produktname: string }[] = [];
+  vertragPositionTypenList: { id: string; produktPositionname: string }[] = [];
 isNewPositionBeingCreated = false;
 isNewVerbraucherBeingCreated = false;
 isNewChildBeingCreated = false;
@@ -145,8 +145,12 @@ geschaeftszahlenOptions: string[] = [];
     private route: ActivatedRoute,
     public dialog: MatDialog,
     private dummyService: VertraegeService,
+    private cdr: ChangeDetectorRef,
 
-  ) {}
+  ) {
+    this.bezugsartenOptions = this.buildOption(ApiVertragBezugsart);
+    this.vertragsTypOptions = this.buildOption(ApiVertragsTyp);
+  }
 
 ngOnInit(): void {
   this.vertragId = this.route.snapshot.paramMap.get('id')!;
@@ -157,11 +161,16 @@ ngOnInit(): void {
   this.initChildDetailForm();
   this.loadRollenbezeichnungen();
   this.loadVerantwortlicherOptions();
+  this.loadProdukte();
 
   if (!this.vertragId || this.vertragId === 'new') {
     this.vertragId = null!;
     this.isFormEditable = true;
     this.vertragForm.enable();
+    this.vertragForm.patchValue({
+      aktiv: true,
+      ende: new Date(9999, 11, 31),
+    });
     this.loading = false;
     this.loadGeschaeftszahlen();
     return;
@@ -195,6 +204,42 @@ private loadGeschaeftszahlen(): void {
     error: (err) => console.error('Error loading Geschaeftszahlen:', err)
   });
 }
+private loadProdukte(): void {
+  this.dummyService.getProdukte().subscribe({
+    next: (produkte: ApiProdukt[]) => {
+      // Use the same `id || produktname` fallback that the form patch uses,
+      // so mat-select always finds a matching option even when mock data
+      // produkte have no `id` field.
+      this.vertragList = (produkte || []).map((p) => ({
+        id: p.id || p.produktname || '',
+        produktname: p.produktname || ''
+      }));
+    },
+    error: (err) => console.error('Error loading Produkte:', err)
+  });
+}
+
+private loadProduktPositionen(produktId: string, onLoaded?: () => void): void {
+  if (!produktId) {
+    this.vertragPositionTypenList = [];
+    onLoaded?.();
+    return;
+  }
+  this.dummyService.getProdukt(produktId).subscribe({
+    next: (produkt: ApiProdukt) => {
+      this.vertragPositionTypenList = (produkt?.produktPosition || []).map((pp: ApiProduktPosition) => ({
+        id: pp.id || pp.produktPositionname || '',
+        produktPositionname: pp.produktPositionname || ''
+      }));
+      onLoaded?.();
+    },
+    error: (err) => {
+      console.error('Error loading ProduktPositionen:', err);
+      onLoaded?.();
+    }
+  });
+}
+
 private loadRollenbezeichnungen(): void {
   this.dummyService.getAlleAktuellenRollenbezeichnungen().subscribe({
     next: (data) => {
@@ -353,18 +398,18 @@ canAddBuchungspunkt(node: FlatNode): boolean {
       vertragstype: ['', Validators.required],
       anmerkung: ['']
     });
-    this.vertragForm.disable();
+    // Don't disable here — disable AFTER patchValue in loadVertragData.
+    // Otherwise mat-select binds against a disabled control and the trigger
+    // can stay blank even when the value matches an option (Bezugsart bug).
   }
-bezugsartenOptions = [
-  { value: '', label: 'Bezugsart wählen' },
-  ...Object.values(ApiVertragBezugsart).map(v => ({ value: v, label: v }))
-];
+bezugsartenOptions: string[] = [];
+vertragsTypOptions: string[] = [];
+verbraucherArray: string[] = ['Personal', 'Sachmittel'];
 
-vertragsTypOptions = [
-  { value: '', label: 'Vertragstyp wählen' },
-  ...Object.values(ApiVertragsTyp).map(v => ({ value: v, label: v }))
-];
-  verbraucherArray=['Personal','Sachmittel'];
+/** Take an enum object and return its values as a flat string[] for mat-options. */
+private buildOption(enumObj: any): string[] {
+  return Object.values(enumObj as Record<string, string>);
+}
 
 
   private initPositionDetailForm(): void {
@@ -437,7 +482,13 @@ private initChildDetailForm(): void {
     anmerkung: [''],
     aktiv: [false],
   });
-  this.childDetailForm.disable();
+  // Don't disable here — the form template is gated by *ngIf on
+  // selectedPosition, so it isn't rendered until doSelectPosition runs and
+  // disables it after patchValue (with emitEvent:false).
+
+  this.childDetailForm.get('produkt')!.valueChanges.subscribe((produktId: string) => {
+    this.loadProduktPositionen(produktId);
+  });
 }
 
  private loadVertragData(): void {
@@ -450,8 +501,6 @@ private initChildDetailForm(): void {
         return;
       }
 
-      this.extractVertragTypenAndPositionTypen(detailData);
-
       if (detailData.vertragsverantwortlicher) {
         const v = detailData.vertragsverantwortlicher;
         const exists = this.verantwortlicherOptions.some(p => p.id === v.id);
@@ -463,13 +512,30 @@ private initChildDetailForm(): void {
         }
       }
 
+      // Force CD so the *ngFor mat-options are rendered (the form-content is
+      // wrapped in *ngIf="!loading"); only then patch the values, so mat-select
+      // can find the matching option for Bezugsart / Vertragstyp / Vertragsverantwortlicher
+      // immediately instead of waiting for the user to open the dropdown.
+      const bezugsartValue = this.mapBezugsart(detailData.bezugsart);
+      const vertragsTypValue = this.mapVertragsTyp(detailData.vertragsTyp);
+      // If the persisted value isn't one of the static enum options (older
+      // record, custom value, etc.), append it so mat-select can still render
+      // it instead of showing an empty trigger.
+      if (bezugsartValue && !this.bezugsartenOptions.includes(bezugsartValue)) {
+        this.bezugsartenOptions = [...this.bezugsartenOptions, bezugsartValue];
+      }
+      if (vertragsTypValue && !this.vertragsTypOptions.includes(vertragsTypValue)) {
+        this.vertragsTypOptions = [...this.vertragsTypOptions, vertragsTypValue];
+      }
+      this.loading = false;
+      this.cdr.detectChanges();
       this.vertragForm.patchValue({
         vertragsname:    detailData.vertragsname    || '',
         vertragszusatz:  detailData.vertragszusatz  || '',
         vertragspartner: detailData.vertragspartner || '',
         auftraggeber:    detailData.auftraggeber    || '',
         vertragsverantwortlicher: detailData.vertragsverantwortlicher?.id || '',
-        bezugsart:this.mapBezugsart(detailData.bezugsart),
+        bezugsart: bezugsartValue,
         elak: detailData.elak|| '',
         beschaffungsnummer: detailData.beschaffungsnummer || '',
         lkVertrag: detailData.lkKennung || false,
@@ -480,11 +546,15 @@ private initChildDetailForm(): void {
         vertragssumme:detailData.vertragssumme    || '',
         auftragsreferenz: detailData.auftragsreferenz || '',
         rahmenvertragGZ: detailData.geschaeftszahl || '',
-        vertragstype: this.mapVertragsTyp(detailData.vertragsTyp),
+        vertragstype: vertragsTypValue,
         anmerkung: detailData.anmerkung || ''
       });
-
-      this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.value));
+      this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.getRawValue()));
+      // Disable AFTER patching so mat-select renders the patched value first.
+      if (!this.isFormEditable) {
+        this.vertragForm.disable({ emitEvent: false });
+      }
+      this.cdr.detectChanges();
 
       // Build the tree
       if (detailData.vertragPosition) {
@@ -493,7 +563,7 @@ private initChildDetailForm(): void {
           name:         parentPos.position || 'Unnamed Position',
           aktiv:        parentPos.aktiv !== false,
           typ:          'Vertragsposition',
-          isExpanded:   true,
+          isExpanded:   false,
           level:        1,
           volumenEuro:  parentPos.volumenEuro,
           volumenStunden: parentPos.volumenStunden,
@@ -513,7 +583,7 @@ private initChildDetailForm(): void {
             personId: verbraucher.person?.id,
             typ: 'Verbraucher',
             level:2,
-            isExpanded: true,
+            isExpanded: false,
             parentId:parentPos.id,
             aktiv:verbraucher.aktiv !== false,
             volumenEuro:verbraucher.volumenEuro,
@@ -536,9 +606,8 @@ private initChildDetailForm(): void {
             })) || []
           })) || []
         }));
+        this.sortNodesByName(this.vertragspositionen);
       }
-
-      this.loading = false;
     },
     error: (error: any) => {
       console.error('Error:', error);
@@ -572,49 +641,6 @@ private mapVerbraucherTyp(value: string): string {
   };
   return map[value] || value || '';
 }
-private extractVertragTypenAndPositionTypen(detailData: any): void {
-  const produktKeys = new Set<string>();
-  const produktArr: any[] = [];
-  const positionIds = new Set<string>();
-  const positionArr: any[] = [];
-
-  if (detailData.vertragPosition) {
-    detailData.vertragPosition.forEach((position: any) => {
-      if (position.vertragPositionVerbraucher) {
-        position.vertragPositionVerbraucher.forEach((verbraucher: any) => {
-          if (verbraucher.stundenplanung) {
-            verbraucher.stundenplanung.forEach((plan: any) => {
-              const pp = plan.produktPosition;
-              if (pp) {
-                if (pp.id && !positionIds.has(pp.id)) {
-                  positionIds.add(pp.id);
-                  positionArr.push({
-                    id: pp.id,
-                    produktPositionname: pp.produktPositionname || 'Unnamed Position'
-                  });
-                }
-                if (pp.produkt) {
-                  const key = pp.produkt.id || pp.produkt.produktname;
-                  if (key && !produktKeys.has(key)) {
-                    produktKeys.add(key);
-                    produktArr.push({
-                      id: key,
-                      produktname: pp.produkt.produktname || 'Unnamed Product'
-                    });
-                  }
-                }
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-
-  this.vertragList = produktArr;
-  this.vertragPositionTypenList = positionArr;
-}
-
   // Main Form Actions (Vertrag)
 onEditOrSubmit(): void {
   if (!this.isFormEditable) {
@@ -638,7 +664,10 @@ onSubmit(): void {
   this.vertragSubmitAttempted = true;
   if (this.vertragForm.invalid) {
     this.vertragForm.markAllAsTouched();
-    this.showErrorDialog('Bitte füllen Sie alle Pflichtfelder aus.', 'Validierung');
+    this.showErrorDialog(
+      this.buildRequiredErrorMessage(this.vertragForm, this.vertragLabelMap),
+      'Validierung'
+    );
     return;
   }
 
@@ -682,10 +711,10 @@ onSubmit(): void {
   saveObservable.subscribe({
     next: (response: ApiVertrag) => {
       this.vertragId = response.id ?? this.vertragId;
-      this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.value));
+      this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.getRawValue()));
       this.saving = false;
       this.isFormEditable = false;
-      this.vertragForm.disable();
+      this.vertragForm.disable({ emitEvent: false });
       this.vertragSubmitAttempted = false;
 
       if (isNewVertrag && response.id) {
@@ -709,8 +738,8 @@ onSubmit(): void {
     }
     this.isFormEditable = false;
     this.vertragSubmitAttempted = false;
-    this.vertragForm.patchValue(this.originalVertragData);
-    this.vertragForm.disable();
+    this.vertragForm.patchValue(this.originalVertragData, { emitEvent: false });
+    this.vertragForm.disable({ emitEvent: false });
   } else {
     this.router.navigate(['/vertraege-2']);
   }
@@ -791,17 +820,54 @@ private doSelectPosition(position: any): void {
   });
     if (!this.isVerbraucherFormEditable) this.verbraucherDetailForm.disable();
   } else if (position.typ === 'Buchungspunkt' || position.typ === 'Dokumentation') {
-    this.childDetailForm.patchValue({
-      produkt:
-        position.produktPosition?.produkt?.id
-        || position.produktPosition?.produkt?.produktname
-        || null,
-      produktposition: position.produktPosition?.id || null,
-      stundenGeplant: position.stundenGeplant || '',
-      anmerkung: position.anmerkung || '',
-      aktiv: position.aktiv || false
+    const produktObj = position.produktPosition?.produkt;
+    const produktId = produktObj?.id || produktObj?.produktname || null;
+    const produktpositionId =
+      position.produktPosition?.id
+      || position.produktPosition?.produktPositionname
+      || null;
+
+    // Make sure the saved produkt is present in vertragList; otherwise mat-select
+    // can't find a matching option and the trigger stays blank in display mode.
+    if (produktId && !this.vertragList.some(p => p.id === produktId)) {
+      this.vertragList = [
+        ...this.vertragList,
+        { id: produktId, produktname: produktObj?.produktname || produktId }
+      ];
+    }
+
+    // Load the positionen for this produkt FIRST so mat-select has the matching
+    // option, then run change detection so *ngFor renders the new mat-option
+    // nodes BEFORE patching the form values. Without detectChanges() between
+    // the array update and the patch, mat-select can't find a match and the
+    // dropdown stays blank until the user clicks it.
+    this.loadProduktPositionen(produktId || '', () => {
+      // Same defensive add for the produktposition: if the loaded list doesn't
+      // include the saved one (e.g. produkt was a placeholder so the wrong list
+      // came back), append it so mat-select can render it.
+      if (produktpositionId && !this.vertragPositionTypenList.some(p => p.id === produktpositionId)) {
+        this.vertragPositionTypenList = [
+          ...this.vertragPositionTypenList,
+          {
+            id: produktpositionId,
+            produktPositionname: position.produktPosition?.produktPositionname || produktpositionId
+          }
+        ];
+      }
+      this.cdr.detectChanges();
+      this.childDetailForm.patchValue({
+        produkt: produktId,
+        produktposition: produktpositionId,
+        stundenGeplant: position.stundenGeplant || '',
+        anmerkung: position.anmerkung || '',
+        aktiv: position.aktiv || false
+      }, { emitEvent: false });
+      // emitEvent:false on disable() — otherwise the produkt valueChanges
+      // subscription fires again, reloads the produkt-positionen list and
+      // drops the defensively-added saved produktposition.
+      if (!this.isChildFormEditable) this.childDetailForm.disable({ emitEvent: false });
+      this.cdr.detectChanges();
     });
-    if (!this.isChildFormEditable) this.childDetailForm.disable();
   }
 }
 
@@ -898,7 +964,10 @@ private savePositionDetails(): void {
     this.positionSubmitAttempted = true;
     if (this.positionDetailForm.invalid) {
       this.positionDetailForm.markAllAsTouched();
-      this.showErrorDialog('Bitte füllen Sie alle Pflichtfelder aus.', 'Validierung');
+      this.showErrorDialog(
+        this.buildRequiredErrorMessage(this.positionDetailForm, this.positionLabelMap),
+        'Validierung'
+      );
       return;
     }
 
@@ -927,6 +996,7 @@ private savePositionDetails(): void {
             isNew: false
           };
           this.vertragspositionen.unshift(newPosition);
+          this.sortNodesByName(this.vertragspositionen);
           this.finalizePositionSave();
         },
         error: (err: any) => {
@@ -998,7 +1068,10 @@ private savePositionDetails(): void {
   this.verbraucherSubmitAttempted = true;
   if (this.verbraucherDetailForm.invalid) {
     this.verbraucherDetailForm.markAllAsTouched();
-    this.showErrorDialog('Bitte füllen Sie alle Pflichtfelder aus.', 'Validierung');
+    this.showErrorDialog(
+      this.buildRequiredErrorMessage(this.verbraucherDetailForm, this.verbraucherLabelMap),
+      'Validierung'
+    );
     return;
   }
 
@@ -1039,6 +1112,7 @@ private savePositionDetails(): void {
               isNew: false,
             };
             parentNode.children.push(savedNode);
+            this.sortNodesByName(parentNode.children);
             parentNode.isExpanded = true;
             this.selectedPosition = savedNode;
           }
@@ -1119,7 +1193,10 @@ private finalizeVerbraucherSave(): void {
   this.childSubmitAttempted = true;
   if (this.childDetailForm.invalid) {
     this.childDetailForm.markAllAsTouched();
-    this.showErrorDialog('Bitte füllen Sie alle Pflichtfelder aus.', 'Validierung');
+    this.showErrorDialog(
+      this.buildRequiredErrorMessage(this.childDetailForm, this.childLabelMap),
+      'Validierung'
+    );
     return;
   }
 
@@ -1150,6 +1227,7 @@ dto.produktPosition = { id: formValues.produktposition } as ApiProduktPosition;
               isPendingCreation: false,
               isNew: false,
             });
+            this.sortNodesByName(parentNode.children);
             parentNode.isExpanded = true;
           }
           this.finalizeChildSave();
@@ -1206,14 +1284,18 @@ private finalizeChildSave(): void {
 
   this.childSubmitAttempted = false;
   this.isChildFormEditable = false;
+  const produktObj = this.selectedPosition.produktPosition?.produkt;
   this.childDetailForm.patchValue({
-    produkt: this.selectedPosition.produktPosition?.produkt?.id || null,
-    produktposition: this.selectedPosition.produktPosition?.id || null,
+    produkt: produktObj?.id || produktObj?.produktname || null,
+    produktposition:
+      this.selectedPosition.produktPosition?.id
+      || this.selectedPosition.produktPosition?.produktPositionname
+      || null,
     stundenGeplant: this.selectedPosition.stundenGeplant || '',
     anmerkung: this.selectedPosition.anmerkung || '',
     aktiv: this.selectedPosition.aktiv || false
-  });
-  this.childDetailForm.disable();
+  }, { emitEvent: false });
+  this.childDetailForm.disable({ emitEvent: false });
 }
   openDeleteDialog(): void {
     if (!this.selectedPosition) return;
@@ -1438,6 +1520,69 @@ private showErrorDialog(detail: string, title: string = 'Fehler'): void {
     data: { title, detail },
     panelClass: 'custom-dialog-width'
   });
+}
+
+/** Build a validation message that enumerates every required field that is
+ *  still empty in the given form. The error dialog renders with
+ *  white-space: pre-wrap, so newlines are preserved. */
+private buildRequiredErrorMessage(form: FormGroup, labelMap: Record<string, string>): string {
+  const missing: string[] = [];
+  Object.keys(form.controls).forEach((key) => {
+    const ctl = form.get(key);
+    if (ctl && ctl.invalid && ctl.errors && ctl.errors['required']) {
+      missing.push(labelMap[key] || key);
+    }
+  });
+  if (missing.length === 0) {
+    return 'Bitte füllen Sie alle Pflichtfelder aus.';
+  }
+  return 'Bitte füllen Sie folgende Pflichtfelder aus:\n• ' + missing.join('\n• ');
+}
+
+private vertragLabelMap: Record<string, string> = {
+  vertragsname: 'Vertragsname',
+  vertragszusatz: 'Vertragszusatz',
+  vertragspartner: 'Vertragspartner',
+  auftraggeber: 'Auftraggeber',
+  erstellungsdatum: 'Erstellungsdatum',
+  start: 'Gültig von',
+  ende: 'Gültig bis',
+  vertragssumme: 'Vertragssumme',
+  vertragstype: 'Vertragstyp',
+};
+
+private positionLabelMap: Record<string, string> = {
+  positionsbezeichnung: 'Positionsbezeichnung',
+  planungsjahr: 'Planungsjahr',
+  volumenEuro: 'Volumen [Euro]',
+};
+
+private verbraucherLabelMap: Record<string, string> = {
+  verbraucherTyp: 'Verbrauchertyp',
+  person: 'Person',
+  verbraucher: 'Verbraucher',
+  stundensatz: 'Stundensatz inkl. UST.',
+  stundenkontingent: 'Stundenkontingent jährlich',
+  volumenEuro: 'Volumen [Euro]',
+};
+
+private childLabelMap: Record<string, string> = {
+  produktposition: 'Produktposition',
+  stundenGeplant: 'Stunden geplant',
+};
+
+/** Sort the tree alphabetically (A→Z) by name at every level, in-place. */
+private sortNodesByName(nodes: any[]): any[] {
+  if (!Array.isArray(nodes)) return nodes;
+  nodes.sort((a, b) =>
+    (a?.name || '').localeCompare((b?.name || ''), 'de', { sensitivity: 'base' })
+  );
+  nodes.forEach((node) => {
+    if (Array.isArray(node?.children) && node.children.length > 0) {
+      this.sortNodesByName(node.children);
+    }
+  });
+  return nodes;
 }
 
 }

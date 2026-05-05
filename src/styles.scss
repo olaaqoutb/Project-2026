@@ -10,6 +10,23 @@
   width: 90% !important;
   margin-left: 15px !important;
 }
+
+/* mat-menu panels also render in the CDK overlay. Force MDI icons inside
+   option-menu items down to 16px (overrides mdi-24px on the inline element). */
+.mat-mdc-menu-panel .mat-mdc-menu-item i.mdi,
+.cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi,
+.option-menu .mat-mdc-menu-item i.mdi {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+}
+.mat-mdc-menu-panel .mat-mdc-menu-item i.mdi::before,
+.cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi::before,
+.option-menu .mat-mdc-menu-item i.mdi::before {
+  font-size: 16px !important;
+  line-height: 16px !important;
+}
 // .custom-dropdown-panel {
 //   position:relative!important;
 //  top: 80px !important;

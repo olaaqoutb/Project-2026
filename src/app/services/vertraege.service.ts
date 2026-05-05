@@ -9,6 +9,7 @@ import { ApiStundenplanung } from '../models/ApiStundenplanung';
 import { ApiGeschaeftszahlenListe } from '../models/ApiGeschaeftszahlenListe';
 import { ApiRollenbezeichnungsListe } from '../models/ApiRollenbezeichnungsListe';
 import { ApiPerson } from '../models/ApiPerson';
+import { ApiProdukt } from '../models/ApiProdukt';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,14 @@ export class VertraegeService {
   getAlleAktuellenRollenbezeichnungen(): Observable<ApiRollenbezeichnungsListe> {
     return this.getitRest3Service.getAlleAktuellenRollenbezeichnungen()
       .pipe(map(r => r.body ?? {}));
+  }
+
+  getProdukte(): Observable<ApiProdukt[]> {
+    return this.getitRest3Service.getProdukte().pipe(map(r => r.body ?? []));
+  }
+
+  getProdukt(id: string, filter?: string): Observable<ApiProdukt> {
+    return this.getitRest3Service.getProdukt(id, filter).pipe(map(r => r.body as ApiProdukt));
   }
 
   createVertragPosition(

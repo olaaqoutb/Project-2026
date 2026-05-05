@@ -9,7 +9,7 @@
             class="cancel-btn cancel-btn-header"
             (click)="onCancel()"
           >
-            <mat-icon>arrow_back</mat-icon>
+            <i class="mdi mdi-chevron-left mdi-24px" aria-hidden="true"></i>
           </button>
           <button
             *ngIf="isFormEditable"
@@ -27,13 +27,15 @@
             class="custom-menu menu-icon-right-top custom-menu-header"
             *ngIf="!isFormEditable"
           >
-            <mat-icon>menu</mat-icon>
+            <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
           </button>
           <mat-menu #topMenu="matMenu" class="option-menu">
             <button mat-menu-item>
-              <mat-icon>picture_as_pdf</mat-icon>Plan-Ist Vergleich
+              <i class="mdi mdi-file-pdf-box mdi-24px" aria-hidden="true"></i>Plan-Ist Vergleich
             </button>
-            <button mat-menu-item><mat-icon>article</mat-icon>Logbuch</button>
+            <button mat-menu-item>
+              <i class="mdi mdi-file-document mdi-24px" aria-hidden="true"></i>Logbuch
+            </button>
           </mat-menu>
         </div>
         <h2 class="form-title">Verträge</h2>
@@ -45,7 +47,12 @@
             (click)="onEditOrSubmit()"
             [disabled]="saving"
           >
-            <mat-icon>{{ isFormEditable ? "check" : "edit" }}</mat-icon>
+            <i
+              class="mdi mdi-24px"
+              [class.mdi-check]="isFormEditable"
+              [class.mdi-lead-pencil]="!isFormEditable"
+              aria-hidden="true"
+            ></i>
             {{ isFormEditable ? "Speichern" : "Bearbeiten" }}
           </button>
         </div>
@@ -142,9 +149,9 @@
                 >
                   <mat-option
                     *ngFor="let bez of bezugsartenOptions"
-                    [value]="bez.value"
+                    [value]="bez"
                   >
-                    {{ bez.label }}
+                    {{ bez }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -260,6 +267,7 @@
                   matInput
                   formControlName="vertragssumme"
                   type="number"
+                  maxlength="30"
                   class="input-height"
                 />
               </mat-form-field>
@@ -298,9 +306,9 @@
                 >
                   <mat-option
                     *ngFor="let vert of vertragsTypOptions"
-                    [value]="vert.value"
+                    [value]="vert"
                   >
-                    {{ vert.label }}
+                    {{ vert }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -336,7 +344,7 @@
         </button>
         <mat-menu #treeMenu="matMenu" class="option-menu">
           <button mat-menu-item>
-            <mat-icon>sort</mat-icon>Verbraucher sortieren
+            <i class="mdi mdi-order-alphabetical-ascending mdi-24px" aria-hidden="true"></i>Verbraucher sortieren
           </button>
         </mat-menu>
         <span class="header-title">Vertragspositionen</span>
@@ -346,7 +354,7 @@
           matTooltip="Vertragsposition hinzufügen"
           (click)="addVertragsposition()"
         >
-          <i class="mdi mdi-map-marker-plus"></i>
+          <i class="mdi mdi-map-marker-plus mdi-24px"></i>
         </button>
       </div>
       <div class="positionen-list scrollable-container">
@@ -370,7 +378,7 @@
               <!-- Custom icons for each level with dynamic color -->
               <i
                 *ngIf="node.level === 1"
-                class="mdi mdi-map-marker position-icon location-row-icon"
+                class="mdi mdi-map-marker mdi-16px position-icon location-row-icon"
                 [ngClass]="{
                   'icon-active': node.aktiv,
                   'icon-inactive': !node.aktiv
@@ -378,7 +386,7 @@
               ></i>
               <i
                 *ngIf="node.level === 2"
-                class="mdi mdi-account-plus position-icon"
+                class="mdi mdi-account mdi-16px position-icon"
                 [ngClass]="{
                   'icon-active': node.aktiv,
                   'icon-inactive': !node.aktiv
@@ -386,7 +394,7 @@
               ></i>
               <i
                 *ngIf="node.level === 3"
-                class="mdi mdi-alarm position-icon"
+                class="mdi mdi-alarm mdi-16px position-icon"
                 [ngClass]="{
                   'icon-active': node.aktiv,
                   'icon-inactive': !node.aktiv
@@ -400,9 +408,9 @@
                 <div
                   class="position-extra"
                   [style.margin-left.px]="0"
-                  *ngIf="node.level === 1 && node.volumenStunden"
+                  *ngIf="node.level === 1 && node.volumenStunden && (node.aktiv || node.isExpanded)"
                 >
-                  <i class="mdi mdi-file-tree inline-icon"></i>
+                  <i class="mdi mdi-file-tree mdi-16px inline-icon"></i>
                   <span
                     >Volumen €: {{ node.volumenEuro | number: "1.2-2" }}</span
                   >
@@ -418,9 +426,9 @@
                 <div
                   class="position-extra"
                   [style.margin-left.px]="0"
-                  *ngIf="node.level === 2 && node.volumenStunden"
+                  *ngIf="node.level === 2 && node.volumenStunden && (node.aktiv || node.isExpanded)"
                 >
-                  <i class="mdi mdi-file-tree inline-icon"></i>
+                  <i class="mdi mdi-file-tree mdi-16px inline-icon"></i>
                   <span
                     >Volumen €: {{ node.volumenEuro | number: "1.2-2" }}</span
                   >
@@ -435,7 +443,7 @@
                 <div
                   class="position-extra position-extra-l3"
                   [style.margin-left.px]="0"
-                  *ngIf="node.level === 3"
+                  *ngIf="node.level === 3 && (node.aktiv || node.isExpanded)"
                 >
                   <span class="geplant"
                     >Geplant: {{ node.stundenGeplant }}</span
@@ -459,7 +467,7 @@
                 matTooltip="Verbraucher hinzufügen"
                 (click)="addVerbraucher(node, $event)"
               >
-                <i class="mdi mdi-account-plus "></i>
+                <i class="mdi mdi-account-plus mdi-flip-h mdi-24px"></i>
               </button>
 
               <!-- Add Buchungspunkt button on Level 2 -->
@@ -471,7 +479,7 @@
                 matTooltip="Buchungspunkt hinzufügen"
                 (click)="addBuchungspunkt(node, $event)"
               >
-                <i class="mdi mdi-alarm"></i>
+                <i class="mdi mdi-account-plus mdi-flip-h mdi-24px"></i>
               </button>
 
               <!-- Nothing shows for Level 3 -->
@@ -507,23 +515,25 @@
               (click)="openDeleteDialog()"
               class="header-btn btn-loeschen"
             >
-              <mat-icon>delete</mat-icon>
+              <i class="mdi mdi-delete-forever mdi-24px" aria-hidden="true"></i>
               <span>Löschen</span>
             </button>
             <button
               [matMenuTriggerFor]="detailMenu"
               class="custom-menu menu-icon-left"
             >
-              <mat-icon>menu</mat-icon>
+              <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
             </button>
             <mat-menu #detailMenu="matMenu" class="option-menu">
               <button
                 mat-menu-item
                 *ngIf="selectedPosition?.typ === 'Vertragsposition'"
               >
-                <mat-icon>restart_alt</mat-icon>Reset
+                <i class="mdi mdi-file-restore mdi-24px" aria-hidden="true"></i>Reset
               </button>
-              <button mat-menu-item><mat-icon>article</mat-icon>Logbuch</button>
+              <button mat-menu-item>
+                <i class="mdi mdi-file-document mdi-24px" aria-hidden="true"></i>Logbuch
+              </button>
             </mat-menu>
             <button
               *ngIf="
@@ -571,21 +581,24 @@
               id="menu-icon-right"
               mat-button
             >
-              <mat-icon>
-                {{
-                  selectedPosition?.typ === "Vertragsposition"
+              <i
+                class="mdi mdi-24px"
+                [class.mdi-check]="
+                  selectedPosition?.typ === 'Vertragsposition'
                     ? isPositionFormEditable
-                      ? "check"
-                      : "edit"
-                    : selectedPosition?.typ === "Verbraucher"
+                    : selectedPosition?.typ === 'Verbraucher'
                       ? isVerbraucherFormEditable
-                        ? "check"
-                        : "edit"
                       : isChildFormEditable
-                        ? "check"
-                        : "edit"
-                }}
-              </mat-icon>
+                "
+                [class.mdi-lead-pencil]="
+                  !(selectedPosition?.typ === 'Vertragsposition'
+                    ? isPositionFormEditable
+                    : selectedPosition?.typ === 'Verbraucher'
+                      ? isVerbraucherFormEditable
+                      : isChildFormEditable)
+                "
+                aria-hidden="true"
+              ></i>
               {{
                 selectedPosition?.typ === "Vertragsposition"
                   ? isPositionFormEditable
@@ -749,7 +762,7 @@
                 <mat-label class="field-label width required">Verbraucher</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
                   [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('verbraucher')?.invalid">
-                  <input matInput formControlName="verbraucher" maxlength="60" />
+                  <input matInput formControlName="verbraucher" maxlength="30" />
                 </mat-form-field>
               </div>
 
@@ -798,7 +811,7 @@
                 >
                 <mat-form-field appearance="outline" class="form-field"
                   [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('stundensatz')?.invalid">
-                  <input matInput formControlName="stundensatz" type="number" />
+                  <input matInput formControlName="stundensatz" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
 
@@ -816,6 +829,7 @@
                     matInput
                     formControlName="stundenkontingent"
                     type="number"
+                    maxlength="30"
                   />
                 </mat-form-field>
               </div>
@@ -825,7 +839,7 @@
                 <mat-label class="field-label width required">Volumen [Euro]</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
                   [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('volumenEuro')?.invalid">
-                  <input matInput formControlName="volumenEuro" type="number" />
+                  <input matInput formControlName="volumenEuro" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
 
@@ -840,6 +854,7 @@
                     matInput
                     formControlName="StundensatzAnderung"
                     rows="2"
+                    maxlength="50"
                   ></textarea>
                 </mat-form-field>
               </div>
@@ -880,7 +895,7 @@
 
               <!-- Produkt -->
               <div class="form-row form-row-third">
-                <mat-label class="field-label">Produkt</mat-label>
+                <mat-label class="field-label produkt-label">Produkt</mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select
                     formControlName="produkt"
@@ -923,6 +938,7 @@
                     matInput
                     type="number"
                     formControlName="stundenGeplant"
+                    maxlength="30"
                     class="child-input"
                   />
                 </mat-form-field>
@@ -930,7 +946,7 @@
 
               <!-- Anmerkung -->
               <div class="form-row form-row-third">
-                <mat-label class="field-label">Anmerkung</mat-label>
+                <mat-label class="field-label anmerkung-label">Anmerkung</mat-label>
                 <mat-form-field appearance="outline">
                   <input
                     matInput
