@@ -6,6 +6,8 @@
         aria-label="Optionen"
         type="button"
         [matMenuTriggerFor]="listMenu"
+        matTooltip="Optionen"
+        matTooltipPosition="below"
       >
         <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
       </button>
@@ -97,7 +99,7 @@
       <ng-container matColumnDef="geplan">
         <th mat-header-cell *matHeaderCellDef class="col-stunden">
           <div class="sort-header" (click)="toggleSort('geplan')">
-            Stunden Geplant
+          Geplant
             <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'geplan'">
               {{ sortState['geplan'] === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
             </mat-icon>

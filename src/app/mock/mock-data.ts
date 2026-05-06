@@ -1687,7 +1687,7 @@ export const MOCK_PRODUKTE: ApiProdukt[] = [
         auftraggeber: 'Bundesministerium',
         auftraggeberOrganisation: 'BMI',
         durchfuehrungsverantwortlicher: MOCK_PERSONEN[0],
-        anmerkung: 'Abgelöst durch Schulungsportal v2',
+        anmerkung: 'Abgelöst durch v2',
         produktPositionBuchungspunkt: [
           { id: 'ppbp-18-1-1', version: 1, deleted: false, state: ApiState.READ, aktiv: false, buchungspunkt: 'Teilnehmer-Verwaltung' },
         ],
@@ -2193,11 +2193,11 @@ export const MOCK_PRODUKTE: ApiProdukt[] = [
  */
 function buildExtraVertragPositionen(count: number, parentId: string): any[] {
   const namesLong = [
-    'Cloud-Migration Produktionssysteme (AWS EU-Central & Fallback AT-Vienna)',
-    'Sicherheitsaudit & Penetration-Testing der extern erreichbaren Schnittstellen',
-    'End-to-End Monitoring + Alerting Rollout (Prometheus, Grafana, PagerDuty)',
-    'Einführung Continuous Delivery Pipeline mit GitLab Runner und ArgoCD',
-    'DSGVO-Konformitätsprüfung und Anpassung Datenhaltung personenbezogener Daten',
+    'Cloud-Migration AWS',
+    'Sicherheitsaudit & Pentest',
+    'E2E Monitoring + Alerting',
+    'CD-Pipeline GitLab + ArgoCD',
+    'DSGVO-Konformitätsprüfung',
   ];
   const namesMed = [
     'Mobile App Modernisierung',
@@ -2223,11 +2223,11 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
   const verbraucherNames = [
     'Hassan Adam Terab',
     'Anna Müller',
-    'Dr. Peter Friedrich Schmidt-Hohenberg',
+    'Dr. Peter Schmidt',
     'Max Gruber',
     'Julia Huber',
     'HA',
-    'Stefan Breitner – Externer Berater (ACME GmbH)',
+    'Stefan Breitner',
   ];
 
   const pickName = (i: number) => {
@@ -2259,14 +2259,14 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
       aktiv, planungsjahr: '2026',
       jahresuebertrag: i % 4 === 0,
       rollenbezeichnungRahmenvertrag: rollen[i % rollen.length],
-      anmerkung: `Generierte Vertragsposition #${idx} – Test-/Demo-Daten.`,
+      anmerkung: `Generierte Position #${idx}.`,
       stundenGeplant: String(geplant), stundenGebucht: String(Math.floor(geplant / 3)),
       vertragPositionVerbraucher: [
         {
           id: `vpv-${parentId}-ext-${idx}-1`,
           version: 1, deleted: false, state: ApiState.READ,
           verbraucher: verbraucher1, verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
           volumenStunden: String(Math.floor(volStd * 0.6)),
           volumenEuro: (volEuro * 0.6).toFixed(2),
           stundenpreis: '120.00',
@@ -2276,7 +2276,7 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
           stundenplanung: [
             {
               id: `sp-${parentId}-ext-${idx}-1-1`, version: 1, state: ApiState.READ,
-              anmerkung: 'Buchungspunkt-Notiz: Stundenplanung Generierte Daten.',
+              anmerkung: 'Buchungspunkt generiert.',
               stundenGeplant: String(Math.floor(geplant * 0.4)),
               produktPosition: {
                 id: `pp-${parentId}-ext-${idx}-1-1`, aktiv: aktiv,
@@ -2286,7 +2286,7 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
             },
             {
               id: `sp-${parentId}-ext-${idx}-1-2`, version: 1, state: ApiState.READ,
-              anmerkung: 'Buchungspunkt-Notiz: Stundenplanung Generierte Daten.',
+              anmerkung: 'Buchungspunkt generiert.',
               stundenGeplant: String(Math.floor(geplant * 0.2)),
               produktPosition: {
                 id: `pp-${parentId}-ext-${idx}-1-2`, aktiv: true,
@@ -2300,7 +2300,7 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
           id: `vpv-${parentId}-ext-${idx}-2`,
           version: 1, deleted: false, state: ApiState.READ,
           verbraucher: verbraucher2, verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
           volumenStunden: String(Math.floor(volStd * 0.4)),
           volumenEuro: (volEuro * 0.4).toFixed(2),
           stundenpreis: '120.00',
@@ -2310,7 +2310,7 @@ function buildExtraVertragPositionen(count: number, parentId: string): any[] {
           stundenplanung: [
             {
               id: `sp-${parentId}-ext-${idx}-2-1`, version: 1, state: ApiState.READ,
-              anmerkung: 'Buchungspunkt-Notiz: Stundenplanung Generierte Daten.',
+              anmerkung: 'Buchungspunkt generiert.',
               stundenGeplant: String(Math.floor(geplant * 0.4)),
               produktPosition: {
                 id: `pp-${parentId}-ext-${idx}-2-1`, aktiv: true,
@@ -2332,7 +2332,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Rahmenvertrag Softwareentwicklung 2024',
+    vertragsname: 'Rahmenvertrag SW 2024',
     vertragspartner: 'ACME Consulting GmbH',
     gueltigVon: '2024-01-01',
     gueltigBis: '2026-12-31',
@@ -2343,35 +2343,35 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.BMI_AUSSCHREIBUNG,
     vertragsverantwortlicher: MOCK_PERSONEN[0],
     stundenGeplant: '8000',
-    stundenGebucht: '3240',    vertragszusatz: 'Konzern-Rahmen IT-Bund (Erweiterung 2024)',
+    stundenGebucht: '3240',    vertragszusatz: 'Konzern-Rahmen IT-Bund',
     auftragsreferenz: 'AR-2024-0042',
     erstelldatum: '2023-11-15',
     beschaffungsnummer: 'BN-RV-SE-2024',
     elak: 'BMI-IT/0117/0001-IT2/2024',
     geschaeftszahl: 'GZ-2024-001',
-    anmerkung: 'Mehrjähriger Rahmenvertrag mit Verlängerungsoption +2 Jahre. Quartalsweise Abrechnung.',
+    anmerkung: 'Rahmenvertrag mit Option +2J.',
     vertragPosition: [
       {
         id: 'vp-1a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'FE-Entwicklung GETIT Portal – Angular 19 Migration & Redesign',
+        position: 'FE-Entwicklung GETIT Portal',
         volumenStunden: '4000', volumenEuro: '480000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '4000', stundenGebucht: '1850',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1a-1', version: 1, deleted: false, state: ApiState.READ,
-            verbraucher: 'Hassan Adam Terab – Senior Frontend Engineer', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1200', volumenEuro: '144000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1200', stundenGebucht: '620',
             stundenplanung: [
               {
                 id: 'sp-1a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '300',
                 produktPosition: {
                   id: 'pp-1a-1-1', aktiv: true,
@@ -2381,7 +2381,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-1a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-1a-1-2', aktiv: true,
@@ -2391,7 +2391,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-1a-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '400',
                 produktPosition: {
                   id: 'pp-1a-1-3', aktiv: false,
@@ -2404,14 +2404,14 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-1a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '800', volumenEuro: '96000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '800', stundenGebucht: '350',
             stundenplanung: [
               {
                 id: 'sp-1a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '250',
                 produktPosition: {
                   id: 'pp-1a-2-1', aktiv: true,
@@ -2421,11 +2421,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-1a-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '550',
                 produktPosition: {
                   id: 'pp-1a-2-2', aktiv: true,
-                  produktPositionname: 'Internationale Lokalisierung – DE/EN/FR/IT/ES',
+                  produktPositionname: 'Internat. Lokalisierung',
                   produkt: { produktname: 'Translation Service Framework', kurzName: 'TSF' },
                 },
               },
@@ -2440,20 +2440,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '3000', stundenGebucht: '1070',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'HA', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '600', volumenEuro: '72000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '600', stundenGebucht: '260',
             stundenplanung: [
               {
                 id: 'sp-1b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-1b-1-1', aktiv: true,
@@ -2465,26 +2465,26 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           },
           {
             id: 'vpv-1b-2', version: 1, deleted: false, state: ApiState.READ,
-            verbraucher: 'Dr. Peter Friedrich Schmidt-Hohenberg (extern, ACME Consulting GmbH, Standort Wien)',
+            verbraucher: 'Dr. Peter Schmidt-Hohenberg',
             verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1400', volumenEuro: '168000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1400', stundenGebucht: '810',
             stundenplanung: [
               {
                 id: 'sp-1b-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-1b-2-1', aktiv: true,
-                  produktPositionname: 'Datenbankmigration Oracle → PostgreSQL (Gesamtsystem)',
+                  produktPositionname: 'DB-Migration Oracle→Postgres',
                   produkt: { produktname: 'Datenbank-Plattform GETIT', kurzName: 'DB' },
                 },
               },
               {
                 id: 'sp-1b-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '400',
                 produktPosition: {
                   id: 'pp-1b-2-2', aktiv: true,
@@ -2494,11 +2494,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-1b-2-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '300',
                 produktPosition: {
                   id: 'pp-1b-2-3', aktiv: false,
-                  produktPositionname: 'Monitoring Infrastruktur (eingestellt 01/2026)',
+                  produktPositionname: 'Monitoring Infrastruktur',
                   produkt: { produktname: 'Observability Stack', kurzName: 'OBS' },
                 },
               },
@@ -2508,35 +2508,35 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
       {
         id: 'vp-1c', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Architektur-Beratung & Review (Bewertung der aktuellen Systemlandschaft)',
+        position: 'Architektur-Beratung & Review',
         volumenStunden: '1000', volumenEuro: '150000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1000', stundenGebucht: '320',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1c-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '150000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1000', stundenGebucht: '320',
             stundenplanung: [
               {
                 id: 'sp-1c-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-1c-1-1', aktiv: true,
-                  produktPositionname: 'Architektur-Board & Governance Workshops Q1–Q4',
+                  produktPositionname: 'Architektur-Board Q1–Q4',
                   produkt: { produktname: 'Enterprise Architecture Office', kurzName: 'EA' },
                 },
               },
               {
                 id: 'sp-1c-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '400',
                 produktPosition: {
                   id: 'pp-1c-1-2', aktiv: true,
@@ -2555,19 +2555,32 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2026',
         jahresuebertrag: true,
         rollenbezeichnungRahmenvertrag: 'Tester',
-        anmerkung: 'Inaktive Vertragsposition – Jahresübertrag aus 2025.',
+        anmerkung: 'Inaktiv. Übertrag 2025.',
         stundenGeplant: '500', stundenGebucht: '0',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-1d-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'X', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '500', volumenEuro: '60000.00', stundenpreis: '120.00',
             aktiv: false, person: MOCK_PERSONEN[4],
             stundenGeplant: '500', stundenGebucht: '0',
             stundenplanung: [],
           },
         ],
+      },
+      {
+        // Vertragsposition without any Verbraucher / Buchungspunkt children —
+        // used to test the "leaf level-1 node" case in the tree.
+        id: 'vp-1e', version: 1, deleted: false, state: ApiState.READ,
+        position: 'Leere Position',
+        volumenStunden: '0', volumenEuro: '0.00',
+        aktiv: true, planungsjahr: '2026',
+        jahresuebertrag: false,
+        rollenbezeichnungRahmenvertrag: 'Entwickler',
+        anmerkung: 'Position ohne Verbraucher.',
+        stundenGeplant: '0', stundenGebucht: '0',
+        vertragPositionVerbraucher: [],
       },
       ...buildExtraVertragPositionen(26, 'v-1'),
     ],
@@ -2577,7 +2590,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Betriebsvertrag Infrastruktur 2025',
+    vertragsname: 'Betriebsvertrag Infra 2025',
     vertragspartner: 'TechOps Austria AG',
     gueltigVon: '2025-01-01',
     gueltigBis: '2028-12-31',
@@ -2588,13 +2601,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.DIREKTVERGABE,
     vertragsverantwortlicher: MOCK_PERSONEN[1],
     stundenGeplant: '18000',
-    stundenGebucht: '2050',    vertragszusatz: '24/7 Betrieb Rechenzentren Wien & Graz',
+    stundenGebucht: '2050',    vertragszusatz: '24/7 RZ Wien & Graz',
     auftragsreferenz: 'AR-2025-0007',
     erstelldatum: '2024-10-20',
     beschaffungsnummer: 'BN-OP-INF-2025',
     elak: 'BMI-IT/0117/0014-IT2/2025',
     geschaeftszahl: 'GZ-2025-001',
-    anmerkung: 'Betriebsvertrag mit SLA 99,9 % Verfügbarkeit. Monatliche Reports.',
+    anmerkung: 'SLA 99,9 %. Monatl. Reports.',
     vertragPosition: [
       {
         id: 'vp-2a', version: 1, deleted: false, state: ApiState.READ,
@@ -2603,13 +2616,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '8000', stundenGebucht: '550',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-2a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '3000', volumenEuro: '300000.00', stundenpreis: '100.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '3000', stundenGebucht: '400',
@@ -2617,7 +2630,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-2a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Max Gruber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '500', volumenEuro: '50000.00', stundenpreis: '100.00',
             aktiv: true, person: MOCK_PERSONEN[4],
             stundenGeplant: '500', stundenGebucht: '150',
@@ -2631,13 +2644,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '5000', stundenGebucht: '1160',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-2b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '500', volumenEuro: '60000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '500', stundenGebucht: '180',
@@ -2645,7 +2658,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-2b-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2500', volumenEuro: '300000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '2500', stundenGebucht: '980',
@@ -2659,13 +2672,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '5000', stundenGebucht: '700',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-2c-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2000', volumenEuro: '200000.00', stundenpreis: '100.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '2000', stundenGebucht: '700',
@@ -2690,13 +2703,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.BMI_AUSSCHREIBUNG,
     vertragsverantwortlicher: MOCK_LOGGED_IN_PERSON,
     stundenGeplant: '5500',
-    stundenGebucht: '920',    vertragszusatz: 'Aktenführung & elektronischer Rechtsverkehr',
+    stundenGebucht: '920',    vertragszusatz: 'Aktenführung & ERV',
     auftragsreferenz: 'AR-2026-0011',
     erstelldatum: '2025-09-30',
     beschaffungsnummer: 'BN-DA-2026',
     elak: 'BMI-IT/0117/0021-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Anschlussvertrag an Pilotprojekt 2025. Stakeholder: Sektion III.',
+    anmerkung: 'Anschluss an Pilot 2025.',
     vertragPosition: [
       {
         id: 'vp-3a', version: 1, deleted: false, state: ApiState.READ,
@@ -2705,13 +2718,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '2000', stundenGebucht: '320',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-3a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1200', volumenEuro: '180000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '1200', stundenGebucht: '200',
@@ -2719,7 +2732,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-3a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '500', volumenEuro: '75000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '500', stundenGebucht: '120',
@@ -2733,13 +2746,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '3500', stundenGebucht: '600',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-3b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '120000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1000', stundenGebucht: '340',
@@ -2747,7 +2760,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-3b-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '800', volumenEuro: '96000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '800', stundenGebucht: '260',
@@ -2761,7 +2774,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Altvertrag E-Government 2022 (ausgelaufen)',
+    vertragsname: 'Altvertrag E-Gov 2022',
     vertragspartner: 'OldTech Solutions GmbH',
     gueltigVon: '2022-01-01',
     gueltigBis: '2023-12-31',
@@ -2772,13 +2785,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.BMI_AUSSCHREIBUNG,
     vertragsverantwortlicher: MOCK_PERSONEN[2],
     stundenGeplant: '3200',
-    stundenGebucht: '3200',    vertragszusatz: 'Abgeschlossen 12/2023 – Archivunterlagen verfügbar',
+    stundenGebucht: '3200',    vertragszusatz: 'Abgeschlossen 12/2023',
     auftragsreferenz: 'AR-2022-0099',
     erstelldatum: '2021-12-01',
     beschaffungsnummer: 'BN-EGOV-2022',
     elak: 'BMI-IT/0117/0009-IT2/2022',
     geschaeftszahl: 'GZ-2024-002',
-    anmerkung: 'Vertrag ausgelaufen. Gewährleistungsphase bis 06/2025.',
+    anmerkung: 'Ausgelaufen. GW bis 06/25.',
     vertragPosition: [
       {
         id: 'vp-4a', version: 1, deleted: false, state: ApiState.READ,
@@ -2787,13 +2800,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2023',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Projektleiter',
-        anmerkung: 'Historische Position aus Planungsjahr 2023.',
+        anmerkung: 'Historische Position 2023.',
         stundenGeplant: '3200', stundenGebucht: '3200',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-4a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1600', volumenEuro: '225000.00', stundenpreis: '140.00',
             aktiv: false, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1600', stundenGebucht: '1600',
@@ -2807,7 +2820,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Pilotprojekt Dokumentenmanagement 2023',
+    vertragsname: 'Pilot DMS 2023',
     vertragspartner: 'DocuFlow Systems',
     gueltigVon: '2023-03-01',
     gueltigBis: '2024-02-28',
@@ -2818,13 +2831,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.BMI_AUSSCHREIBUNG,
     vertragsverantwortlicher: MOCK_PERSONEN[1],
     stundenGeplant: '1500',
-    stundenGebucht: '1500',    vertragszusatz: 'Pilotbetrieb 2 Standorte – Evaluierung abgeschlossen',
+    stundenGebucht: '1500',    vertragszusatz: 'Pilotbetrieb 2 Standorte',
     auftragsreferenz: 'AR-2023-0022',
     erstelldatum: '2023-02-10',
     beschaffungsnummer: 'BN-DM-PIL-2023',
     elak: 'BMI-IT/0117/0006-IT2/2023',
     geschaeftszahl: 'GZ-2025-002',
-    anmerkung: 'Pilot lief erfolgreich. Übergang zu Regelbetrieb 2025 geplant.',
+    anmerkung: 'Regelbetrieb 2025 geplant.',
     vertragPosition: [
       {
         id: 'vp-5a', version: 1, deleted: false, state: ApiState.READ,
@@ -2833,13 +2846,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2023',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Projektleiter',
-        anmerkung: 'Historische Position aus Planungsjahr 2023.',
+        anmerkung: 'Historische Position 2023.',
         stundenGeplant: '1500', stundenGebucht: '1500',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-5a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '900', volumenEuro: '108000.00', stundenpreis: '120.00',
             aktiv: false, person: MOCK_PERSONEN[1],
             stundenGeplant: '900', stundenGebucht: '900',
@@ -2847,7 +2860,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-5a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '600', volumenEuro: '72000.00', stundenpreis: '120.00',
             aktiv: false, person: MOCK_PERSONEN[2],
             stundenGeplant: '600', stundenGebucht: '600',
@@ -2872,13 +2885,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     bezugsart: ApiVertragBezugsart.DIREKTVERGABE,
     vertragsverantwortlicher: MOCK_PERSONEN[2],
     stundenGeplant: '2800',
-    stundenGebucht: '2800',    vertragszusatz: 'Hotline + Vor-Ort-Service Bundesländer',
+    stundenGebucht: '2800',    vertragszusatz: 'Hotline + Vor-Ort-Service',
     auftragsreferenz: 'AR-2021-0055',
     erstelldatum: '2020-11-12',
     beschaffungsnummer: 'BN-WTG-2021',
     elak: 'BMI-IT/0117/0003-IT2/2021',
     geschaeftszahl: 'GZ-2024-002',
-    anmerkung: 'Wartungsvertrag wurde 2022 nicht verlängert.',
+    anmerkung: 'Nicht verlängert 2022.',
     vertragPosition: [
       {
         id: 'vp-6a', version: 1, deleted: false, state: ApiState.READ,
@@ -2887,13 +2900,13 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2022',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Analyst',
-        anmerkung: 'Historische Position aus Planungsjahr 2022.',
+        anmerkung: 'Historische Position 2022.',
         stundenGeplant: '2800', stundenGebucht: '2800',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-6a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '180000.00', stundenpreis: '100.00',
             aktiv: false, person: MOCK_PERSONEN[2],
             stundenGeplant: '1800', stundenGebucht: '1800',
@@ -2901,7 +2914,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-6a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '110000.00', stundenpreis: '110.00',
             aktiv: false, person: MOCK_PERSONEN[3],
             stundenGeplant: '1000', stundenGebucht: '1000',
@@ -2932,49 +2945,49 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-CYB-SOC-2026',
     elak: 'BMI-IT/0117/0042-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'SOC läuft 24/7. Eskalationsstufen lt. Anlage B.',
+    anmerkung: 'SOC 24/7.',
     vertragPosition: [
       {
         id: 'vp-7a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Security Operations Center (SOC) – 24/7 Monitoring',
+        position: 'SOC 24/7 Monitoring',
         volumenStunden: '4000', volumenEuro: '480000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '4000', stundenGebucht: '720',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-7a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2200', volumenEuro: '264000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '2200', stundenGebucht: '420',
             stundenplanung: [
               {
                 id: 'sp-7a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-7a-1-1', aktiv: true,
-                  produktPositionname: 'SIEM-Korrelationsregeln & Alert Tuning',
+                  produktPositionname: 'SIEM-Korrelation',
                   produkt: { produktname: 'SIEM Platform', kurzName: 'SIEM' },
                 },
               },
               {
                 id: 'sp-7a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '800',
                 produktPosition: {
                   id: 'pp-7a-1-2', aktiv: true,
-                  produktPositionname: 'Threat Intelligence Feeds Integration',
+                  produktPositionname: 'Threat Intel Feeds',
                   produkt: { produktname: 'Threat Intel Hub', kurzName: 'TIH' },
                 },
               },
               {
                 id: 'sp-7a-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-7a-1-3', aktiv: true,
@@ -2987,24 +3000,24 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-7a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '216000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1800', stundenGebucht: '300',
             stundenplanung: [
               {
                 id: 'sp-7a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1100',
                 produktPosition: {
                   id: 'pp-7a-2-1', aktiv: true,
-                  produktPositionname: 'Endpoint Detection & Response (EDR) Rollout',
+                  produktPositionname: 'EDR Rollout',
                   produkt: { produktname: 'Endpoint Security Suite', kurzName: 'EDR' },
                 },
               },
               {
                 id: 'sp-7a-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-7a-2-2', aktiv: true,
@@ -3018,25 +3031,25 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
       {
         id: 'vp-7b', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Pentesting & Vulnerability Management',
+        position: 'Pentest & Vuln. Mgmt',
         volumenStunden: '1800', volumenEuro: '270000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1800', stundenGebucht: '380',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-7b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '270000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1800', stundenGebucht: '380',
             stundenplanung: [
               {
                 id: 'sp-7b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-7b-1-1', aktiv: true,
@@ -3046,7 +3059,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-7b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-7b-1-2', aktiv: true,
@@ -3056,11 +3069,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-7b-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-7b-1-3', aktiv: true,
-                  produktPositionname: 'CVE-Scanning Pipeline (Trivy/Nessus)',
+                  produktPositionname: 'CVE-Scanning Pipeline',
                   produkt: { produktname: 'Vuln Scanner', kurzName: 'VULN' },
                 },
               },
@@ -3070,25 +3083,25 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
       {
         id: 'vp-7c', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Security Awareness & Schulungen',
+        position: 'Security Awareness',
         volumenStunden: '1000', volumenEuro: '90000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1000', stundenGebucht: '140',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-7c-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '90000.00', stundenpreis: '90.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '1000', stundenGebucht: '140',
             stundenplanung: [
               {
                 id: 'sp-7c-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-7c-1-1', aktiv: true,
@@ -3098,11 +3111,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-7c-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-7c-1-2', aktiv: true,
-                  produktPositionname: 'E-Learning Module – Datenschutz',
+                  produktPositionname: 'E-Learning Datenschutz',
                   produkt: { produktname: 'Learning Management', kurzName: 'LMS' },
                 },
               },
@@ -3118,7 +3131,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     deleted: false,
     state: ApiState.READ,
     vertragsname: 'Cloud Migration Programm 2026',
-    vertragszusatz: 'AWS EU-Central + Hybrid On-Prem',
+    vertragszusatz: 'AWS EU + Hybrid On-Prem',
     vertragspartner: 'CloudShift Engineering GmbH',
     gueltigVon: '2026-02-01',
     gueltigBis: '2028-01-31',
@@ -3134,39 +3147,39 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-CLD-MIG-2026',
     elak: 'BMI-IT/0117/0044-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Phasen 1–3 in 2026, Phase 4 in 2027. Cutover-Window mit RZ-Team abgestimmt.',
+    anmerkung: 'Phasen 1–3 in 2026.',
     vertragPosition: [
       {
         id: 'vp-8a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Lift & Shift Workloads (Phase 1)',
+        position: 'Lift & Shift Phase 1',
         volumenStunden: '6000', volumenEuro: '900000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '6000', stundenGebucht: '1340',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-8a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '3000', volumenEuro: '450000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '3000', stundenGebucht: '720',
             stundenplanung: [
               {
                 id: 'sp-8a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1200',
                 produktPosition: {
                   id: 'pp-8a-1-1', aktiv: true,
-                  produktPositionname: 'Terraform-Module für Netzwerk & Subnets',
+                  produktPositionname: 'Terraform Netz & Subnets',
                   produkt: { produktname: 'IaC Library', kurzName: 'IAC' },
                 },
               },
               {
                 id: 'sp-8a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-8a-1-2', aktiv: true,
@@ -3176,11 +3189,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-8a-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-8a-1-3', aktiv: true,
-                  produktPositionname: 'Service Migration Welle 1 (Auth & API-GW)',
+                  produktPositionname: 'Service-Migration Welle 1',
                   produkt: { produktname: 'Migration Toolchain', kurzName: 'MIG' },
                 },
               },
@@ -3189,28 +3202,28 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-8a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '3000', volumenEuro: '450000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '3000', stundenGebucht: '620',
             stundenplanung: [
               {
                 id: 'sp-8a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1500',
                 produktPosition: {
                   id: 'pp-8a-2-1', aktiv: true,
-                  produktPositionname: 'RDS Postgres Setup & Replikation',
+                  produktPositionname: 'RDS Postgres Setup',
                   produkt: { produktname: 'Datenbank-Plattform', kurzName: 'DB' },
                 },
               },
               {
                 id: 'sp-8a-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1500',
                 produktPosition: {
                   id: 'pp-8a-2-2', aktiv: true,
-                  produktPositionname: 'Datenmigration & Validierungslauf',
+                  produktPositionname: 'Datenmigration & Test',
                   produkt: { produktname: 'Migration Toolchain', kurzName: 'MIG' },
                 },
               },
@@ -3225,20 +3238,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '4500', stundenGebucht: '980',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-8b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2500', volumenEuro: '375000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '2500', stundenGebucht: '560',
             stundenplanung: [
               {
                 id: 'sp-8b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1200',
                 produktPosition: {
                   id: 'pp-8b-1-1', aktiv: true,
@@ -3248,7 +3261,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-8b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1300',
                 produktPosition: {
                   id: 'pp-8b-1-2', aktiv: true,
@@ -3261,28 +3274,28 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-8b-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Max Gruber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2000', volumenEuro: '300000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[4],
             stundenGeplant: '2000', stundenGebucht: '420',
             stundenplanung: [
               {
                 id: 'sp-8b-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-8b-2-1', aktiv: true,
-                  produktPositionname: 'Container Registry & Image Scanning',
+                  produktPositionname: 'Container Registry',
                   produkt: { produktname: 'Registry Service', kurzName: 'REG' },
                 },
               },
               {
                 id: 'sp-8b-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-8b-2-2', aktiv: false,
-                  produktPositionname: 'Jenkins Legacy Wrapper (zu migrieren)',
+                  produktPositionname: 'Jenkins Legacy Wrapper',
                   produkt: { produktname: 'Build Plattform', kurzName: 'BLD' },
                 },
               },
@@ -3297,44 +3310,44 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '4500', stundenGebucht: '800',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-8c-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '4500', volumenEuro: '825000.00', stundenpreis: '180.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '4500', stundenGebucht: '800',
             stundenplanung: [
               {
                 id: 'sp-8c-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1500',
                 produktPosition: {
                   id: 'pp-8c-1-1', aktiv: true,
-                  produktPositionname: 'Prometheus + Grafana – Cluster-Dashboards',
+                  produktPositionname: 'Prometheus + Grafana',
                   produkt: { produktname: 'Observability Stack', kurzName: 'OBS' },
                 },
               },
               {
                 id: 'sp-8c-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1500',
                 produktPosition: {
                   id: 'pp-8c-1-2', aktiv: true,
-                  produktPositionname: 'Distributed Tracing (OpenTelemetry)',
+                  produktPositionname: 'OpenTelemetry Tracing',
                   produkt: { produktname: 'Observability Stack', kurzName: 'OBS' },
                 },
               },
               {
                 id: 'sp-8c-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1500',
                 produktPosition: {
                   id: 'pp-8c-1-3', aktiv: true,
-                  produktPositionname: 'Cloud Cost Reporting & Tagging-Standards',
+                  produktPositionname: 'Cloud Cost Reporting',
                   produkt: { produktname: 'FinOps Dashboard', kurzName: 'FIN' },
                 },
               },
@@ -3349,8 +3362,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Datenbank-Modernisierung Oracle → PostgreSQL',
-    vertragszusatz: 'Bundesweit, ressortübergreifend',
+    vertragsname: 'DB-Modernisierung Oracle→PG',
+    vertragszusatz: 'Bundesweit, ressortübergr.',
     vertragspartner: 'DataMigrate Solutions',
     gueltigVon: '2026-03-01',
     gueltigBis: '2027-12-31',
@@ -3366,7 +3379,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-DBM-2026',
     elak: 'BMI-IT/0117/0048-IT2/2026',
     geschaeftszahl: 'GZ-2025-002',
-    anmerkung: 'Cutover bedarf Wartungsfenster Wochenende. Fallback-Plan in Anlage C.',
+    anmerkung: 'Cutover am Wochenende.',
     vertragPosition: [
       {
         id: 'vp-9a', version: 1, deleted: false, state: ApiState.READ,
@@ -3375,34 +3388,34 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1500', stundenGebucht: '220',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-9a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1500', volumenEuro: '180000.00', stundenpreis: '120.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1500', stundenGebucht: '220',
             stundenplanung: [
               {
                 id: 'sp-9a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-9a-1-1', aktiv: true,
-                  produktPositionname: 'Reverse-Engineering Oracle Schema',
+                  produktPositionname: 'Reverse-Eng. Oracle',
                   produkt: { produktname: 'Schema Migrator', kurzName: 'SMG' },
                 },
               },
               {
                 id: 'sp-9a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '800',
                 produktPosition: {
                   id: 'pp-9a-1-2', aktiv: true,
-                  produktPositionname: 'Mapping-Dokumentation & Risiken',
+                  produktPositionname: 'Mapping-Dokumentation',
                   produkt: { produktname: 'Architecture Doc Hub', kurzName: 'ADOC' },
                 },
               },
@@ -3417,20 +3430,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '3700', stundenGebucht: '420',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-9b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '2000', volumenEuro: '320000.00', stundenpreis: '160.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '2000', stundenGebucht: '240',
             stundenplanung: [
               {
                 id: 'sp-9b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-9b-1-1', aktiv: true,
@@ -3440,7 +3453,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-9b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-9b-1-2', aktiv: true,
@@ -3453,28 +3466,28 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-9b-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1700', volumenEuro: '280000.00', stundenpreis: '160.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1700', stundenGebucht: '180',
             stundenplanung: [
               {
                 id: 'sp-9b-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-9b-2-1', aktiv: true,
-                  produktPositionname: 'Application-Layer Anpassungen (JDBC → JPA)',
+                  produktPositionname: 'App-Layer JDBC → JPA',
                   produkt: { produktname: 'Backend Services', kurzName: 'BE' },
                 },
               },
               {
                 id: 'sp-9b-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '800',
                 produktPosition: {
                   id: 'pp-9b-2-2', aktiv: true,
-                  produktPositionname: 'Cutover-Wochenende & Fallback-Plan',
+                  produktPositionname: 'Cutover & Fallback',
                   produkt: { produktname: 'Migration Toolchain', kurzName: 'MIG' },
                 },
               },
@@ -3490,7 +3503,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     deleted: false,
     state: ApiState.READ,
     vertragsname: 'KI-Plattform Forschung 2026',
-    vertragszusatz: 'LLM-Hosting + Vektor-Datenbanken',
+    vertragszusatz: 'LLM-Hosting + Vektor-DB',
     vertragspartner: 'AI Lab Vienna GmbH',
     gueltigVon: '2026-04-01',
     gueltigBis: '2027-03-31',
@@ -3506,7 +3519,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-AI-2026',
     elak: 'BMI-IT/0117/0051-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Forschungsbudget aus IT-Innovationspool. Quartalsbericht an CIO.',
+    anmerkung: 'Forschungsbudget IT-Innov.',
     vertragPosition: [
       {
         id: 'vp-10a', version: 1, deleted: false, state: ApiState.READ,
@@ -3515,30 +3528,30 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '2400', stundenGebucht: '320',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-10a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1400', volumenEuro: '224000.00', stundenpreis: '160.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1400', stundenGebucht: '200',
             stundenplanung: [
               {
                 id: 'sp-10a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-10a-1-1', aktiv: true,
-                  produktPositionname: 'GPU-Cluster Setup (NVIDIA A100)',
+                  produktPositionname: 'GPU-Cluster A100',
                   produkt: { produktname: 'AI Infrastructure', kurzName: 'AI-INF' },
                 },
               },
               {
                 id: 'sp-10a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-10a-1-2', aktiv: true,
@@ -3551,14 +3564,14 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-10a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '156000.00', stundenpreis: '156.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '1000', stundenGebucht: '120',
             stundenplanung: [
               {
                 id: 'sp-10a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-10a-2-1', aktiv: true,
@@ -3568,11 +3581,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-10a-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-10a-2-2', aktiv: true,
-                  produktPositionname: 'Embedding-Pipeline für interne Dokumente',
+                  produktPositionname: 'Embedding-Pipeline',
                   produkt: { produktname: 'Knowledge Base', kurzName: 'KB' },
                 },
               },
@@ -3587,20 +3600,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1800', stundenGebucht: '160',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-10b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '270000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '1800', stundenGebucht: '160',
             stundenplanung: [
               {
                 id: 'sp-10b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-10b-1-1', aktiv: true,
@@ -3610,7 +3623,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-10b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-10b-1-2', aktiv: true,
@@ -3646,7 +3659,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-MOB-2026',
     elak: 'BMI-IT/0117/0055-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Veröffentlichung iOS App Store + Google Play durch Auftragnehmer.',
+    anmerkung: 'iOS + Android Release.',
     vertragPosition: [
       {
         id: 'vp-11a', version: 1, deleted: false, state: ApiState.READ,
@@ -3655,20 +3668,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '2200', stundenGebucht: '540',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-11a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1200', volumenEuro: '168000.00', stundenpreis: '140.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '1200', stundenGebucht: '320',
             stundenplanung: [
               {
                 id: 'sp-11a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-11a-1-1', aktiv: true,
@@ -3678,7 +3691,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-11a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-11a-1-2', aktiv: true,
@@ -3691,14 +3704,14 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-11a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '132000.00', stundenpreis: '132.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '1000', stundenGebucht: '220',
             stundenplanung: [
               {
                 id: 'sp-11a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-11a-2-1', aktiv: true,
@@ -3708,7 +3721,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-11a-2-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '500',
                 produktPosition: {
                   id: 'pp-11a-2-2', aktiv: true,
@@ -3727,20 +3740,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1600', stundenGebucht: '370',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-11b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1600', volumenEuro: '220000.00', stundenpreis: '140.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1600', stundenGebucht: '370',
             stundenplanung: [
               {
                 id: 'sp-11b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '800',
                 produktPosition: {
                   id: 'pp-11b-1-1', aktiv: true,
@@ -3750,7 +3763,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-11b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '800',
                 produktPosition: {
                   id: 'pp-11b-1-2', aktiv: true,
@@ -3769,8 +3782,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Schulungsvertrag IT-Akademie 2026',
-    vertragszusatz: 'Inhouse-Schulungen + Zertifizierungen',
+    vertragsname: 'Schulung IT-Akademie 2026',
+    vertragszusatz: 'Inhouse + Zertifizierungen',
     vertragspartner: 'TechEdu Wien',
     gueltigVon: '2026-01-01',
     gueltigBis: '2026-12-31',
@@ -3786,7 +3799,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-EDU-2026',
     elak: 'BMI-IT/0117/0058-IT2/2026',
     geschaeftszahl: 'GZ-2025-001',
-    anmerkung: 'Schulungsplan in Abstimmung mit HR. Mind. 30 % Frauen-Teilnahme.',
+    anmerkung: 'Schulungsplan mit HR.',
     vertragPosition: [
       {
         id: 'vp-12a', version: 1, deleted: false, state: ApiState.READ,
@@ -3795,20 +3808,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1000', stundenGebucht: '280',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-12a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '110000.00', stundenpreis: '110.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '1000', stundenGebucht: '280',
             stundenplanung: [
               {
                 id: 'sp-12a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '350',
                 produktPosition: {
                   id: 'pp-12a-1-1', aktiv: true,
@@ -3818,7 +3831,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-12a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '350',
                 produktPosition: {
                   id: 'pp-12a-1-2', aktiv: true,
@@ -3828,7 +3841,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-12a-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '300',
                 produktPosition: {
                   id: 'pp-12a-1-3', aktiv: true,
@@ -3842,25 +3855,25 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
       {
         id: 'vp-12b', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Zertifizierungen (CKA / AZ-104 / CISSP)',
+        position: 'Zertifizierungen',
         volumenStunden: '600', volumenEuro: '70000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '600', stundenGebucht: '140',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-12b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Sammelposten Zertifizierung', verbraucherTyp: ApiVerbraucherTyp.FIXKOSTEN,
-            anmerkung: 'Fixkosten-Sammelposten: keine Stundenerfassung, Pauschalabrechnung pro Quartal.',
+            anmerkung: 'Fixkosten-Sammelposten.',
             volumenStunden: '600', volumenEuro: '70000.00', stundenpreis: '0.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '600', stundenGebucht: '140',
             stundenplanung: [
               {
                 id: 'sp-12b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '300',
                 produktPosition: {
                   id: 'pp-12b-1-1', aktiv: true,
@@ -3870,7 +3883,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-12b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '300',
                 produktPosition: {
                   id: 'pp-12b-1-2', aktiv: true,
@@ -3889,8 +3902,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Hardware-Wartungsvertrag Rechenzentrum',
-    vertragszusatz: '24/7 Vor-Ort, Standorte Wien & Graz',
+    vertragsname: 'HW-Wartung Rechenzentrum',
+    vertragszusatz: '24/7 Vor-Ort Wien & Graz',
     vertragspartner: 'HW-Care Austria',
     gueltigVon: '2026-01-01',
     gueltigBis: '2028-12-31',
@@ -3906,7 +3919,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-HW-WTG-2026',
     elak: 'BMI-IT/0117/0060-IT2/2026',
     geschaeftszahl: 'GZ-2025-002',
-    anmerkung: 'Reaktionszeit 4 h für Standort Wien, 8 h für Graz.',
+    anmerkung: 'Reaktionszeit 4h/8h.',
     vertragPosition: [
       {
         id: 'vp-13a', version: 1, deleted: false, state: ApiState.READ,
@@ -3915,20 +3928,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '2400', stundenGebucht: '280',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-13a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Max Gruber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1400', volumenEuro: '154000.00', stundenpreis: '110.00',
             aktiv: true, person: MOCK_PERSONEN[4],
             stundenGeplant: '1400', stundenGebucht: '180',
             stundenplanung: [
               {
                 id: 'sp-13a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-13a-1-1', aktiv: true,
@@ -3938,7 +3951,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-13a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '700',
                 produktPosition: {
                   id: 'pp-13a-1-2', aktiv: true,
@@ -3951,14 +3964,14 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
           {
             id: 'vpv-13a-2', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1000', volumenEuro: '106000.00', stundenpreis: '106.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1000', stundenGebucht: '100',
             stundenplanung: [
               {
                 id: 'sp-13a-2-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-13a-2-1', aktiv: true,
@@ -3977,20 +3990,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1200', stundenGebucht: '130',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-13b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1200', volumenEuro: '160000.00', stundenpreis: '133.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '1200', stundenGebucht: '130',
             stundenplanung: [
               {
                 id: 'sp-13b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-13b-1-1', aktiv: true,
@@ -4000,7 +4013,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-13b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-13b-1-2', aktiv: true,
@@ -4019,7 +4032,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Datenanalyse & Auswertungen 2026',
+    vertragsname: 'Datenanalyse 2026',
     vertragszusatz: 'BI-Plattform + Reporting',
     vertragspartner: 'Insight Analytics GmbH',
     gueltigVon: '2026-02-15',
@@ -4036,7 +4049,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-BI-2026',
     elak: 'BMI-IT/0117/0063-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Reporting-Layer abgestimmt mit Abteilung Statistik.',
+    anmerkung: 'Reporting-Layer mit Statistik.',
     vertragPosition: [
       {
         id: 'vp-14a', version: 1, deleted: false, state: ApiState.READ,
@@ -4045,20 +4058,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1800', stundenGebucht: '320',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-14a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Julia Huber', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '240000.00', stundenpreis: '133.00',
             aktiv: true, person: MOCK_PERSONEN[3],
             stundenGeplant: '1800', stundenGebucht: '320',
             stundenplanung: [
               {
                 id: 'sp-14a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-14a-1-1', aktiv: true,
@@ -4068,7 +4081,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-14a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-14a-1-2', aktiv: true,
@@ -4078,7 +4091,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-14a-1-3', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '600',
                 produktPosition: {
                   id: 'pp-14a-1-3', aktiv: true,
@@ -4092,25 +4105,25 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
       },
       {
         id: 'vp-14b', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Reporting & Self-Service Dashboards',
+        position: 'Reporting Dashboards',
         volumenStunden: '1100', volumenEuro: '140000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1100', stundenGebucht: '190',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-14b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1100', volumenEuro: '140000.00', stundenpreis: '127.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '1100', stundenGebucht: '190',
             stundenplanung: [
               {
                 id: 'sp-14b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '550',
                 produktPosition: {
                   id: 'pp-14b-1-1', aktiv: true,
@@ -4120,7 +4133,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-14b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '550',
                 produktPosition: {
                   id: 'pp-14b-1-2', aktiv: true,
@@ -4139,8 +4152,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Webportal Bürgerservice (ausgelaufen)',
-    vertragszusatz: 'Vorgänger des Bürgerportals 2026',
+    vertragsname: 'Webportal Bürgerservice',
+    vertragszusatz: 'Vorgänger Bürgerportal 2026',
     vertragspartner: 'WebGov Solutions',
     gueltigVon: '2022-06-01',
     gueltigBis: '2024-12-31',
@@ -4156,7 +4169,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-WBP-2022',
     elak: 'BMI-IT/0117/0017-IT2/2022',
     geschaeftszahl: 'GZ-2024-002',
-    anmerkung: 'Vorgängerportal – Inhalte 2025 in neues Bürgerportal überführt.',
+    anmerkung: 'Inhalte ins Bürgerportal.',
     vertragPosition: [
       {
         id: 'vp-15a', version: 1, deleted: false, state: ApiState.READ,
@@ -4165,20 +4178,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2024',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Architekt',
-        anmerkung: 'Abgeschlossene Position aus Planungsjahr 2024.',
+        anmerkung: 'Abgeschl. Position 2024.',
         stundenGeplant: '1800', stundenGebucht: '1800',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-15a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1800', volumenEuro: '230000.00', stundenpreis: '128.00',
             aktiv: false, person: MOCK_PERSONEN[1],
             stundenGeplant: '1800', stundenGebucht: '1800',
             stundenplanung: [
               {
                 id: 'sp-15a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-15a-1-1', aktiv: false,
@@ -4188,7 +4201,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-15a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '900',
                 produktPosition: {
                   id: 'pp-15a-1-2', aktiv: false,
@@ -4207,20 +4220,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: false, planungsjahr: '2024',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Architekt',
-        anmerkung: 'Abgeschlossene Position aus Planungsjahr 2024.',
+        anmerkung: 'Abgeschl. Position 2024.',
         stundenGeplant: '1200', stundenGebucht: '1200',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-15b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1200', volumenEuro: '180000.00', stundenpreis: '150.00',
             aktiv: false, person: MOCK_PERSONEN[2],
             stundenGeplant: '1200', stundenGebucht: '1200',
             stundenplanung: [
               {
                 id: 'sp-15b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1200',
                 produktPosition: {
                   id: 'pp-15b-1-1', aktiv: false,
@@ -4239,7 +4252,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'SAP-Beratung Personal & Finanzen 2026',
+    vertragsname: 'SAP-Beratung HR & FI 2026',
     vertragszusatz: 'Modul HR + FI/CO',
     vertragspartner: 'SAP Consulting Austria',
     gueltigVon: '2026-01-01',
@@ -4256,7 +4269,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-SAP-2026',
     elak: 'BMI-IT/0117/0066-IT2/2026',
     geschaeftszahl: 'GZ-2025-001',
-    anmerkung: 'Konsolidierung HR + FI/CO unter einem SAP-Berater pro Modul.',
+    anmerkung: 'Konsolidierung HR + FI/CO.',
     vertragPosition: [
       {
         id: 'vp-16a', version: 1, deleted: false, state: ApiState.READ,
@@ -4265,20 +4278,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '1300', stundenGebucht: '170',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-16a-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Peter Schmidt', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '1300', volumenEuro: '190000.00', stundenpreis: '146.00',
             aktiv: true, person: MOCK_PERSONEN[2],
             stundenGeplant: '1300', stundenGebucht: '170',
             stundenplanung: [
               {
                 id: 'sp-16a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '650',
                 produktPosition: {
                   id: 'pp-16a-1-1', aktiv: true,
@@ -4288,7 +4301,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-16a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '650',
                 produktPosition: {
                   id: 'pp-16a-1-2', aktiv: true,
@@ -4307,20 +4320,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Aktive Vertragsposition – Planungsjahr 2026.',
+        anmerkung: 'Aktive Position 2026.',
         stundenGeplant: '900', stundenGebucht: '120',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-16b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Personal-Verbraucher: Standard-Stundensatz, monatliche Abrechnung lt. Zeiterfassung.',
+            anmerkung: 'Personal-Verbraucher Standard.',
             volumenStunden: '900', volumenEuro: '130000.00', stundenpreis: '144.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '900', stundenGebucht: '120',
             stundenplanung: [
               {
                 id: 'sp-16b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-16b-1-1', aktiv: true,
@@ -4330,7 +4343,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-16b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-16b-1-2', aktiv: true,
@@ -4349,8 +4362,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Netzwerksegmentierung Bundes-LAN',
-    vertragszusatz: 'Mikrosegmentierung Wien-Zentrale',
+    vertragsname: 'Netzsegmentierung Bundes-LAN',
+    vertragszusatz: 'Mikrosegmentierung Wien',
     vertragspartner: 'NetSec Engineering GmbH',
     gueltigVon: '2026-03-01',
     gueltigBis: '2027-12-31',
@@ -4366,16 +4379,16 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-NET-SEG-2026',
     elak: 'BMI-IT/0117/0072-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Zero-Trust-Architektur. Pilot in Wien, Rollout 2027.',
+    anmerkung: 'Zero-Trust. Pilot Wien.',
     vertragPosition: [
       {
         id: 'vp-17a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Netzwerk-Audit & Segmentierungs-Konzept',
+        position: 'Netz-Audit & Segmentierung',
         volumenStunden: '1500', volumenEuro: '210000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Architekt',
-        anmerkung: 'Audit phase 1 – inkl. Risk Assessment.',
+        anmerkung: 'Audit Phase 1.',
         stundenGeplant: '1500', stundenGebucht: '180',
         vertragPositionVerbraucher: [
           {
@@ -4388,7 +4401,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-17a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '750',
                 produktPosition: {
                   id: 'pp-17a-1-1', aktiv: true,
@@ -4398,7 +4411,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-17a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '750',
                 produktPosition: {
                   id: 'pp-17a-1-2', aktiv: true,
@@ -4417,7 +4430,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Pilotrollout, abgesichert mit Fallback.',
+        anmerkung: 'Pilotrollout mit Fallback.',
         stundenGeplant: '2000', stundenGebucht: '230',
         vertragPositionVerbraucher: [
           {
@@ -4430,7 +4443,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-17b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-17b-1-1', aktiv: true,
@@ -4440,7 +4453,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-17b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-17b-1-2', aktiv: true,
@@ -4459,8 +4472,8 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Identity & Access Management 2026',
-    vertragszusatz: 'IAM Zentralisierung mit Keycloak',
+    vertragsname: 'IAM 2026',
+    vertragszusatz: 'IAM Zentral mit Keycloak',
     vertragspartner: 'IDM Solutions Austria',
     gueltigVon: '2026-04-01',
     gueltigBis: '2028-03-31',
@@ -4476,11 +4489,11 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-IAM-2026',
     elak: 'BMI-IT/0117/0079-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'Konsolidierung von 7 Legacy-IDM-Systemen auf Keycloak.',
+    anmerkung: '7 Legacy-IDM auf Keycloak.',
     vertragPosition: [
       {
         id: 'vp-18a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Keycloak-Hosting & Konfiguration',
+        position: 'Keycloak-Hosting',
         volumenStunden: '2400', volumenEuro: '320000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
@@ -4498,7 +4511,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-18a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1200',
                 produktPosition: {
                   id: 'pp-18a-1-1', aktiv: true,
@@ -4508,7 +4521,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-18a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1200',
                 produktPosition: {
                   id: 'pp-18a-1-2', aktiv: true,
@@ -4527,20 +4540,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: true,
         rollenbezeichnungRahmenvertrag: 'Projektleiter',
-        anmerkung: 'Schrittweise Migration über 24 Monate.',
+        anmerkung: 'Migration über 24 Monate.',
         stundenGeplant: '2000', stundenGebucht: '180',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-18b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Anna Müller', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Migration-Lead, koordiniert Rollouts.',
+            anmerkung: 'Migration-Lead.',
             volumenStunden: '2000', volumenEuro: '300000.00', stundenpreis: '150.00',
             aktiv: true, person: MOCK_PERSONEN[1],
             stundenGeplant: '2000', stundenGebucht: '180',
             stundenplanung: [
               {
                 id: 'sp-18b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-18b-1-1', aktiv: true,
@@ -4550,7 +4563,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-18b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '1000',
                 produktPosition: {
                   id: 'pp-18b-1-2', aktiv: true,
@@ -4586,7 +4599,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-GIS-2026',
     elak: 'BMI-IT/0117/0082-IT2/2026',
     geschaeftszahl: 'GZ-2026-001',
-    anmerkung: 'OpenStreetMap-basierte Tile-Server, plus eigene Layer.',
+    anmerkung: 'OSM-Tile-Server + Layer.',
     vertragPosition: [
       {
         id: 'vp-19a', version: 1, deleted: false, state: ApiState.READ,
@@ -4608,7 +4621,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-19a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '650',
                 produktPosition: {
                   id: 'pp-19a-1-1', aktiv: true,
@@ -4618,7 +4631,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-19a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '650',
                 produktPosition: {
                   id: 'pp-19a-1-2', aktiv: true,
@@ -4637,20 +4650,20 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Entwickler',
-        anmerkung: 'Leaflet + MapLibre Frontend-Integration.',
+        anmerkung: 'Leaflet + MapLibre.',
         stundenGeplant: '900', stundenGebucht: '70',
         vertragPositionVerbraucher: [
           {
             id: 'vpv-19b-1', version: 1, deleted: false, state: ApiState.READ,
             verbraucher: 'Hassan Adam Terab', verbraucherTyp: ApiVerbraucherTyp.PERSONAL,
-            anmerkung: 'Frontend-Entwickler, Karten-Komponenten.',
+            anmerkung: 'FE-Karten-Komponenten.',
             volumenStunden: '900', volumenEuro: '120000.00', stundenpreis: '133.00',
             aktiv: true, person: MOCK_LOGGED_IN_PERSON,
             stundenGeplant: '900', stundenGebucht: '70',
             stundenplanung: [
               {
                 id: 'sp-19b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-19b-1-1', aktiv: true,
@@ -4660,7 +4673,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-19b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-19b-1-2', aktiv: true,
@@ -4679,7 +4692,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     version: 1,
     deleted: false,
     state: ApiState.READ,
-    vertragsname: 'Backup-Plattform Modernisierung',
+    vertragsname: 'Backup-Plattform Modern.',
     vertragszusatz: 'Veeam → Cloud-Native Backups',
     vertragspartner: 'BackupOps GmbH',
     gueltigVon: '2026-02-01',
@@ -4696,16 +4709,16 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
     beschaffungsnummer: 'BN-BKP-2026',
     elak: 'BMI-IT/0117/0085-IT2/2026',
     geschaeftszahl: 'GZ-2025-002',
-    anmerkung: 'Migration auf S3-kompatible Backup-Targets.',
+    anmerkung: 'Migration auf S3 Backups.',
     vertragPosition: [
       {
         id: 'vp-20a', version: 1, deleted: false, state: ApiState.READ,
-        position: 'Backup-Konzept & Disaster Recovery Plan',
+        position: 'Backup & DR-Plan',
         volumenStunden: '900', volumenEuro: '120000.00',
         aktiv: true, planungsjahr: '2026',
         jahresuebertrag: false,
         rollenbezeichnungRahmenvertrag: 'Architekt',
-        anmerkung: 'RPO/RTO-Targets je Workload definiert.',
+        anmerkung: 'RPO/RTO je Workload.',
         stundenGeplant: '900', stundenGebucht: '120',
         vertragPositionVerbraucher: [
           {
@@ -4718,7 +4731,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-20a-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-20a-1-1', aktiv: true,
@@ -4728,7 +4741,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-20a-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '450',
                 produktPosition: {
                   id: 'pp-20a-1-2', aktiv: true,
@@ -4760,7 +4773,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
             stundenplanung: [
               {
                 id: 'sp-20b-1-1', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '400',
                 produktPosition: {
                   id: 'pp-20b-1-1', aktiv: true,
@@ -4770,7 +4783,7 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
               },
               {
                 id: 'sp-20b-1-2', version: 1, state: ApiState.READ,
-                anmerkung: 'Buchungspunkt-Notiz: Stundenplanung lt. Vorgabe.',
+                anmerkung: 'Buchungspunkt-Notiz.',
                 stundenGeplant: '400',
                 produktPosition: {
                   id: 'pp-20b-1-2', aktiv: true,
@@ -4789,21 +4802,21 @@ export const MOCK_VERTRAEGE: ApiVertrag[] = [
 
 function buildExtraVertraege(count: number): ApiVertrag[] {
   const namesPool = [
-    'Cloud-Migration AWS', 'Service-Desk Outsourcing', 'Identity-Management Upgrade',
-    'Datenschutz-Audit', 'Backup-Lösung Renewal', 'Mobile App Refactoring',
-    'API-Gateway Einführung', 'KI-Pilot Aktenverarbeitung', 'SAP S/4HANA Vorbereitung',
-    'Schulungsplattform Hosting', 'BI-Reporting Modernisierung', 'Sicherheits-Penetrationstest',
-    'WAF-Erneuerung', 'Container-Plattform OpenShift', 'GIS-Modul Erweiterung',
-    'Monitoring Konsolidierung', 'Telefonie-Migration MS Teams', 'Außenstellen-VPN Ersatz',
-    'Bürger-Portal Redesign', 'Compliance-Tool Einführung', 'Disaster-Recovery Test',
-    'Active-Directory Bereinigung', 'IT-Asset-Management', 'Drucker-Flotten-Service',
-    'Schwachstellen-Scanner', 'Videokonferenz-Lizenzen', 'eSignatur-Plattform',
-    'DevOps-Toolchain', 'Storage-Erweiterung NetApp', 'Netzwerk-Refresh Cisco',
-    'Helpdesk-Bots Pilot', 'Datenbank-Konsolidierung Oracle', 'Web-Filter Renewal',
-    'Antivirus-Plattform', 'Software-Verteilung Intune', 'Patch-Management',
-    'Endpoint-Detection EDR', 'PKI-Erneuerung', 'Workflow-Automatisierung',
-    'Public-Cloud Beratung', 'Linux-Plattform Hardening', 'BCM-Workshop Reihe',
-    'Server-Refresh DC1', 'Server-Refresh DC2', 'IPv6 Roll-out Phase 2',
+    'Cloud-Migration AWS', 'Service-Desk', 'Identity-Mgmt Upgrade',
+    'Datenschutz-Audit', 'Backup Renewal', 'Mobile App Refactor',
+    'API-Gateway', 'KI-Pilot Akten', 'SAP S/4HANA Vorbereit.',
+    'Schulungsplattform', 'BI-Reporting Modern.', 'Sicherheits-Pentest',
+    'WAF-Erneuerung', 'Container OpenShift', 'GIS-Modul',
+    'Monitoring Konsolid.', 'Telefonie MS Teams', 'Außenstellen-VPN',
+    'Bürger-Portal Redesign', 'Compliance-Tool', 'Disaster-Recovery',
+    'Active-Directory', 'IT-Asset-Management', 'Drucker-Flotte',
+    'Schwachstellen-Scan', 'Videokonferenz-Lizenz', 'eSignatur',
+    'DevOps-Toolchain', 'Storage NetApp', 'Netzwerk-Refresh Cisco',
+    'Helpdesk-Bots Pilot', 'DB-Konsolidierung Oracle', 'Web-Filter',
+    'Antivirus-Plattform', 'Software-Vert. Intune', 'Patch-Management',
+    'Endpoint-Detection EDR', 'PKI-Erneuerung', 'Workflow-Automation',
+    'Public-Cloud Beratung', 'Linux Hardening', 'BCM-Workshop',
+    'Server-Refresh DC1', 'Server-Refresh DC2', 'IPv6 Roll-out',
   ];
   const partner = [
     'CloudPartners GmbH', 'ITService Consulting', 'SecureLine AG', 'NetWorks AT',
@@ -4845,13 +4858,13 @@ function buildExtraVertraege(count: number): ApiVertrag[] {
       vertragsverantwortlicher: verantwortlicher,
       stundenGeplant: String(stundenGeplant),
       stundenGebucht: String(stundenGebucht),
-      vertragszusatz: `Generierter Test-Vertrag #${idx} – ${isProjekt ? 'Projekt' : 'Betrieb'}`,
+      vertragszusatz: `Test-Vertrag #${idx}`,
       auftragsreferenz: `AR-${startYear}-${String(idx).padStart(4, '0')}`,
       erstelldatum: `${startYear - 1}-11-${String(((i % 28) + 1)).padStart(2, '0')}`,
       beschaffungsnummer: `BN-GEN-${idx}-${startYear}`,
       elak: `BMI-IT/0117/${String(idx).padStart(4, '0')}-IT2/${startYear}`,
       geschaeftszahl: `GZ-${startYear}-${String(idx).padStart(3, '0')}`,
-      anmerkung: `Automatisch generierter Vertrag #${idx} für Listen-Scrollverhalten und Sortier-Tests.`,
+      anmerkung: `Generierter Vertrag #${idx}.`,
       vertragPosition: buildExtraVertragPositionen(2, id),
     });
   }
@@ -4879,8 +4892,8 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     deleted: false,
     state: ApiState.READ,
     person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-17', '07:00'),
-    logoff: iso('2026-04-17', '18:30'),
+    login: iso('2026-04-17', '08:00'),
+    logoff: iso('2026-04-17', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     anmerkung: 'Regulärer Arbeitstag',
   },
@@ -4890,8 +4903,8 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     deleted: false,
     state: ApiState.READ,
     person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-18', '06:30'),
-    logoff: iso('2026-04-18', '18:45'),
+    login: iso('2026-04-18', '09:00'),
+    logoff: iso('2026-04-18', '17:15'),
     zeitTyp: ApiZeitTyp.TELEARBEIT,
   },
   {
@@ -4900,8 +4913,8 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     deleted: false,
     state: ApiState.READ,
     person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-19', '07:15'),
-    logoff: iso('2026-04-19', '19:30'),
+    login: iso('2026-04-19', '08:15'),
+    logoff: iso('2026-04-19', '16:45'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
   },
   {
@@ -4910,8 +4923,8 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     deleted: false,
     state: ApiState.READ,
     person: MOCK_PERSONEN[1],
-    login: iso('2026-04-19', '06:45'),
-    logoff: iso('2026-04-19', '19:00'),
+    login: iso('2026-04-19', '07:45'),
+    logoff: iso('2026-04-19', '16:00'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
   },
   // ── Julia Huber (p-4) — 3 rows ──────────────────────────────────────────────
@@ -4987,31 +5000,25 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     login: iso('2027-03-01', '00:00'), logoff: iso('2027-03-03', '23:59'),
     zeitTyp: ApiZeitTyp.KRANKENSTAND, anmerkung: 'Krankenstand März' },
 
-  // ── Hassan Adam (p-me) — Test data: Gestempelt > 10h to trigger Buchungslimit dialog
-  { id: 'sz-60', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-05-04', '06:00'), logoff: iso('2026-05-04', '18:43'),
-    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Test >10h Gestempelt (12:43)',
-    marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
-
   // ── Hassan Adam (p-me) — current week (Apr 13–20) ───────────────────────────
   { id: 'sz-30', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-20', '07:00'), logoff: iso('2026-04-20', '19:30'),
+    login: iso('2026-04-20', '08:00'), logoff: iso('2026-04-20', '16:00'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Montag',
     marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
   { id: 'sz-31', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-16', '06:30'), logoff: iso('2026-04-16', '19:15'),
+    login: iso('2026-04-16', '08:30'), logoff: iso('2026-04-16', '17:00'),
     zeitTyp: ApiZeitTyp.REMOTEZEIT,
     marker: [ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.HOMEOFFICE_STEMPELN_ABMELDUNG] },
   { id: 'sz-32', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-15', '07:00'), logoff: iso('2026-04-15', '19:45'),
+    login: iso('2026-04-15', '09:00'), logoff: iso('2026-04-15', '17:30'),
     zeitTyp: ApiZeitTyp.TELEARBEIT, anmerkung: 'Nachgebucht',
     eintragungsart: ApiStempelzeitEintragungsart.SELBST },
   { id: 'sz-33', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-14', '06:45'), logoff: iso('2026-04-14', '19:30'),
+    login: iso('2026-04-14', '07:45'), logoff: iso('2026-04-14', '16:15'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
   { id: 'sz-34', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-13', '07:00'), logoff: iso('2026-04-13', '19:30'),
+    login: iso('2026-04-13', '08:00'), logoff: iso('2026-04-13', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Zeitkorrektur durch Leiter', poKorrektur: true },
 
   // ── Hassan Adam (p-me) — week Apr 6–10 ─────────────────────────────────────
@@ -5019,42 +5026,42 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     login: iso('2026-04-10', '00:00'), logoff: iso('2026-04-10', '23:59'),
     zeitTyp: ApiZeitTyp.ZEITAUSGLEICH, anmerkung: 'ZA-Tag' },
   { id: 'sz-36', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-09', '07:00'), logoff: iso('2026-04-09', '19:30'),
+    login: iso('2026-04-09', '08:00'), logoff: iso('2026-04-09', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
   { id: 'sz-37', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-08', '07:00'), logoff: iso('2026-04-08', '19:30'),
+    login: iso('2026-04-08', '09:00'), logoff: iso('2026-04-08', '17:00'),
     zeitTyp: ApiZeitTyp.TELEARBEIT },
   { id: 'sz-38', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-07', '06:30'), logoff: iso('2026-04-07', '19:00'),
+    login: iso('2026-04-07', '08:15'), logoff: iso('2026-04-07', '16:45'),
     zeitTyp: ApiZeitTyp.REMOTEZEIT, anmerkung: 'Nachgebucht',
     eintragungsart: ApiStempelzeitEintragungsart.SELBST },
   { id: 'sz-39', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-06', '07:00'), logoff: iso('2026-04-06', '19:30'),
+    login: iso('2026-04-06', '08:00'), logoff: iso('2026-04-06', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
 
   // ── Hassan Adam (p-me) — week Mar 30 – Apr 3 ───────────────────────────────
   { id: 'sz-40', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-03', '06:00'), logoff: iso('2026-04-03', '18:30'),
-    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Langer Tag' },
+    login: iso('2026-04-03', '08:00'), logoff: iso('2026-04-03', '15:30'),
+    zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Früher gegangen' },
   { id: 'sz-41', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-02', '06:30'), logoff: iso('2026-04-02', '19:15'),
+    login: iso('2026-04-02', '08:30'), logoff: iso('2026-04-02', '17:00'),
     zeitTyp: ApiZeitTyp.REMOTEZEIT },
   { id: 'sz-42', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-04-01', '07:00'), logoff: iso('2026-04-01', '19:30'),
+    login: iso('2026-04-01', '08:00'), logoff: iso('2026-04-01', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     marker: [ApiStempelzeitMarker.CHIP_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.CHIP_STEMPELN_ABMELDUNG] },
   { id: 'sz-43', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
     login: iso('2026-03-31', '00:00'), logoff: iso('2026-03-31', '23:59'),
     zeitTyp: ApiZeitTyp.BEREITSCHAFT, anmerkung: 'Bereitschaftsdienst' },
   { id: 'sz-44', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-03-30', '06:45'), logoff: iso('2026-03-30', '19:00'),
+    login: iso('2026-03-30', '08:00'), logoff: iso('2026-03-30', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT, anmerkung: 'Zeitkorrektur', poKorrektur: true },
 
   // ── Hassan Adam (p-me) — week Mar 23–27 ────────────────────────────────────
   { id: 'sz-45', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-03-27', '07:00'), logoff: iso('2026-03-27', '19:15'),
+    login: iso('2026-03-27', '08:00'), logoff: iso('2026-03-27', '16:00'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT },
   { id: 'sz-46', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
     login: iso('2026-03-26', '00:00'), logoff: iso('2026-03-26', '23:59'),
@@ -5063,7 +5070,7 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     login: iso('2026-03-25', '00:00'), logoff: iso('2026-03-25', '23:59'),
     zeitTyp: ApiZeitTyp.KRANKENSTAND },
   { id: 'sz-48', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
-    login: iso('2026-03-24', '07:00'), logoff: iso('2026-03-24', '19:30'),
+    login: iso('2026-03-24', '08:00'), logoff: iso('2026-03-24', '16:30'),
     zeitTyp: ApiZeitTyp.ARBEITSZEIT,
     marker: [ApiStempelzeitMarker.ONLINE_STEMPELN_ANMELDUNG, ApiStempelzeitMarker.ONLINE_STEMPELN_ABMELDUNG] },
   { id: 'sz-49', version: 1, deleted: false, state: ApiState.READ, person: MOCK_LOGGED_IN_PERSON,
@@ -5105,11 +5112,11 @@ export const MOCK_STEMPELZEITEN: ApiStempelzeit[] = [
     ApiZeitTyp.REMOTEZEIT,
   ];
   const startTimes: Array<[string, string]> = [
-    ['07:00', '18:30'],
-    ['06:30', '18:45'],
-    ['07:15', '19:30'],
-    ['06:45', '19:00'],
-    ['07:30', '19:15'],
+    ['08:00', '16:30'],
+    ['08:30', '17:00'],
+    ['09:00', '17:15'],
+    ['07:45', '16:00'],
+    ['08:15', '16:45'],
   ];
 
   let nextId = 100;
@@ -5326,7 +5333,7 @@ export const MOCK_PERSONENVERMERKE: ApiPersonenvermerk[] = [
     state: ApiState.READ,
     datum: '2026-02-10',
     vermerkTyp: ApiPersonenvermerkTyp.BUCHUNGSERINNERUNG,
-    anmerkung: 'Bitte Buchung für 2026-02-09 nachtragen',
+    anmerkung: 'Buchung 2026-02-09 nachtragen',
   },
   {
     id: 'pv-2',
@@ -5335,7 +5342,7 @@ export const MOCK_PERSONENVERMERKE: ApiPersonenvermerk[] = [
     state: ApiState.READ,
     datum: '2026-03-01',
     vermerkTyp: ApiPersonenvermerkTyp.STD_LIMIT_10,
-    anmerkung: 'Wochenstundenlimit überschritten',
+    anmerkung: 'Wochenlimit überschritten',
   },
   {
     id: 'pv-3',

@@ -44,7 +44,7 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
   vertraege: ApiVertrag[] = [];
   searchTerm = '';
   showInactive = false;
-  displayedColumns: string[] = ['vertragsname', 'zusatz', 'geplan', 'org-Einheit', 'verbrauchtDate'];
+  displayedColumns: string[] = ['vertragsname', 'zusatz', 'org-Einheit', 'geplan', 'verbrauchtDate'];
 
   /**
    * In-memory state that survives detail-back navigation but NOT a round-trip
@@ -216,7 +216,7 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
           .toString()
           .toLowerCase();
       case 'verbrauchtDate':
-        return ((item as any).verbraucht ?? '').toString().toLowerCase();
+        return parseFloat((item as any).stundenGebucht) || 0;
       default:
         return ((item as Record<string, unknown>)[field] ?? '').toString().toLowerCase();
     }

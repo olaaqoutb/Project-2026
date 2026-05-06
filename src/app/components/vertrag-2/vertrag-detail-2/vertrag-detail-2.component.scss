@@ -516,6 +516,11 @@ i.mdi.inline-icon {
   display: block !important;
   grid-template-columns: none;
 }
+/* Reserve the second-line height for collapsed/inactive level-3 rows so the
+   row height does not jump when the user double-clicks to expand. */
+.position-extra-l3.extra-hidden {
+  visibility: hidden;
+}
 .position-extra-l3 .geplant {
   grid-column: auto;
   display: inline-block;
@@ -1078,6 +1083,7 @@ div.mat-mdc-select-panel.drop-down-bottom,
 }
 
 .position-item .position-info .position-title { font-size: 14px !important; }
+.position-item .position-info .position-title.position-title-l1 { font-weight: 700 !important; }
 .position-extra,
 .position-extra > span,
 .position-extra .volumen,

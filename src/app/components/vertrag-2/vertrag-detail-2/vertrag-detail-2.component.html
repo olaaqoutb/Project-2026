@@ -8,6 +8,8 @@
             type="button"
             class="cancel-btn cancel-btn-header"
             (click)="onCancel()"
+            matTooltip="Zurück"
+            matTooltipPosition="below"
           >
             <i class="mdi mdi-chevron-left mdi-24px" aria-hidden="true"></i>
           </button>
@@ -18,6 +20,8 @@
             class="cancel-btn cancel-btn-header"
             (click)="onCancel()"
             [disabled]="saving"
+            matTooltip="Abbrechen"
+            matTooltipPosition="below"
           >
             <mat-icon>close</mat-icon>
             Abbrechen
@@ -26,6 +30,8 @@
             [matMenuTriggerFor]="topMenu"
             class="custom-menu menu-icon-right-top custom-menu-header"
             *ngIf="!isFormEditable"
+            matTooltip="Optionen"
+            matTooltipPosition="below"
           >
             <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
           </button>
@@ -46,6 +52,8 @@
             class="save-btn save-btn-header"
             (click)="onEditOrSubmit()"
             [disabled]="saving"
+            [matTooltip]="isFormEditable ? 'Speichern' : 'Bearbeiten'"
+            matTooltipPosition="below"
           >
             <i
               class="mdi mdi-24px"
@@ -339,7 +347,12 @@
     <!-- Left: Product Positions Tree -->
     <div class="vertragspositionen-container">
       <div class="positionen-header">
-        <button [matMenuTriggerFor]="treeMenu" class="custom-menu menu-icon-left">
+        <button
+          [matMenuTriggerFor]="treeMenu"
+          class="custom-menu menu-icon-left"
+          matTooltip="Optionen"
+          matTooltipPosition="below"
+        >
           <mat-icon>menu</mat-icon>
         </button>
         <mat-menu #treeMenu="matMenu" class="option-menu">
@@ -402,7 +415,10 @@
               ></i>
 
               <div class="position-info">
-                <div class="position-title">{{ node.name }}</div>
+                <div
+                  class="position-title"
+                  [class.position-title-l1]="node.level === 1"
+                >{{ node.name }}</div>
 
                 <!-- Level 1: Produktposition -->
                 <div
@@ -412,13 +428,13 @@
                 >
                   <i class="mdi mdi-file-tree mdi-16px inline-icon"></i>
                   <span
-                    >Volumen €: {{ node.volumenEuro | number: "1.2-2" }}</span
+                    >Volumen €: <strong>{{ node.volumenEuro | number: "1.2-2" }}</strong></span
                   >
                   <span class="volumen"
-                    >Volumen Std.: {{ node.volumenStunden }}</span
+                    >Volumen Std.: <strong>{{ node.volumenStunden }}</strong></span
                   >
                   <span class="geplant"
-                    >Geplant: {{ node.stundenGeplant }}</span
+                    >Geplant: <strong>{{ node.stundenGeplant }}</strong></span
                   >
                 </div>
 
@@ -430,23 +446,27 @@
                 >
                   <i class="mdi mdi-file-tree mdi-16px inline-icon"></i>
                   <span
-                    >Volumen €: {{ node.volumenEuro | number: "1.2-2" }}</span
+                    >Volumen €: <strong>{{ node.volumenEuro | number: "1.2-2" }}</strong></span
                   >
                   <!-- <mat-icon class="inline-icon">sum</mat-icon> -->
-                  <span class="volumen">Gesamt: {{ node.volumenStunden }}</span>
+                  <span class="volumen">Gesamt: <strong>{{ node.volumenStunden }}</strong></span>
                   <span class="geplant"
-                    >Geplant: {{ node.stundenGeplant }}</span
+                    >Geplant: <strong>{{ node.stundenGeplant }}</strong></span
                   >
                 </div>
 
                 <!-- Level 3: Buchungspunkt -->
+                <!-- Always rendered so the row height matches the 2-line state.
+                     When the node is collapsed and inactive we hide the line
+                     with visibility:hidden, which keeps the reserved height. -->
                 <div
                   class="position-extra position-extra-l3"
+                  [class.extra-hidden]="!(node.aktiv || node.isExpanded)"
                   [style.margin-left.px]="0"
-                  *ngIf="node.level === 3 && (node.aktiv || node.isExpanded)"
+                  *ngIf="node.level === 3"
                 >
                   <span class="geplant"
-                    >Geplant: {{ node.stundenGeplant }}</span
+                    >Geplant: <strong>{{ node.stundenGeplant }}</strong></span
                   >
                 </div>
 
@@ -479,7 +499,7 @@
                 matTooltip="Buchungspunkt hinzufügen"
                 (click)="addBuchungspunkt(node, $event)"
               >
-                <i class="mdi mdi-account-plus mdi-flip-h mdi-24px"></i>
+                <i class="mdi mdi-alarm mdi-24px"></i>
               </button>
 
               <!-- Nothing shows for Level 3 -->
@@ -510,17 +530,29 @@
                 selectedPosition &&
                 (!selectedPosition.children ||
                   selectedPosition.children.length === 0) &&
-                !selectedPosition.isPendingCreation
+                !selectedPosition.isPendingCreation &&
+                !isPositionFormEditable &&
+                !isVerbraucherFormEditable &&
+                !isChildFormEditable
               "
               (click)="openDeleteDialog()"
               class="header-btn btn-loeschen"
+              matTooltip="Löschen"
+              matTooltipPosition="below"
             >
               <i class="mdi mdi-delete-forever mdi-24px" aria-hidden="true"></i>
               <span>Löschen</span>
             </button>
             <button
+              *ngIf="
+                !isPositionFormEditable &&
+                !isVerbraucherFormEditable &&
+                !isChildFormEditable
+              "
               [matMenuTriggerFor]="detailMenu"
               class="custom-menu menu-icon-left"
+              matTooltip="Optionen"
+              matTooltipPosition="below"
             >
               <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
             </button>
@@ -530,6 +562,13 @@
                 *ngIf="selectedPosition?.typ === 'Vertragsposition'"
               >
                 <i class="mdi mdi-file-restore mdi-24px" aria-hidden="true"></i>Reset
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="selectedPosition?.typ === 'Verbraucher'"
+                (click)="openStundensatzAenderungDialog()"
+              >
+                <i class="mdi mdi-currency-eur mdi-24px" aria-hidden="true"></i>Stundensatzänderung
               </button>
               <button mat-menu-item>
                 <i class="mdi mdi-file-document mdi-24px" aria-hidden="true"></i>Logbuch
@@ -545,6 +584,8 @@
               mat-button
               class="cancel-btn-bottom"
               (click)="onCancelPositionOrChild()"
+              matTooltip="Abbrechen"
+              matTooltipPosition="below"
             >
               <mat-icon>close</mat-icon>
               Abbrechen
@@ -580,6 +621,16 @@
               (click)="onEditOrSubmitPositionOrChild()"
               id="menu-icon-right"
               mat-button
+              [matTooltip]="
+                (selectedPosition?.typ === 'Vertragsposition'
+                  ? isPositionFormEditable
+                  : selectedPosition?.typ === 'Verbraucher'
+                    ? isVerbraucherFormEditable
+                    : isChildFormEditable)
+                  ? 'Speichern'
+                  : 'Bearbeiten'
+              "
+              matTooltipPosition="below"
             >
               <i
                 class="mdi mdi-24px"
@@ -797,6 +848,8 @@
                   color="primary"
                   (click)="goToPersonPage()"
                   class="person-arrow-btn"
+                  matTooltip="Zur Person"
+                  matTooltipPosition="below"
                 >
                   <mat-icon>keyboard_double_arrow_right</mat-icon>
                 </button>
