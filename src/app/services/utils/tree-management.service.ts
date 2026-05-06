@@ -36,14 +36,15 @@ export class TreeManagementService {
     date: Date,
     activityData: TaetigkeitFormValue,
     timeRange: string,
-    stempelzeitData: ApiStempelzeit
+    stempelzeitData: ApiStempelzeit,
+    buchungData?: ApiTaetigkeitsbuchung
   ): void {
     const monthYear = this.timeUtilityService.getMonthYearString(date);
     const monthNode = this.findOrCreateMonthNode(treeData, monthYear);
     const dayKey = this.timeUtilityService.formatDayName(date);
     const dayNode = this.findOrCreateDayNode(monthNode, dayKey, date);
 
-    this.treeNodeService.addActivityToDay(dayNode, activityData, timeRange, stempelzeitData);
+    this.treeNodeService.addActivityToDay(dayNode, activityData, timeRange, stempelzeitData, buchungData);
     this.treeBuilderService.expandParentNodesForNewEntry(treeControl, monthYear, dayKey);
   }
 
@@ -83,8 +84,15 @@ export class TreeManagementService {
   findNewlyCreatedNode(
     flatNodes: FlatNode[],
     formValue: TaetigkeitFormValue,
-    timeRange: string
+    timeRange: string,
+    buchungId?: string
   ): FlatNode | undefined {
+    if (buchungId) {
+      const byId = flatNodes.find(node =>
+        node.level === 2 && node.buchungData?.id === buchungId
+      );
+      if (byId) return byId;
+    }
     return flatNodes.find(node =>
       node.level === 2 &&
       node.formData &&
@@ -391,6 +399,7 @@ private createActivityNodeFromBuchung(activity: ActivityEntry): TaetigkeitNode {
     timeRange: timeRange,
      buchungspunkt: produktInfo.buchungspunkt,
     stempelzeitData: activity.type === 'stempelzeit' ? activity.data : null,
+    buchungData: buchung,
     formData: {
       datum: this.dateParserService.formatToGermanDate(
         activity.type === 'stempelzeit' ? loginTime : new Date(buchung.datum!)

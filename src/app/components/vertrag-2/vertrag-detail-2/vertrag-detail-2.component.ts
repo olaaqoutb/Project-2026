@@ -1572,7 +1572,6 @@ private childLabelMap: Record<string, string> = {
   stundenGeplant: 'Stunden geplant',
 };
 
-/** Sort the tree alphabetically (A→Z) by name at every level, in-place. */
 private sortNodesByName(nodes: any[]): any[] {
   if (!Array.isArray(nodes)) return nodes;
   nodes.sort((a, b) =>

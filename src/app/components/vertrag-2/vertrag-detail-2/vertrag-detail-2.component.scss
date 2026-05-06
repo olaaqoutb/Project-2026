@@ -123,13 +123,16 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 @media screen and (width: 1920px) and (height: 1080px) {
   .details-panes-container { height: 880px !important; }
   .form-grid-container { gap: 25rem !important; }
-  .parent-position3 { position: relative !important; right: 15% !important; }
+  .child-detail-form {margin-left: 9%!important;}
+  // .parent-position3 { position: relative !important; right: 15% !important; }
 }
 
 @media screen and (min-width: 1940px) {
   .form-grid-container { gap: 64rem !important; }
-  .third-level-form { margin-right: 27rem !important; }
+  // .third-level-form { margin-right: 27rem !important; }
   .Produktposition-margin { margin-left: -5px !important; }
+  .child-detail-form {margin-left: 6%!important;}
+
 }
 
 .flex-field-start { position: relative; right: 2px; }
@@ -376,11 +379,12 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 .Produktposition-margin { margin-left: 30px; }
 
 .child-detail-form {
-  padding: 16px; margin-top: 10px; height: auto;
+  padding: 16px; margin:10px 20px 20px 10%; height: auto;
+
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { width: 0; height: 0; display: none; }
-  display: flex; flex-direction: column; align-items: center;
+  display: flex; flex-direction: column;
   .form-row {
     display: flex; align-items: center; margin-bottom: 16px;
     &:first-child { padding-left: 16px; }
@@ -389,10 +393,12 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   }
 }
 
+
 @media screen and (width: 1920px) and (height: 1080px) {
   .vertical-form { height: auto !important; }
 }
 
+    /* align-items: center; */
 .delete-btn {
   background-color: #2c3e50 !important; color: white !important;
   // &:hover:not(:disabled) { background: #3e5870 !important; }
@@ -470,7 +476,7 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
   right: 7% !important;
   width: 100%;
 }
-.parent-position3 { position: relative; right: 5%; }
+// .parent-position3 { position: relative; right: 5%; }
 
 .icon-active { color: #4caf50 !important; }
 .icon-inactive { color: #d32f2f !important; }

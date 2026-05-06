@@ -92,7 +92,8 @@ export class TreeNodeService {
     dayNode: TaetigkeitNode,
     formData: any,
     timeRange: string,
-    stempelzeitData?: any
+    stempelzeitData?: any,
+    buchungData?: any
   ): void {
     if (!dayNode.children) {
       dayNode.children = [];
@@ -116,6 +117,7 @@ export class TreeNodeService {
       timeRange: timeRange,
       formData: formData,
       stempelzeitData: stempelzeitData,
+      buchungData: buchungData,
       children: [],
       hasAlarm: false,
       alarmData: null
@@ -157,17 +159,22 @@ export class TreeNodeService {
       for (let i = 0; i < nodes.length; i++) {
         const treeNode = nodes[i];
 
-        // For level 0 or 1 nodes, match by name
         if (selectedNode.level === 0 || selectedNode.level === 1) {
           if (treeNode.name === selectedNode.name) {
             nodes.splice(i, 1);
             return true;
           }
-        }
+        } else if (selectedNode.level === 2) {
+          const selBuchungId = selectedNode.buchungData?.id;
+          const selStempelId = selectedNode.stempelzeitData?.id;
+          const treeBuchungId = treeNode.buchungData?.id;
+          const treeStempelId = treeNode.stempelzeitData?.id;
 
-        // For level 2 nodes, match by stempelzeit ID
-        if (selectedNode.level === 2 && selectedNode.stempelzeitData) {
-          if (treeNode.stempelzeitData?.id === selectedNode.stempelzeitData.id) {
+          const matched =
+            (!!selBuchungId && treeBuchungId === selBuchungId) ||
+            (!!selStempelId && treeStempelId === selStempelId);
+
+          if (matched) {
             nodes.splice(i, 1);
             return true;
           }

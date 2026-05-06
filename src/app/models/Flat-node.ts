@@ -1,4 +1,5 @@
 import { expand } from "rxjs";
+import { ApiTaetigkeitsbuchung } from './ApiTaetigkeitsbuchung';
 
 export interface FlatNode {
   expandable: boolean;
@@ -7,6 +8,7 @@ export interface FlatNode {
   hasNotification?: boolean;
   formData?:any;
   stempelzeitData?: any;
+  buchungData?: ApiTaetigkeitsbuchung;
   monthName?: string;
   gebuchtTotal?: string;
   dayName?: string;

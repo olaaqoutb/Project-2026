@@ -1,3 +1,5 @@
+import { ApiTaetigkeitsbuchung } from './ApiTaetigkeitsbuchung';
+
 export interface TaetigkeitNode {
   alarmData?: null;
   hasAlarm?: boolean;
@@ -16,6 +18,7 @@ export interface TaetigkeitNode {
   hasNotification?: boolean;
   formData?: any;
   stempelzeitData?: any;
+  buchungData?: ApiTaetigkeitsbuchung;
   stempelzeitenList?: string[];
   hasEntries?: boolean;
   buchungspunkt?: string;

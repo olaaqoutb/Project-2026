@@ -40,6 +40,7 @@ import { DeleteConfirmDialogComponent } from '../delete-confirm-dialog/delete-co
 import { InfoDialogComponent } from '../dialogs/info-dialog/info-dialog.component';
 import { ErrorDialogComponent } from '../dialogs/error-dialog/error-dialog.component';
 import { CloseOpenConfirmDialogComponent } from '../dialogs/close-open-confirm-dialog/close-open-confirm-dialog.component';
+import { QuestionDialogComponent } from '../dialogs/question-dialog/question-dialog/question-dialog.component';
 // import { DialogService } from '../../services/utils/dialog.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -199,6 +200,7 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
     hasNotification: node.hasNotification || false,
     formData: node.formData,
     stempelzeitData: node.stempelzeitData,
+    buchungData: node.buchungData,
     monthName: node.monthName,
     gebuchtTotal: node.gebuchtTotal,
     dayName: node.dayName,
@@ -544,16 +546,24 @@ datum: formValue.datum instanceof Date
   }
 
  if (this.abschlussInfo?.naechsterBuchbarerTag) {
-    const selectedDate: Date = resolvedDate;
-    const naechsterBuchbarerTag = new Date(this.abschlussInfo.naechsterBuchbarerTag);
+    const selectedDateStr = this.formatDateForBackend(resolvedDate);
+    const naechsterStr = this.abschlussInfo.naechsterBuchbarerTag;
 
-    if (selectedDate < naechsterBuchbarerTag) {
+    if (selectedDateStr < naechsterStr) {
       this.openErrorDialog(
         'Zeitraum abgeschlossen',
         `Dieser Zeitraum ist bereits abgeschlossen. Frühestens ab ${this.abschlussInfo.naechsterBuchbarerTag} buchbar.`
       );
       return;
     }
+  }
+
+  if (this.isMonthClosedForDate(resolvedDate)) {
+    this.openErrorDialog(
+      'Monat ist geschlossen',
+      'Der ausgewählte Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+    );
+    return;
   }
       const validationResult = this.validateTimeEntryOverlap(formValueForValidation, isDurationBased);
   if (!validationResult.isValid) {
@@ -665,7 +675,8 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
         selectedDate,
         newActivityData,
         timeRange,
-        newStempelzeitData
+        newStempelzeitData,
+        savedEntry
       );
 
       this.dataSource.data = [...this.dataSource.data];
@@ -674,20 +685,29 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
       this.isHeaderCreated = false;
       this.isEditing = false;
 
-      setTimeout(() => {
+      const applyNewEntryData = () => {
         const newNode = this.treeManagementService.findNewlyCreatedNode(
           this.treeControl.dataNodes,
           formValue,
-          timeRange
+          timeRange,
+          savedEntry?.id
         );
 
         if (newNode) {
+          newNode.buchungData = savedEntry;
+          newNode.stempelzeitData = newStempelzeitData;
           this.selectedNode = newNode;
           this.activityFormService.populateActivityForm(this.taetigkeitForm, newNode.formData);
           this.formValidationService.disableAllFormControls(this.taetigkeitForm);
           this.cdr.detectChanges();
+        } else if (this.selectedNode && this.selectedNode.level === 2) {
+          this.selectedNode.buchungData = savedEntry;
+          this.selectedNode.stempelzeitData = newStempelzeitData;
         }
-      }, 150);
+      };
+
+      applyNewEntryData();
+      setTimeout(applyNewEntryData, 150);
 
       this.dialog.open(InfoDialogComponent, {
         data: { title: 'Erfolgreich', detail: 'Die Tätigkeitsbuchung wurde erfolgreich erstellt!' },
@@ -721,6 +741,20 @@ private formatDateForBackend(date: Date): string {
   return `${year}-${month}-${day}`;
 }
   onAlarmClick(node: FlatNode, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (node.level !== 1) return;
+
+    if (this.isMonthClosedForDayNode(node)) {
+      this.openErrorDialog(
+        'Monat ist geschlossen',
+        'Dieser Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+      );
+      return;
+    }
+
     if (this.isCreatingNew || this.isNewlyCreated || this.isEditing) {
       this.isCreatingNew = false;
       this.isNewlyCreated = false;
@@ -730,16 +764,10 @@ private formatDateForBackend(date: Date): string {
       this.taetigkeitForm.disable();
     }
 
-    if (event) {
-      event.stopPropagation();
-    }
-
-    if (node.level === 1) {
-      this.alarmNode = node;
-      this.isCreatingNewThirdLevel = true;
-      this.showRightPanelAlarmActions = true;
-      this.createNewThirdLevelForm(node);
-    }
+    this.alarmNode = node;
+    this.isCreatingNewThirdLevel = true;
+    this.showRightPanelAlarmActions = true;
+    this.createNewThirdLevelForm(node);
   }
 
   createNewThirdLevelForm(parentNode: FlatNode) {
@@ -794,6 +822,27 @@ private formatDateForBackend(date: Date): string {
     } else {
       formValue.durationStunde = alarmValue.durationStunde || 0;
       formValue.durationMinuten = alarmValue.durationMinuten || 0;
+    }
+
+    if (!isRemote && this.isAlarmDurationOver10h()) {
+      const dialogRef = this.dialog.open(QuestionDialogComponent, {
+        data: {
+          title: 'Buchungslimit',
+          message: 'Sie überschreiten das Buchungslimit von 10 Stunden pro Tag. Wenn Sie trotzdem buchen möchten, bitte eine Begründung eingeben.',
+          label: 'Begründung für mehr als 10 Std./Tag:',
+          confirmText: 'Buchen',
+          cancelText: 'Abbrechen'
+        },
+        panelClass: 'custom-dialog-width'
+      });
+
+      dialogRef.afterClosed().subscribe((reason: string | false | undefined) => {
+        if (!reason) return;
+        this.isCreatingNew = true;
+        this.isNewlyCreated = true;
+        this.validate(formValue);
+      });
+      return;
     }
 
     this.isCreatingNew = true;
@@ -852,31 +901,49 @@ private formatDateForBackend(date: Date): string {
 
 isAlarmDay(node: FlatNode): boolean {
   if (!node || node.level !== 1 || node.hasNotification) return false;
+  if (this.isMonthClosedForDayNode(node)) return false;
   return !!node.dateKey && node.dateKey === this.alarmDayKey;
 }
 
-private recomputeAlarmDayKey(): void {
-  const naechster = this.abschlussInfo?.naechsterBuchbarerTag ?? null;
-  const closedKeys = new Set<string>(
-    this.treeControl.dataNodes
-      .filter(n => n.level === 1 && n.hasNotification && !!n.dateKey)
-      .map(n => n.dateKey!)
+private isMonthClosedForDayNode(dayNode: FlatNode): boolean {
+  if (!dayNode.dateKey) return false;
+  const monthKey = dayNode.dateKey.slice(0, 7);
+  const monthNode = this.treeControl.dataNodes.find(
+    n => n.level === 0 && n.monthKey === monthKey
   );
+  return !!monthNode?.hasNotification;
+}
 
-  const allDayKeys: string[] = [];
-  (this.dataSource.data || []).forEach((month: any) => {
-    (month.children || []).forEach((day: any) => {
-      if (day.dateKey && !closedKeys.has(day.dateKey)) allDayKeys.push(day.dateKey);
-    });
-  });
+private isMonthClosedForDate(date: Date): boolean {
+  const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  const monthNode = this.treeControl.dataNodes.find(
+    n => n.level === 0 && n.monthKey === monthKey
+  );
+  return !!monthNode?.hasNotification;
+}
 
-  if (!allDayKeys.length) { this.alarmDayKey = null; return; }
+private recomputeAlarmDayKey(): void {
+  const dayNodes = this.treeControl.dataNodes
+    .filter(n => n.level === 1 && !!n.dateKey);
 
-  const pool = naechster
-    ? allDayKeys.filter(k => k >= naechster)
-    : allDayKeys;
-  const source = pool.length ? pool : allDayKeys;
-  this.alarmDayKey = source.reduce((a, b) => (a > b ? a : b));
+  if (!dayNodes.length) { this.alarmDayKey = null; return; }
+
+  const closedKeys = dayNodes.filter(n => n.hasNotification).map(n => n.dateKey!);
+  const openKeys = dayNodes.filter(n => !n.hasNotification).map(n => n.dateKey!);
+
+  if (!openKeys.length) { this.alarmDayKey = null; return; }
+
+  const maxClosed = closedKeys.length
+    ? closedKeys.reduce((a, b) => (a > b ? a : b))
+    : null;
+
+  const candidates = maxClosed
+    ? openKeys.filter(k => k > maxClosed)
+    : openKeys;
+
+  if (!candidates.length) { this.alarmDayKey = null; return; }
+
+  this.alarmDayKey = candidates.reduce((a, b) => (a < b ? a : b));
 }
 
 get isSelectedDayLocked(): boolean {
@@ -941,6 +1008,14 @@ toggleMonthOpenClose(monthNode: FlatNode): void {
 toggleDayOpenClose(dayNode: FlatNode): void {
   if (!dayNode || dayNode.level !== 1) return;
 
+  if (this.isMonthClosedForDayNode(dayNode)) {
+    this.openErrorDialog(
+      'Monat ist geschlossen',
+      'Der zugehörige Monat ist abgeschlossen. Bitte öffnen Sie zuerst den Monat, bevor Sie Tage öffnen oder schließen.'
+    );
+    return;
+  }
+
   const isClosed = !!dayNode.hasNotification;
 
   if (!isClosed) {
@@ -984,8 +1059,8 @@ toggleDayOpenClose(dayNode: FlatNode): void {
 private performDelete(): void {
   if (!this.selectedNode) return;
 
-  const stempelzeitId = this.selectedNode.stempelzeitData?.id;
-  if (!stempelzeitId) {
+  const buchungId = this.selectedNode.buchungData?.id ?? this.selectedNode.stempelzeitData?.id;
+  if (!buchungId) {
     this.openErrorDialog('Fehler beim Löschen', 'Keine ID zum Löschen gefunden.');
     return;
   }
@@ -1001,7 +1076,7 @@ private performDelete(): void {
 
   const startTime = Date.now();
   this.taetigkeitenBuchenService.updateTaetigkeitsbuchung(
-    stempelzeitId,
+    buchungId,
     dto,
     'delete'
   ).subscribe({
@@ -1265,10 +1340,25 @@ private performDelete(): void {
 
   onDurationHourChange(value: number): void {
     this.alarmForm.get('durationStunde')?.patchValue(value);
-    if (value === 1) {
+    if (value === this.getDauerStundenMax()) {
       this.alarmForm.get('durationMinuten')?.patchValue(0);
     }
     this.validateAlarmTime('duration');
+  }
+
+  getDauerStundenMax(): number {
+    const gestempelt = this.alarmNode?.gestempelt;
+    if (!gestempelt) return 24;
+    const hourPart = String(gestempelt).split(/[:.]/)[0];
+    const hours = parseInt(hourPart, 10);
+    if (isNaN(hours) || hours < 0) return 0;
+    return Math.min(hours, 24);
+  }
+
+  isAlarmDurationOver10h(): boolean {
+    const h = Number(this.alarmForm?.get('durationStunde')?.value || 0);
+    const m = Number(this.alarmForm?.get('durationMinuten')?.value || 0);
+    return (h * 60 + m) > 600;
   }
 
   isAlarmRemote(): boolean {
@@ -1330,6 +1420,14 @@ private performDelete(): void {
   }
 
   addTimeEntryFromHeader() {
+    if (this.isMonthClosedForDate(new Date())) {
+      this.openErrorDialog(
+        'Monat ist geschlossen',
+        'Der aktuelle Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+      );
+      return;
+    }
+
     if (this.showRightPanelAlarmActions || this.isCreatingNewThirdLevel) {
       this.resetAlarmState();
     }

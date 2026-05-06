@@ -292,7 +292,7 @@
             <div class="time-column">
               <app-taetigkeiten-time-box
                 [value]="alarmForm.get('durationStunde')?.value || 0"
-                [max]="1"
+                [max]="getDauerStundenMax()"
                 [disabled]="!canEditAlarmTime"
                 (valueChange)="onDurationHourChange($event)"
               />
@@ -303,7 +303,8 @@
               <app-taetigkeiten-time-box
                 [value]="alarmForm.get('durationMinuten')?.value || 0"
                 [max]="59"
-                [disabled]="!canEditAlarmTime || getAlarmHour('duration') === 1"
+                [step]="5"
+                [disabled]="!canEditAlarmTime || getAlarmHour('duration') === getDauerStundenMax()"
                 (valueChange)="alarmForm.get('durationMinuten')?.patchValue($event); validateAlarmTime('duration')"
               />
             </div>

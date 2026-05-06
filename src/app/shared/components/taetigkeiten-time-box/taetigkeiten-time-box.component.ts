@@ -12,6 +12,7 @@ export class TaetigkeitenTimeBoxComponent {
   @Input() value: number = 0;
   @Input() min: number = 0;
   @Input() max: number = 24;
+  @Input() step: number = 1;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
   @Input() decreaseDisabled: boolean = false;
@@ -20,13 +21,17 @@ export class TaetigkeitenTimeBoxComponent {
   @Output() valueChange = new EventEmitter<number>();
 
   get nextValue(): number {
-    const next = this.value + 1;
+    const next = this.value + this.step;
     return next > this.max ? this.min : next;
   }
 
   get previousValue(): number {
-    const prev = this.value - 1;
-    return prev < this.min ? this.max : prev;
+    const prev = this.value - this.step;
+    if (prev < this.min) {
+      const span = this.max - this.min;
+      return this.min + Math.floor(span / this.step) * this.step;
+    }
+    return prev;
   }
 
   get canIncrease(): boolean {
