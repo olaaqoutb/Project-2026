@@ -1,5 +1,6 @@
 // import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit, Inject, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -8,7 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -40,7 +41,7 @@ import {
 } from '../../dialogs/Stundensatz-aendeung-dialog/stundensatz-aendeung-dialog/stundensatz-aendeung-dialog.component';
 import { FlatNode } from '../../../models/Flat-node';
 import { TaetigkeitNode } from '../../../models/TaetigkeitNode';
-import { VertraegeService } from '../../../services/vertraege.service';
+import { VertragService } from '../../../services/vertrag.service';
 import { ApiVertrag } from '../../../models/ApiVertrag';
 import { ApiVertragPosition } from '../../../models/ApiVertragPosition';
 import{ApiVertragPositionVerbraucher}from "../../../models/ApiVertragPositionVerbraucher";
@@ -50,6 +51,12 @@ import { ApiProdukt } from '../../../models/ApiProdukt';
 import { ApiProduktPosition } from '../../../models/ApiProduktPosition';
 import{ApiVertragBezugsart}from"../../../models/ApiVertragBezugsart"
 import{ApiVertragsTyp}from"../../../models/ApiVertragsTyp"
+import { ApiVerbraucherTyp } from '../../../models/ApiVerbraucherTyp';
+import { VertragTreeNode } from '../../../models/VertragTreeNode';
+import { HttpError } from '../../../models/HttpError';
+import { VERTRAG_DETAIL_MESSAGES } from '../../../constants/vertrag-detail-messages';
+import { StatusPanelService } from '../../../services/utils/status-panel-status.service';
+import { AppConstants } from '../../../models/app-constants';
 
 // import{VertraegeService}from "../../../services/vertrage.service"
 
@@ -123,35 +130,16 @@ vertragForm!: FormGroup;
   isChildFormEditable = false;
   saving = false;
   loading = true;
-  originalVertragData: any = {};
-  vertragspositionen: any[] = [];
-  selectedPosition: any | null = null;
-verantwortlicherOptions: { id: string; fullName: string }[] = [{ id: '', fullName: '< Person wählen >' }];
+  originalVertragData: Record<string, unknown> = {};
+  vertragspositionen: VertragTreeNode[] = [];
+  selectedPosition: VertragTreeNode | null = null;
+  private destroyRef = inject(DestroyRef);
+verantwortlicherOptions: { id: string; fullName: string }[] = [];
   servicemanagerOptions: string[] = [];
-    vertragList: { id: string; produktname: string }[] = [{ id: '', produktname: '< Produkt wählen >' }];
-  vertragPositionTypenList: { id: string; produktPositionname: string }[] = [{ id: '', produktPositionname: '< Produktposition wählen >' }];
+    vertragList: { id: string; produktname: string }[] = [];
+  vertragPositionTypenList: { id: string; produktPositionname: string }[] = [];
+  readonly messages = VERTRAG_DETAIL_MESSAGES;
 
-  /** Placeholder labels rendered as the first option of each dropdown. */
-  private readonly placeholderPerson         = '< Person wählen >';
-  private readonly placeholderProdukt        = '< Produkt wählen >';
-  private readonly placeholderProduktposition = '< Produktposition wählen >';
-  private readonly placeholderBezugsart      = '< Bezugsart wählen >';
-  private readonly placeholderVertragstyp    = '< Vertragstyp wählen >';
-  private readonly placeholderVerbrauchertyp = '< Verbrauchertyp wählen >';
-  private readonly placeholderRollenbez      = '< Rollenbez.Rahmenvertrag wählen >';
-
-  /** Convert the dropdown's placeholder string back to '' before persisting. */
-  private clearPlaceholder(value: any): any {
-    if (
-      value === this.placeholderBezugsart ||
-      value === this.placeholderVertragstyp ||
-      value === this.placeholderVerbrauchertyp ||
-      value === this.placeholderRollenbez
-    ) {
-      return '';
-    }
-    return value;
-  }
 isNewPositionBeingCreated = false;
 isNewVerbraucherBeingCreated = false;
 isNewChildBeingCreated = false;
@@ -170,12 +158,13 @@ geschaeftszahlenOptions: string[] = [];
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private dummyService: VertraegeService,
+    private vertrageService: VertragService,
     private cdr: ChangeDetectorRef,
+    private statusPanelService: StatusPanelService,
 
   ) {
-    this.bezugsartenOptions = [this.placeholderBezugsart, ...this.buildOption(ApiVertragBezugsart)];
-    this.vertragsTypOptions = [this.placeholderVertragstyp, ...this.buildOption(ApiVertragsTyp)];
+    this.bezugsartenOptions = this.buildOption(ApiVertragBezugsart);
+    this.vertragsTypOptions = this.buildOption(ApiVertragsTyp);
   }
 
 ngOnInit(): void {
@@ -188,6 +177,7 @@ ngOnInit(): void {
   this.loadRollenbezeichnungen();
   this.loadVerantwortlicherOptions();
   this.loadProdukte();
+  this.loadGeschaeftszahlen();
 
   if (!this.vertragId || this.vertragId === 'new') {
     this.vertragId = null!;
@@ -198,102 +188,93 @@ ngOnInit(): void {
       ende: new Date(9999, 11, 31),
     });
     this.loading = false;
-    this.loadGeschaeftszahlen();
     return;
   }
 
-  this.loadGeschaeftszahlen();
+  this.loadVertragData();
 }
 private loadVerantwortlicherOptions(): void {
-  this.dummyService.getPersonen1().subscribe({
-    next: (persons: any[]) => {
-      this.verantwortlicherOptions = [
-        { id: '', fullName: this.placeholderPerson },
-        ...persons.map(p => ({
-          id: p.id,
+  this.vertrageService.getPersonen1()
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        const persons = response.body ?? [];
+        this.verantwortlicherOptions = persons.map(p => ({
+          id: p.id ?? '',
           fullName: `${p.vorname || ''} ${p.nachname || ''}`.trim()
-        }))
-      ];
-    },
-    error: (err) => console.error('Error loading Verantwortlicher:', err)
-  });
+        }));
+      },
+      error: (error: HttpError) => console.error('Error loading Verantwortlicher:', error)
+    });
 }
 private loadGeschaeftszahlen(): void {
-  this.dummyService.getAlleAktuellenGeschaeftszahlen().subscribe({
-    next: (data) => {
-      const raw = Array.isArray(data.geschaeftszahl) ? data.geschaeftszahl : [];
-
-      // ✅ Add empty string so mat-select can match geschaeftszahl: ""
-      this.geschaeftszahlenOptions = ['', ...raw];
-
-      if (this.vertragId) {
-        this.loadVertragData();
-      }
-    },
-    error: (err) => console.error('Error loading Geschaeftszahlen:', err)
-  });
+  this.vertrageService.getAlleAktuellenGeschaeftszahlen()
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        const data = response.body ?? {};
+        const raw = Array.isArray(data.geschaeftszahl) ? data.geschaeftszahl : [];
+        this.geschaeftszahlenOptions = ['', ...raw];
+      },
+      error: (error: HttpError) => console.error('Error loading Geschaeftszahlen:', error)
+    });
 }
 private loadProdukte(): void {
-  this.dummyService.getProdukte().subscribe({
-    next: (produkte: ApiProdukt[]) => {
-      // Use the same `id || produktname` fallback that the form patch uses,
-      // so mat-select always finds a matching option even when mock data
-      // produkte have no `id` field.
-      this.vertragList = [
-        { id: '', produktname: this.placeholderProdukt },
-        ...(produkte || []).map((p) => ({
+  this.vertrageService.getProdukte()
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        const produkte = response.body ?? [];
+        this.vertragList = produkte.map((p) => ({
           id: p.id || p.produktname || '',
           produktname: p.produktname || ''
-        }))
-      ];
-    },
-    error: (err) => console.error('Error loading Produkte:', err)
-  });
+        }));
+      },
+      error: (error: HttpError) => console.error('Error loading Produkte:', error)
+    });
 }
 
 private loadProduktPositionen(produktId: string, onLoaded?: () => void): void {
   if (!produktId) {
-    this.vertragPositionTypenList = [
-      { id: '', produktPositionname: this.placeholderProduktposition }
-    ];
+    this.vertragPositionTypenList = [];
     onLoaded?.();
     return;
   }
-  this.dummyService.getProdukt(produktId).subscribe({
-    next: (produkt: ApiProdukt) => {
-      this.vertragPositionTypenList = [
-        { id: '', produktPositionname: this.placeholderProduktposition },
-        ...(produkt?.produktPosition || []).map((pp: ApiProduktPosition) => ({
+  this.vertrageService.getProdukt(produktId)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        const produkt = response.body;
+        this.vertragPositionTypenList = (produkt?.produktPosition || []).map((pp: ApiProduktPosition) => ({
           id: pp.id || pp.produktPositionname || '',
           produktPositionname: pp.produktPositionname || ''
-        }))
-      ];
-      onLoaded?.();
-    },
-    error: (err) => {
-      console.error('Error loading ProduktPositionen:', err);
-      onLoaded?.();
-    }
-  });
+        }));
+        onLoaded?.();
+      },
+      error: (error: HttpError) => {
+        console.error('Error loading ProduktPositionen:', error);
+        onLoaded?.();
+      }
+    });
 }
 
 private loadRollenbezeichnungen(): void {
-  this.dummyService.getAlleAktuellenRollenbezeichnungen().subscribe({
-    next: (data) => {
-      this.rollenbezeichnungOptions = [
-        this.placeholderRollenbez,
-        ...(Array.isArray(data.rollenbezeichnung) ? data.rollenbezeichnung : [])
-      ];
-    },
-    error: (err) => {
-      console.error('Error loading Rollenbezeichnungen:', err);
-    }
-  });
+  this.vertrageService.getAlleAktuellenRollenbezeichnungen()
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        const data = response.body ?? {};
+        this.rollenbezeichnungOptions = Array.isArray(data.rollenbezeichnung) ? data.rollenbezeichnung : [];
+      },
+      error: (error: HttpError) => {
+        console.error('Error loading Rollenbezeichnungen:', error);
+      }
+    });
 }
  addVertragsposition(): void {
   this.cancelAndResetNewFlags();
 
-  const newPosition = {
+  const newPosition: VertragTreeNode = {
     id: `new-level1-${Date.now()}`,
     name: 'Neue Vertragsposition',
     start: undefined,
@@ -326,7 +307,7 @@ private loadRollenbezeichnungen(): void {
     volumen: '',
     volumenEuro: '',
     jahresuebertrag: false,
-    rollenbezRahmenvertrag: this.placeholderRollenbez,
+    rollenbezRahmenvertrag: '',
     anmerkung: '',
   });
 
@@ -335,13 +316,13 @@ private loadRollenbezeichnungen(): void {
   this.editingNewNodeParentId = null;
 }
 
-addVerbraucher(parentNode: any, event: Event): void {
+addVerbraucher(parentNode: VertragTreeNode, event: Event): void {
   event.stopPropagation();
   this.cancelAndResetNewFlags();
 
   if (!parentNode || parentNode.level !== 1) return;
 
-  const newVerbraucher = {
+  const newVerbraucher: VertragTreeNode = {
     id: `new-level2-${Date.now()}`,
     name: 'Neue Person',
     typ: 'Verbraucher',
@@ -360,7 +341,7 @@ addVerbraucher(parentNode: any, event: Event): void {
   this.verbraucherDetailForm.enable();
   this.verbraucherDetailForm.reset({
     aktiv: true,
-    verbraucherTyp: this.placeholderVerbrauchertyp,
+    verbraucherTyp: '',
     person: '',
     verbraucher: '',
     stundensatz: '',
@@ -378,19 +359,19 @@ addVerbraucher(parentNode: any, event: Event): void {
   return node && node.level === 1;
 }
 
-canAddBuchungspunkt(node: FlatNode): boolean {
+canAddStundenplanung(node: FlatNode): boolean {
   return node && node.level === 2;
 }
-     addBuchungspunkt(parentNode:any, event: Event): void {
+     addStundenplanung(parentNode: VertragTreeNode, event: Event): void {
   event.stopPropagation();
   this.cancelAndResetNewFlags();
 
   if (!parentNode || parentNode.level !== 2) return;
 
-  const newBuchungspunkt = {
+  const newStundenplanung: VertragTreeNode = {
     id: `new-level3-${Date.now()}`,
-    name: 'Neuer Buchungspunkt',
-    typ: 'Buchungspunkt',
+    name: 'Neue Stundenplanung',
+    typ: 'Stundenplanung',
     level: 3,
     parentId: parentNode.id,
     aktiv: true,
@@ -402,7 +383,7 @@ canAddBuchungspunkt(node: FlatNode): boolean {
     isNew: true,
     isPendingCreation: true
   };
-  this.selectedPosition = newBuchungspunkt;
+  this.selectedPosition = newStundenplanung;
   this.isChildFormEditable = true;
   this.childDetailForm.enable();
   this.childDetailForm.reset({
@@ -424,7 +405,7 @@ canAddBuchungspunkt(node: FlatNode): boolean {
       vertragspartner: ['', Validators.required],
       auftraggeber: ['', Validators.required],
       vertragsverantwortlicher: [''],
-      bezugsart: [this.placeholderBezugsart],
+      bezugsart: [''],
       elak: [''],
       beschaffungsnummer: [''],
       lkVertrag: [false],
@@ -435,20 +416,16 @@ canAddBuchungspunkt(node: FlatNode): boolean {
       vertragssumme: ['', Validators.required],
       auftragsreferenz: [''],
       rahmenvertragGZ: [''],
-      vertragstype: [this.placeholderVertragstyp, Validators.required],
+      vertragstype: ['', Validators.required],
       anmerkung: ['']
     });
-    // Don't disable here — disable AFTER patchValue in loadVertragData.
-    // Otherwise mat-select binds against a disabled control and the trigger
-    // can stay blank even when the value matches an option (Bezugsart bug).
   }
 bezugsartenOptions: string[] = [];
 vertragsTypOptions: string[] = [];
-verbraucherArray: string[] = ['< Verbrauchertyp wählen >', 'Personal', 'Sachmittel'];
+verbraucherArray: string[] = ['Personal', 'Sachmittel'];
 
-/** Take an enum object and return its values as a flat string[] for mat-options. */
-private buildOption(enumObj: any): string[] {
-  return Object.values(enumObj as Record<string, string>);
+private buildOption(enumObj: Record<string, string>): string[] {
+  return Object.values(enumObj);
 }
 
 
@@ -460,7 +437,7 @@ private buildOption(enumObj: any): string[] {
       volumen: [''],
       volumenEuro: ['', Validators.required],
       jahresuebertrag: [false],
-      rollenbezRahmenvertrag: [this.placeholderRollenbez],
+      rollenbezRahmenvertrag: [''],
       anmerkung: [''],
     });
     this.positionDetailForm.disable();
@@ -469,7 +446,7 @@ private buildOption(enumObj: any): string[] {
   private initVerbraucherDetailForm(): void {
     this.verbraucherDetailForm = this.fb.group({
       aktiv: [false],
-      verbraucherTyp: [this.placeholderVerbrauchertyp, Validators.required],
+      verbraucherTyp: ['', Validators.required],
       person: [''],
       verbraucher: [''],
       stundensatz: [''],
@@ -481,9 +458,11 @@ private buildOption(enumObj: any): string[] {
     this.verbraucherDetailForm.disable();
 
     // Required fields depend on the selected Verbrauchertyp
-    this.verbraucherDetailForm.get('verbraucherTyp')!.valueChanges.subscribe((typ: string) => {
-      this.applyVerbraucherRequiredValidators(typ);
-    });
+    this.verbraucherDetailForm.get('verbraucherTyp')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((typ: string) => {
+        this.applyVerbraucherRequiredValidators(typ);
+      });
   }
 
   private applyVerbraucherRequiredValidators(typ: string): void {
@@ -522,20 +501,22 @@ private initChildDetailForm(): void {
     anmerkung: [''],
     aktiv: [false],
   });
-  // Don't disable here — the form template is gated by *ngIf on
-  // selectedPosition, so it isn't rendered until doSelectPosition runs and
-  // disables it after patchValue (with emitEvent:false).
 
-  this.childDetailForm.get('produkt')!.valueChanges.subscribe((produktId: string) => {
-    this.loadProduktPositionen(produktId);
-  });
+  this.childDetailForm.get('produkt')!.valueChanges
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe((produktId: string) => {
+      this.loadProduktPositionen(produktId);
+    });
 }
 
  private loadVertragData(): void {
   this.loading = true;
 
-  this.dummyService.getVertrag(this.vertragId, true).subscribe({
-    next: (detailData: any) => {
+  this.vertrageService.getVertrag(this.vertragId, true)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+    next: (response) => {
+      const detailData = response.body;
       if (!detailData) {
         this.loading = false;
         return;
@@ -547,20 +528,13 @@ private initChildDetailForm(): void {
         if (!exists) {
           this.verantwortlicherOptions = [
             ...this.verantwortlicherOptions,
-            { id: v.id, fullName: `${v.vorname || ''} ${v.nachname || ''}`.trim() }
+            { id: v.id ?? '', fullName: `${v.vorname || ''} ${v.nachname || ''}`.trim() }
           ];
         }
       }
 
-      // Force CD so the *ngFor mat-options are rendered (the form-content is
-      // wrapped in *ngIf="!loading"); only then patch the values, so mat-select
-      // can find the matching option for Bezugsart / Vertragstyp / Vertragsverantwortlicher
-      // immediately instead of waiting for the user to open the dropdown.
-      const bezugsartValue = this.mapBezugsart(detailData.bezugsart);
-      const vertragsTypValue = this.mapVertragsTyp(detailData.vertragsTyp);
-      // If the persisted value isn't one of the static enum options (older
-      // record, custom value, etc.), append it so mat-select can still render
-      // it instead of showing an empty trigger.
+      const bezugsartValue = this.encodeFromApi(ApiVertragBezugsart, detailData.bezugsart);
+      const vertragsTypValue = this.encodeFromApi(ApiVertragsTyp, detailData.vertragsTyp)
       if (bezugsartValue && !this.bezugsartenOptions.includes(bezugsartValue)) {
         this.bezugsartenOptions = [...this.bezugsartenOptions, bezugsartValue];
       }
@@ -575,7 +549,7 @@ private initChildDetailForm(): void {
         vertragspartner: detailData.vertragspartner || '',
         auftraggeber:    detailData.auftraggeber    || '',
         vertragsverantwortlicher: detailData.vertragsverantwortlicher?.id ?? '',
-        bezugsart: bezugsartValue || this.placeholderBezugsart,
+        bezugsart: bezugsartValue || '',
         elak: detailData.elak|| '',
         beschaffungsnummer: detailData.beschaffungsnummer || '',
         lkVertrag: detailData.lkKennung || false,
@@ -586,20 +560,18 @@ private initChildDetailForm(): void {
         vertragssumme:detailData.vertragssumme    || '',
         auftragsreferenz: detailData.auftragsreferenz || '',
         rahmenvertragGZ: detailData.geschaeftszahl || '',
-        vertragstype: vertragsTypValue || this.placeholderVertragstyp,
+        vertragstype: vertragsTypValue || '',
         anmerkung: detailData.anmerkung || ''
       });
       this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.getRawValue()));
-      // Disable AFTER patching so mat-select renders the patched value first.
       if (!this.isFormEditable) {
         this.vertragForm.disable({ emitEvent: false });
       }
       this.cdr.detectChanges();
 
-      // Build the tree
       if (detailData.vertragPosition) {
-        this.vertragspositionen = detailData.vertragPosition.map((parentPos: any) => ({
-          id:           parentPos.id,
+        this.vertragspositionen = detailData.vertragPosition.map((parentPos: ApiVertragPosition) => ({
+          id:           parentPos.id ?? '',
           name:         parentPos.position || 'Unnamed Position',
           aktiv:        parentPos.aktiv !== false,
           typ:          'Vertragsposition',
@@ -609,13 +581,11 @@ private initChildDetailForm(): void {
           volumenStunden: parentPos.volumenStunden,
           stundenGeplant: parentPos.stundenGeplant,
           anmerkung:    parentPos.anmerkung || '',
-
-          // FIX: these 3 were never mapped before
           planungsjahr: parentPos.planungsjahr           || '',
           jahresuebertrag: parentPos.jahresuebertrag        || false,
           rollenbezRahmenvertrag: parentPos.rollenbezeichnungRahmenvertrag || '',
 
-          children: parentPos.vertragPositionVerbraucher?.map((verbraucher: any, vIndex: number) => ({
+          children: parentPos.vertragPositionVerbraucher?.map((verbraucher: ApiVertragPositionVerbraucher, vIndex: number) => ({
             id:  verbraucher.id || `${parentPos.id}-v${vIndex}`,
             name: verbraucher.person
                             ? `${verbraucher.person.vorname ?? ''} ${verbraucher.person.nachname ?? ''}`.trim() || verbraucher.verbraucher || 'Unbekannter Verbraucher'
@@ -629,15 +599,15 @@ private initChildDetailForm(): void {
             volumenEuro:verbraucher.volumenEuro,
             volumenStunden: verbraucher.volumenStunden,
             stundenGeplant: verbraucher.stundenGeplant,
-            verbraucherTyp:  this.mapVerbraucherTyp(verbraucher.verbraucherTyp),
+            verbraucherTyp:  this.encodeFromApi(this.verbraucherTypMap, verbraucher.verbraucherTyp),
             stundensatz: verbraucher.stundenpreis   || '',
             stundenkontingent: verbraucher.stundenGeplant || '',
             anmerkung: verbraucher.anmerkung      || '',
-            children: verbraucher.stundenplanung?.map((plan: any, pIndex: number) => ({
+            children: verbraucher.stundenplanung?.map((plan: ApiStundenplanung, pIndex: number) => ({
               id: plan.id || `${verbraucher.id}-p${pIndex}`,
               name:plan.produktPosition?.produkt?.produktname || `Plan ${pIndex + 1}`,
               aktiv:plan.produktPosition?.aktiv !== false,
-              typ:'Buchungspunkt',
+              typ:'Stundenplanung',
               level: 3,
               parentId:verbraucher.id,
               stundenGeplant: plan.stundenGeplant,
@@ -649,56 +619,35 @@ private initChildDetailForm(): void {
         this.sortNodesByName(this.vertragspositionen);
       }
     },
-    error: (error: any) => {
+    error: (error: HttpError) => {
       console.error('Error:', error);
       this.loading = false;
+      this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.vertrag.loadFailed);
+      this.router.navigate(['/vertraege-2']);
     }
   });
 }
 
-private mapBezugsart(value: string): string {
-  const map: { [key: string]: string } = {
-    'BBG_ABRUF':         'BBG-Abruf',
-    'BRZ_ABRUF':         'BRZ-Abruf',
-    'DIREKTVERGABE':     'Direktvergabe',
-    'BMI_AUSSCHREIBUNG': 'BMI-Ausschreibung'
-  };
-  return map[value] || value || '';
+private readonly verbraucherTypMap: Record<string, string> = {
+  PERSONAL:   'Personal',
+  SACHMITTEL: 'Sachmittel'
+};
+
+private encodeFromApi(map: Record<string, string>, value: string | null | undefined): string {
+  if (!value) return '';
+  return map[value] ?? value;
 }
 
-private mapVertragsTyp(value: string): string {
-  const map: { [key: string]: string } = {
-    'BETRIEB': 'Betrieb',
-    'PROJEKT':  'Projekt'
-  };
-  return map[value] || value || '';
-}
-
-private mapVerbraucherTyp(value: string): string {
-  const map: { [key: string]: string } = {
-    'PERSONAL':  'Personal',
-    'SACHMITTEL': 'Sachmittel'
-  };
-  return map[value] || value || '';
+private encodeToApi(map: Record<string, string>, value: string | null | undefined): string {
+  if (!value) return '';
+  const entry = Object.entries(map).find(([, v]) => v === value);
+  return entry ? entry[0] : value;
 }
   // Main Form Actions (Vertrag)
 onEditOrSubmit(): void {
   if (!this.isFormEditable) {
     this.isFormEditable = true;
     this.vertragForm.enable();
-this.loadVerantwortlicherOptions();
-    // Load full persons list for the dropdown when editing
-    this.dummyService.getPersonen1().subscribe({
-      next: (persons: any[]) => {
-        this.verantwortlicherOptions = [
-          { id: '', fullName: this.placeholderPerson },
-          ...persons.map(p => ({
-            id: p.id,
-            fullName: `${p.vorname || ''} ${p.nachname || ''}`.trim()
-          }))
-        ];
-      }
-    });
   } else {
     this.onSubmit();
   }
@@ -709,7 +658,7 @@ onSubmit(): void {
     this.vertragForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.vertragForm, this.vertragLabelMap),
-      'Es sind Eingabefehler aufgetreten'
+      VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError
     );
     return;
   }
@@ -718,7 +667,6 @@ onSubmit(): void {
   const formValues = this.vertragForm.getRawValue();
   const isNewVertrag = !this.vertragId;
 
-  // Build the DTO
   const dto = {} as ApiVertrag;
   dto.id = this.vertragId;
   dto.vertragsname = formValues.vertragsname;
@@ -732,8 +680,8 @@ onSubmit(): void {
   dto.vertragssumme = formValues.vertragssumme?.toString();
   dto.aktiv = formValues.aktiv;
   dto.lkKennung = formValues.lkVertrag;
-  dto.bezugsart = this.clearPlaceholder(formValues.bezugsart);
-  dto.vertragsTyp = this.clearPlaceholder(formValues.vertragstype);
+  dto.bezugsart = this.encodeToApi(ApiVertragBezugsart, formValues.bezugsart) as ApiVertragBezugsart;
+  dto.vertragsTyp = this.encodeToApi(ApiVertragsTyp, formValues.vertragstype) as ApiVertragsTyp;
   dto.geschaeftszahl = formValues.rahmenvertragGZ;
   dto.vertragsverantwortlicher = { id: formValues.vertragsverantwortlicher } as ApiPerson;
 
@@ -748,27 +696,40 @@ onSubmit(): void {
   }
 
   const saveObservable = isNewVertrag
-    ? this.dummyService.createVertrag(dto)
-    : this.dummyService.updateVertrag(this.vertragId, dto);
+    ? this.vertrageService.createVertrag(dto)
+    : this.vertrageService.updateVertrag(this.vertragId, dto);
 
-  saveObservable.subscribe({
-    next: (response: ApiVertrag) => {
-      this.vertragId = response.id ?? this.vertragId;
+  const startTime = Date.now();
+  saveObservable
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+    next: (response) => {
+      const duration = Date.now() - startTime;
+      const saved = response.body;
+      this.vertragId = saved?.id ?? this.vertragId;
       this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.getRawValue()));
       this.saving = false;
       this.isFormEditable = false;
       this.vertragForm.disable({ emitEvent: false });
       this.vertragSubmitAttempted = false;
 
-      if (isNewVertrag && response.id) {
-        window.history.replaceState({}, '', `/vertrag/${response.id}`);
+      if (isNewVertrag && saved?.id) {
+        this.router.navigate(['/vertraege-2', saved.id], { replaceUrl: true });
       }
 
-      this.showInfoDialog('Daten wurden erfolgreich gespeichert.');
+      this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.vertrag.saveSuccess);
+      this.statusPanelService.addMessageRequest(
+        isNewVertrag ? AppConstants.MSG_VERTRAG_CREATED_SUCCESS : AppConstants.MSG_VERTRAG_UPDATED_SUCCESS,
+        'POST', duration, response);
     },
-    error: (error: string) => {
+    error: (error) => {
+      const duration = Date.now() - startTime;
+      console.error('Error saving Vertrag:', error);
       this.saving = false;
-      this.showErrorDialog('Fehler beim Speichern des Vertrags.');
+      this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.vertrag.saveFailed);
+      this.statusPanelService.addMessageRequest(
+        isNewVertrag ? AppConstants.MSG_VERTRAG_CREATED_ERROR : AppConstants.MSG_VERTRAG_UPDATED_ERROR,
+        'POST', duration, error);
     }
   });
 }
@@ -787,7 +748,7 @@ onSubmit(): void {
     this.router.navigate(['/vertraege-2']);
   }
 }
-selectPosition(position: any): void {
+selectPosition(position: VertragTreeNode): void {
   if (this.selectedPosition?.id === position.id && !position.isNew) {
     return;
   }
@@ -805,13 +766,13 @@ selectPosition(position: any): void {
   this.doSelectPosition(position);
 }
 
-toggleExpand(position: any, event: Event): void {
+toggleExpand(position: VertragTreeNode, event: Event): void {
   event.stopPropagation();
   if (position.isNew) return;
   position.isExpanded = !position.isExpanded;
 }
 
-private doSelectPosition(position: any): void {
+private doSelectPosition(position: VertragTreeNode): void {
   this.selectedPosition = position;
   this.isPositionFormEditable = false;
   this.isVerbraucherFormEditable = false;
@@ -830,7 +791,7 @@ private doSelectPosition(position: any): void {
       this.isVerbraucherFormEditable = true;
       this.verbraucherDetailForm.enable();
       this.isNewVerbraucherBeingCreated = true;
-    } else if (position.typ === 'Buchungspunkt' || position.typ === 'Dokumentation') {
+    } else if (position.typ === 'Stundenplanung' || position.typ === 'Dokumentation') {
       this.isChildFormEditable = true;
       this.childDetailForm.enable();
       this.isNewChildBeingCreated = true;
@@ -845,14 +806,14 @@ private doSelectPosition(position: any): void {
   volumen:  position.volumenStunden || '',
   volumenEuro: position.volumenEuro || '',
   jahresuebertrag:position.jahresuebertrag|| false,
-  rollenbezRahmenvertrag: position.rollenbezRahmenvertrag || this.placeholderRollenbez,
+  rollenbezRahmenvertrag: position.rollenbezRahmenvertrag || '',
   anmerkung: position.anmerkung || '',
 });
     if (!this.isPositionFormEditable) this.positionDetailForm.disable();
   } else if (position.typ === 'Verbraucher') {
   this.verbraucherDetailForm.patchValue({
     aktiv:position.aktiv|| false,
-    verbraucherTyp:position.verbraucherTyp || this.placeholderVerbrauchertyp,
+    verbraucherTyp:position.verbraucherTyp || '',
     person: position.personId ?? '',
     verbraucher: position.verbraucherTyp === 'Sachmittel' ? (position.name || '') : '',
     stundensatz:position.stundensatz || '',
@@ -862,7 +823,7 @@ private doSelectPosition(position: any): void {
     StundensatzAnderung: position.stundensatzAenderung || ''
   });
     if (!this.isVerbraucherFormEditable) this.verbraucherDetailForm.disable();
-  } else if (position.typ === 'Buchungspunkt' || position.typ === 'Dokumentation') {
+  } else if (position.typ === 'Stundenplanung' || position.typ === 'Dokumentation') {
     const produktObj = position.produktPosition?.produkt;
     const produktId = produktObj?.id || produktObj?.produktname || '';
     const produktpositionId =
@@ -870,8 +831,6 @@ private doSelectPosition(position: any): void {
       || position.produktPosition?.produktPositionname
       || '';
 
-    // Make sure the saved produkt is present in vertragList; otherwise mat-select
-    // can't find a matching option and the trigger stays blank in display mode.
     if (produktId && !this.vertragList.some(p => p.id === produktId)) {
       this.vertragList = [
         ...this.vertragList,
@@ -879,15 +838,7 @@ private doSelectPosition(position: any): void {
       ];
     }
 
-    // Load the positionen for this produkt FIRST so mat-select has the matching
-    // option, then run change detection so *ngFor renders the new mat-option
-    // nodes BEFORE patching the form values. Without detectChanges() between
-    // the array update and the patch, mat-select can't find a match and the
-    // dropdown stays blank until the user clicks it.
     this.loadProduktPositionen(produktId || '', () => {
-      // Same defensive add for the produktposition: if the loaded list doesn't
-      // include the saved one (e.g. produkt was a placeholder so the wrong list
-      // came back), append it so mat-select can render it.
       if (produktpositionId && !this.vertragPositionTypenList.some(p => p.id === produktpositionId)) {
         this.vertragPositionTypenList = [
           ...this.vertragPositionTypenList,
@@ -905,35 +856,32 @@ private doSelectPosition(position: any): void {
         anmerkung: position.anmerkung || '',
         aktiv: position.aktiv ?? false
       }, { emitEvent: false });
-      // emitEvent:false on disable() — otherwise the produkt valueChanges
-      // subscription fires again, reloads the produkt-positionen list and
-      // drops the defensively-added saved produktposition.
       if (!this.isChildFormEditable) this.childDetailForm.disable({ emitEvent: false });
       this.cdr.detectChanges();
     });
   }
 }
 
-private isParentOfSelected(possibleParent: any, selectedNode: any): boolean {
-  if (!possibleParent.children || possibleParent.children.length === 0) {
-    return false;
-  }
+// private isParentOfSelected(possibleParent: VertragTreeNode, selectedNode: VertragTreeNode): boolean {
+//   if (!possibleParent.children || possibleParent.children.length === 0) {
+//     return false;
+//   }
 
 
-  for (const child of possibleParent.children) {
-    if (child.id === selectedNode.id) {
-      return true;
-    }
-  }
+//   for (const child of possibleParent.children) {
+//     if (child.id === selectedNode.id) {
+//       return true;
+//     }
+//   }
 
-  for (const child of possibleParent.children) {
-    if (child.children && this.isParentOfSelected(child, selectedNode)) {
-      return true;
-    }
-  }
+//   for (const child of possibleParent.children) {
+//     if (child.children && this.isParentOfSelected(child, selectedNode)) {
+//       return true;
+//     }
+//   }
 
-  return false;
-}
+//   return false;
+// }
   onEditOrSubmitPositionOrChild(): void {
     if (!this.selectedPosition) return;
 
@@ -956,9 +904,6 @@ private isParentOfSelected(possibleParent: any, selectedNode: any): boolean {
     else {
       if (!this.isChildFormEditable) {
         this.isChildFormEditable = true;
-        // emitEvent:false — otherwise enable() re-fires the produkt
-        // valueChanges, which reloads the produkt-positionen list and drops
-        // the defensively-added saved produktposition.
         this.childDetailForm.enable({ emitEvent: false });
       } else {
         this.saveChildDetails();
@@ -990,6 +935,7 @@ private isParentOfSelected(possibleParent: any, selectedNode: any): boolean {
 }
 
 openConfirmDeleteNewDialog(): void {
+  if (!this.selectedPosition) return;
   const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
     width: '500px',
     data: {
@@ -1012,11 +958,11 @@ private savePositionDetails(): void {
       this.positionDetailForm.markAllAsTouched();
       this.showErrorDialog(
         this.buildRequiredErrorMessage(this.positionDetailForm, this.positionLabelMap),
-        'Es sind Eingabefehler aufgetreten'
+        VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError
       );
       return;
     }
-
+    const currentNode = this.selectedPosition;
     const formValues = this.positionDetailForm.getRawValue();
 
     const dto = {} as ApiVertragPosition;
@@ -1027,55 +973,74 @@ private savePositionDetails(): void {
     dto.aktiv = formValues.aktiv;
     dto.planungsjahr = formValues.planungsjahr;
     dto.jahresuebertrag = formValues.jahresuebertrag;
-    dto.rollenbezeichnungRahmenvertrag = this.clearPlaceholder(formValues.rollenbezRahmenvertrag);
-    debugger
-    if (this.selectedPosition.isPendingCreation) {
-      this.dummyService.createVertragPosition(dto, this.vertragId).subscribe({
-
-        next: (response: ApiVertragPosition) => {
-          const newPosition = {
-            ...this.selectedPosition,
-            ...formValues,
-            id: response.id || this.selectedPosition.id,
-            name: formValues.positionsbezeichnung,
-            isPendingCreation: false,
-            isNew: false
-          };
-          this.vertragspositionen.unshift(newPosition);
-          this.sortNodesByName(this.vertragspositionen);
-          this.finalizePositionSave();
-        },
-        error: (err: any) => {
-          this.showErrorDialog('Fehler beim Erstellen der Position.');
-        }
-      });
+    dto.rollenbezeichnungRahmenvertrag = formValues.rollenbezRahmenvertrag;
+    if (currentNode.isPendingCreation) {
+      const startTime = Date.now();
+      this.vertrageService.createVertragPosition(dto, this.vertragId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (response) => {
+            const duration = Date.now() - startTime;
+            const created = response.body;
+            const newPosition = {
+              ...currentNode,
+              ...formValues,
+              id: created?.id || currentNode.id,
+              name: formValues.positionsbezeichnung,
+              isPendingCreation: false,
+              isNew: false
+            };
+            this.vertragspositionen.unshift(newPosition);
+            this.sortNodesByName(this.vertragspositionen);
+            this.finalizePositionSave();
+            this.statusPanelService.addMessageRequest(
+              AppConstants.MSG_VERTRAGSPOSITION_CREATED_SUCCESS, 'POST', duration, response);
+          },
+          error: (error) => {
+            const duration = Date.now() - startTime;
+            console.error('Error creating Position:', error);
+            this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.position.createFailed);
+            this.statusPanelService.addMessageRequest(
+              AppConstants.MSG_VERTRAGSPOSITION_CREATED_ERROR, 'POST', duration, error);
+          }
+        });
     } else {
-      dto.id = this.selectedPosition.id;
+      dto.id = currentNode.id;
 
-      this.dummyService.updateVertragPosition(this.selectedPosition.id, dto).subscribe({
-        next: (response: ApiVertragPosition) => {
-          const updateInArray = (arr: any[], id: string | number, data: any) => {
-            for (let i = 0; i < arr.length; i++) {
-              if (arr[i].id === id) {
-                arr[i] = { ...arr[i], ...data };
-                this.selectedPosition = arr[i];
-                return true;
+      const startTime = Date.now();
+      this.vertrageService.updateVertragPosition(currentNode.id, dto)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (response) => {
+            const duration = Date.now() - startTime;
+            const updateInArray = (arr: VertragTreeNode[], id: string | number, data: Partial<VertragTreeNode>): boolean => {
+              for (let i = 0; i < arr.length; i++) {
+                if (arr[i].id === id) {
+                  arr[i] = { ...arr[i], ...data };
+                  this.selectedPosition = arr[i];
+                  return true;
+                }
+                if (arr[i].children && updateInArray(arr[i].children!, id, data)) return true;
               }
-              if (arr[i].children && updateInArray(arr[i].children!, id, data)) return true;
-            }
-            return false;
-          };
+              return false;
+            };
 
-          updateInArray(this.vertragspositionen, this.selectedPosition.id, {
-            ...formValues,
-            name: formValues.positionsbezeichnung
-          });
-          this.finalizePositionSave();
-        },
-        error: (err: string) => {
-          this.showErrorDialog('Fehler beim Speichern der Position.');
-        }
-      });
+            updateInArray(this.vertragspositionen, currentNode.id, {
+              ...formValues,
+              name: formValues.positionsbezeichnung
+            });
+            this.finalizePositionSave();
+            this.statusPanelService.addMessageRequest(
+              AppConstants.MSG_VERTRAGSPOSITION_UPDATED_SUCCESS, 'POST', duration, response);
+          },
+          error: (error) => {
+            const duration = Date.now() - startTime;
+            console.error('Error saving Position:', error);
+            this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.position.saveFailed);
+            this.statusPanelService.addMessageRequest(
+              AppConstants.MSG_VERTRAGSPOSITION_UPDATED_ERROR, 'POST', duration, error);
+          }
+        });
     }
   }
 
@@ -1087,7 +1052,7 @@ private savePositionDetails(): void {
     if (this.selectedPosition && this.selectedPosition.isNew) {
       this.selectedPosition.isNew = false;
     }
-    this.showInfoDialog('Position erfolgreich gespeichert.');
+    this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.position.saveSuccess);
   }
 
   private cancelPositionDetails(): void {
@@ -1099,28 +1064,28 @@ private savePositionDetails(): void {
       aktiv: this.selectedPosition?.aktiv ?? false,
       positionsbezeichnung: this.selectedPosition?.name ?? '',
       planungsjahr: this.selectedPosition?.planungsjahr ?? '',
-      volumen: this.selectedPosition?.volumen ?? '',
+      volumen: this.selectedPosition?.volumenStunden ?? '',
       volumenEuro: this.selectedPosition?.volumenEuro ?? '',
       jahresuebertrag: this.selectedPosition?.jahresuebertrag ?? false,
-      rollenbezRahmenvertrag: this.selectedPosition?.rollenbezRahmenvertrag || this.placeholderRollenbez,
+      rollenbezRahmenvertrag: this.selectedPosition?.rollenbezRahmenvertrag || '',
       anmerkung: this.selectedPosition?.anmerkung ?? '',
     });
     this.positionDetailForm.disable();
   }
 
  private saveVerbraucherDetails(): void {
-  debugger
   if (!this.selectedPosition) return;
   this.verbraucherSubmitAttempted = true;
   if (this.verbraucherDetailForm.invalid) {
     this.verbraucherDetailForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.verbraucherDetailForm, this.verbraucherLabelMap),
-      'Es sind Eingabefehler aufgetreten'
+      VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError
     );
     return;
   }
 
+  const currentNode = this.selectedPosition;
   const formValues = this.verbraucherDetailForm.getRawValue();
   const selectedPerson = this.verantwortlicherOptions.find(p => p.id === formValues.person);
   const displayName = formValues.verbraucherTyp === 'Sachmittel'
@@ -1134,14 +1099,20 @@ private savePositionDetails(): void {
   dto.stundenGeplant = formValues.verbraucherTyp === 'Sachmittel' ? '' : formValues.stundenkontingent?.toString();
   dto.volumenEuro = formValues.volumenEuro?.toString();
   dto.anmerkung = formValues.anmerkung;
-  dto.verbraucherTyp = this.clearPlaceholder(formValues.verbraucherTyp);
+  dto.verbraucherTyp = this.encodeToApi(this.verbraucherTypMap, formValues.verbraucherTyp) as ApiVerbraucherTyp;
+  if (formValues.verbraucherTyp === 'Personal' && formValues.person) {
+    dto.person = { id: formValues.person } as ApiPerson;
+  }
 
-
-  if (this.selectedPosition.isPendingCreation && this.editingNewNodeParentId) {
-    this.dummyService
+  if (currentNode.isPendingCreation && this.editingNewNodeParentId) {
+    const startTime = Date.now();
+    this.vertrageService
       .createVertragPositionVerbraucher(dto, this.editingNewNodeParentId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: ApiVertragPositionVerbraucher) => {
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          const created = response.body;
           const parentNode = this.findNodeById(
             this.vertragspositionen,
             this.editingNewNodeParentId!
@@ -1149,9 +1120,9 @@ private savePositionDetails(): void {
           if (parentNode) {
             if (!parentNode.children) parentNode.children = [];
             const savedNode = {
-              ...this.selectedPosition,
+              ...currentNode,
               ...formValues,
-              id: response.id,
+              id: created?.id,
               name: displayName,
               personId: formValues.person,
               isPendingCreation: false,
@@ -1163,39 +1134,54 @@ private savePositionDetails(): void {
             this.selectedPosition = savedNode;
           }
           this.finalizeVerbraucherSave();
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_CREATED_SUCCESS, 'POST', duration, response);
         },
-        error: () => {
-          this.showErrorDialog('Fehler beim Erstellen des Verbrauchers.');
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error creating Verbraucher:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.verbraucher.createFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_CREATED_ERROR, 'POST', duration, error);
         },
       });
   } else {
-    dto.id = this.selectedPosition.id;
+    dto.id = currentNode.id;
 
-    this.dummyService
-      .updateVertragPositionVerbraucher(this.selectedPosition.id, dto)
+    const startTime = Date.now();
+    this.vertrageService
+      .updateVertragPositionVerbraucher(currentNode.id, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: ApiVertragPositionVerbraucher) => {
-          const updateInArray = (arr: any[], id: string | number, data: any): boolean => {
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          const updateInArray = (arr: VertragTreeNode[], id: string | number, data: Partial<VertragTreeNode>): boolean => {
             for (let i = 0; i < arr.length; i++) {
               if (arr[i].id === id) {
                 arr[i] = { ...arr[i], ...data };
                 this.selectedPosition = arr[i];
                 return true;
               }
-              if (arr[i].children && updateInArray(arr[i].children, id, data)) return true;
+              if (arr[i].children && updateInArray(arr[i].children!, id, data)) return true;
             }
             return false;
           };
 
-          updateInArray(this.vertragspositionen, this.selectedPosition.id, {
+          updateInArray(this.vertragspositionen, currentNode.id, {
             ...formValues,
             name: displayName,
             personId: formValues.person,
           });
           this.finalizeVerbraucherSave();
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_UPDATED_SUCCESS, 'POST', duration, response);
         },
-        error: () => {
-          this.showErrorDialog('Fehler beim Speichern des Verbrauchers.');
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error saving Verbraucher:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.verbraucher.saveFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_UPDATED_ERROR, 'POST', duration, error);
         },
       });
   }
@@ -1210,7 +1196,7 @@ private finalizeVerbraucherSave(): void {
     this.selectedPosition.isNew = false;
     this.selectedPosition.isPendingCreation = false;
   }
-  this.showInfoDialog('Verbraucher erfolgreich gespeichert.');
+  this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.verbraucher.saveSuccess);
 }
 
   private cancelVerbraucherDetails(): void {
@@ -1220,7 +1206,7 @@ private finalizeVerbraucherSave(): void {
     this.isVerbraucherFormEditable = false;
     this.verbraucherDetailForm.patchValue({
       aktiv: this.selectedPosition?.aktiv ?? false,
-      verbraucherTyp: this.selectedPosition?.verbraucherTyp || this.placeholderVerbrauchertyp,
+      verbraucherTyp: this.selectedPosition?.verbraucherTyp || '',
       person: this.selectedPosition?.personId ?? '',
       verbraucher: this.selectedPosition?.verbraucherTyp === 'Sachmittel'
         ? (this.selectedPosition?.name ?? '')
@@ -1234,31 +1220,34 @@ private finalizeVerbraucherSave(): void {
   }
 
  private saveChildDetails(): void {
-  debugger
   if (!this.selectedPosition) return;
   this.childSubmitAttempted = true;
   if (this.childDetailForm.invalid) {
     this.childDetailForm.markAllAsTouched();
     this.showErrorDialog(
       this.buildRequiredErrorMessage(this.childDetailForm, this.childLabelMap),
-      'Es sind Eingabefehler aufgetreten'
+      VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError
     );
     return;
   }
-
+  const currentNode = this.selectedPosition;
   const formValues = this.childDetailForm.getRawValue();
   const dto = {} as ApiStundenplanung;
   dto.stundenGeplant = formValues.stundenGeplant?.toString();
   dto.anmerkung = formValues.anmerkung;
 dto.produkt = { id: formValues.produkt } as ApiProdukt;
 dto.produktPosition = { id: formValues.produktposition } as ApiProduktPosition;
-  if (this.selectedPosition.isPendingCreation && this.editingNewNodeParentId) {
+  if (currentNode.isPendingCreation && this.editingNewNodeParentId) {
     const produktPositionId: string = formValues.produktposition ?? '';
 
-    this.dummyService
+    const startTime = Date.now();
+    this.vertrageService
       .createStundenplanung(dto, produktPositionId, this.editingNewNodeParentId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: ApiStundenplanung) => {
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          const created = response.body;
           const parentNode = this.findNodeById(
             this.vertragspositionen,
             this.editingNewNodeParentId!
@@ -1268,12 +1257,10 @@ dto.produktPosition = { id: formValues.produktposition } as ApiProduktPosition;
             const selectedProdukt = this.vertragList.find(p => p.id === formValues.produkt);
             const selectedPosition = this.vertragPositionTypenList.find(pp => pp.id === formValues.produktposition);
             parentNode.children.push({
-              ...this.selectedPosition,
+              ...currentNode,
               ...formValues,
-              id: response.id,
-              name: formValues.anmerkung || this.selectedPosition.name,
-              // Mirror the nested shape that doSelectPosition reads when the
-              // node is re-selected later in the tree.
+              id: created?.id,
+              name: formValues.anmerkung || currentNode.name,
               produktPosition: {
                 id: formValues.produktposition,
                 produktPositionname: selectedPosition?.produktPositionname || formValues.produktposition,
@@ -1289,36 +1276,45 @@ dto.produktPosition = { id: formValues.produktposition } as ApiProduktPosition;
             parentNode.isExpanded = true;
           }
           this.finalizeChildSave();
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_CREATED_SUCCESS, 'POST', duration, response);
         },
-        error: () => {
-          this.showErrorDialog('Fehler beim Erstellen des Buchungspunkts.');
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error creating Stundenplanung:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.stundenplanung.createFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_CREATED_ERROR, 'POST', duration, error);
         },
       });
   } else {
     // UPDATE
-    dto.id = this.selectedPosition.id;
+    dto.id = currentNode.id;
 
-    this.dummyService
-      .updateStundenplanung(this.selectedPosition.id, dto)
+    const startTime = Date.now();
+    this.vertrageService
+      .updateStundenplanung(currentNode.id, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          const updateInArray = (arr: any[], id: string | number, data: any): boolean => {
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          const updateInArray = (arr: VertragTreeNode[], id: string | number, data: Partial<VertragTreeNode>): boolean => {
             for (let i = 0; i < arr.length; i++) {
               if (arr[i].id === id) {
                 arr[i] = { ...arr[i], ...data };
                 this.selectedPosition = arr[i];
                 return true;
               }
-              if (arr[i].children && updateInArray(arr[i].children, id, data)) return true;
+              if (arr[i].children && updateInArray(arr[i].children!, id, data)) return true;
             }
             return false;
           };
 
           const selectedProdukt = this.vertragList.find(p => p.id === formValues.produkt);
           const selectedPosition = this.vertragPositionTypenList.find(pp => pp.id === formValues.produktposition);
-          updateInArray(this.vertragspositionen, this.selectedPosition.id, {
+          updateInArray(this.vertragspositionen, currentNode.id, {
             ...formValues,
-            name: formValues.anmerkung || this.selectedPosition.name,
+            name: formValues.anmerkung || currentNode.name,
             produktPosition: {
               id: formValues.produktposition,
               produktPositionname: selectedPosition?.produktPositionname || formValues.produktposition,
@@ -1329,9 +1325,15 @@ dto.produktPosition = { id: formValues.produktposition } as ApiProduktPosition;
             },
           });
           this.finalizeChildSave();
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_UPDATED_SUCCESS, 'POST', duration, response);
         },
-        error: () => {
-          this.showErrorDialog('Fehler beim Speichern des Buchungspunkts.');
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error saving Stundenplanung:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.stundenplanung.saveFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_UPDATED_ERROR, 'POST', duration, error);
         },
       });
   }
@@ -1343,7 +1345,7 @@ private finalizeChildSave(): void {
   this.isNewChildBeingCreated = false;
   this.childSubmitAttempted = false;
   if (this.selectedPosition) this.selectedPosition.isNew = false;
-  this.showInfoDialog('Buchungspunkt erfolgreich gespeichert.');
+  this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.stundenplanung.saveSuccess);
 }
 
 
@@ -1383,9 +1385,6 @@ private finalizeChildSave(): void {
 
     dialogRef.afterClosed().subscribe((result: StundensatzAendeungDialogResult | undefined) => {
       if (!result || !result.confirmed) return;
-      // Reflect the new Stundensatz in the form so the user sees the change.
-      // The actual reset/duplicate flow against the backend is left to the
-      // existing Verbraucher save handler.
       this.verbraucherDetailForm.patchValue(
         { stundensatz: result.newStundensatz },
         { emitEvent: false }
@@ -1416,8 +1415,9 @@ private deleteSelectedPosition(): void {
 
   const id = this.selectedPosition.id;
   const typ = this.selectedPosition.typ;
+  const name = this.selectedPosition.name;
 
-  const removeFromArray = (arr: any[], targetId: string | number): any[] => {
+  const removeFromArray = (arr: VertragTreeNode[], targetId: string | number): VertragTreeNode[] => {
     return arr.filter(item => {
       if (item.id === targetId) return false;
       if (item.children) {
@@ -1430,50 +1430,80 @@ private deleteSelectedPosition(): void {
   if (typ === 'Vertragsposition') {
     const dto = {} as ApiVertragPosition;
     dto.id = id;
-    dto.position = this.selectedPosition.name;
+    dto.position = name;
     dto.aktiv = false;
 
-    this.dummyService.updateVertragPosition(id, dto).subscribe({
-      next: () => {
-        this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
-        this.resetFormsAfterDelete();
-        this.showInfoDialog('Position erfolgreich gelöscht.');
-      },
-      error: () => {
-        this.showErrorDialog('Fehler beim Löschen.');
-      }
-    });
+    const startTime = Date.now();
+    this.vertrageService.updateVertragPosition(id, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
+          this.resetFormsAfterDelete();
+          this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.position.deleteSuccess);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERTRAGSPOSITION_DELETED_SUCCESS, 'POST', duration, response);
+        },
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error deleting Position:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.position.deleteFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERTRAGSPOSITION_DELETED_ERROR, 'POST', duration, error);
+        }
+      });
 
   } else if (typ === 'Verbraucher') {
     const dto = {} as ApiVertragPositionVerbraucher;
     dto.id = id;
     dto.aktiv = false;
 
-    this.dummyService.updateVertragPositionVerbraucher(id, dto).subscribe({
-      next: () => {
-        this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
-        this.resetFormsAfterDelete();
-        this.showInfoDialog('Verbraucher erfolgreich gelöscht.');
-      },
-      error: () => {
-        this.showErrorDialog('Fehler beim Löschen des Verbrauchers.');
-      }
-    });
+    const startTime = Date.now();
+    this.vertrageService.updateVertragPositionVerbraucher(id, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
+          this.resetFormsAfterDelete();
+          this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.verbraucher.deleteSuccess);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_DELETED_SUCCESS, 'POST', duration, response);
+        },
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error deleting Verbraucher:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.verbraucher.deleteFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_VERBRAUCHER_DELETED_ERROR, 'POST', duration, error);
+        }
+      });
 
-  } else if (typ === 'Buchungspunkt') {
+  } else if (typ === 'Stundenplanung') {
     const dto = {} as ApiStundenplanung;
     dto.id = id;
 
-    this.dummyService.updateStundenplanung(id, dto).subscribe({
-      next: () => {
-        this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
-        this.resetFormsAfterDelete();
-        this.showInfoDialog('Buchungspunkt erfolgreich gelöscht.');
-      },
-      error: () => {
-        this.showErrorDialog('Fehler beim Löschen des Buchungspunkts.');
-      }
-    });
+    const startTime = Date.now();
+    this.vertrageService.updateStundenplanung(id, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          this.vertragspositionen = removeFromArray(this.vertragspositionen, id);
+          this.resetFormsAfterDelete();
+          this.showInfoDialog(VERTRAG_DETAIL_MESSAGES.stundenplanung.deleteSuccess);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_DELETED_SUCCESS, 'POST', duration, response);
+        },
+        error: (error) => {
+          const duration = Date.now() - startTime;
+          console.error('Error deleting Stundenplanung:', error);
+          this.showErrorDialog(VERTRAG_DETAIL_MESSAGES.stundenplanung.deleteFailed);
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_STUNDENPLANUNG_DELETED_ERROR, 'POST', duration, error);
+        }
+      });
   }
 }
   private resetFormsAfterDelete(): void {
@@ -1488,7 +1518,7 @@ private deleteSelectedPosition(): void {
     this.childDetailForm.disable();
     this.isChildFormEditable = false;
   }
-private findNodeById(nodes: any[], id: string | number): any | null {
+private findNodeById(nodes: VertragTreeNode[], id: string | number): VertragTreeNode | null {
   for (const node of nodes) {
     if (node.id === id) {
       return node;
@@ -1515,7 +1545,7 @@ private cancelAndResetNewFlags(): boolean {
 private discardNewPosition(showSnackBar: boolean = true): void {
   if (!this.selectedPosition || !this.selectedPosition.isNew) return;
 
-  const removeFromArray = (arr: any[], id: string | number): any[] => {
+  const removeFromArray = (arr: VertragTreeNode[], id: string | number): VertragTreeNode[] => {
     return arr.filter(item => {
       if (item.id === id) {
         return false;
@@ -1528,24 +1558,25 @@ private discardNewPosition(showSnackBar: boolean = true): void {
   };
 
   const discardedLevel = this.selectedPosition.level;
+  const discardedId = this.selectedPosition.id;
   const discardedParentId = this.editingNewNodeParentId;
 
   if (discardedLevel === 1) {
-    this.vertragspositionen = removeFromArray(this.vertragspositionen, this.selectedPosition.id);
+    this.vertragspositionen = removeFromArray(this.vertragspositionen, discardedId);
     this.isNewPositionBeingCreated = false;
   } else if (discardedLevel === 2) {
     this.vertragspositionen.forEach(pos => {
       if (pos.children) {
-        pos.children = removeFromArray(pos.children, this.selectedPosition.id);
+        pos.children = removeFromArray(pos.children, discardedId);
       }
     });
     this.isNewVerbraucherBeingCreated = false;
   } else if (discardedLevel === 3) {
     this.vertragspositionen.forEach(pos => {
       if (pos.children) {
-        pos.children.forEach((verbraucher:any) => {
+        pos.children.forEach((verbraucher: VertragTreeNode) => {
           if (verbraucher.children) {
-            verbraucher.children = removeFromArray(verbraucher.children, this.selectedPosition.id);
+            verbraucher.children = removeFromArray(verbraucher.children, discardedId);
           }
         });
       }
@@ -1604,31 +1635,24 @@ goToPersonPage(): void {
 
 }
 
-private showInfoDialog(detail: string, title: string = 'Erfolgreich'): void {
+private showInfoDialog(detail: string, title: string = VERTRAG_DETAIL_MESSAGES.dialogTitles.success): void {
   this.dialog.open(InfoDialogComponent, {
     data: { title, detail },
     panelClass: 'custom-dialog-width'
   });
 }
 
-private showErrorDialog(detail: string, title: string = 'Fehler'): void {
+private showErrorDialog(detail: string, title: string = VERTRAG_DETAIL_MESSAGES.dialogTitles.error): void {
   this.dialog.open(ErrorDialogComponent, {
     data: { title, detail },
     panelClass: 'custom-dialog-width'
   });
 }
 
-/** Build a validation message that enumerates every required field that is
- *  still empty, one "Das Feld 'X' darf nicht leer sein." line per field.
- *  The error dialog renders with white-space: pre-wrap, so newlines are
- *  preserved. */
 private buildRequiredErrorMessage(form: FormGroup, labelMap: Record<string, string>): string {
   const missing: string[] = [];
   Object.keys(form.controls).forEach((key) => {
     const ctl = form.get(key);
-    // Report ANY invalid control, not just ones with `required` errors.
-    // Otherwise validators like `min`, `pattern`, or async failures show
-    // up as the unhelpful generic "Pflichtfelder" message.
     if (ctl && ctl.invalid) {
       missing.push(labelMap[key] || key);
     }
@@ -1671,7 +1695,7 @@ private childLabelMap: Record<string, string> = {
   stundenGeplant: 'Stunden geplant',
 };
 
-private sortNodesByName(nodes: any[]): any[] {
+private sortNodesByName(nodes: VertragTreeNode[]): VertragTreeNode[] {
   if (!Array.isArray(nodes)) return nodes;
   nodes.sort((a, b) =>
     (a?.name || '').localeCompare((b?.name || ''), 'de', { sensitivity: 'base' })

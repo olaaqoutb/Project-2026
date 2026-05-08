@@ -1,70 +1,105 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
-//import { Vertrag } from '../models/vertrag';
-import { AppConstants } from '../models/app-constants';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
- import { GetitRest2Service } from './getit-rest-2.service';
+import { Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
+import { GetitRest3Service } from './getit-rest-3.service';
 import { ApiVertrag } from '../models/ApiVertrag';
+import { ApiVertragPosition } from '../models/ApiVertragPosition';
+import { ApiVertragPositionVerbraucher } from '../models/ApiVertragPositionVerbraucher';
+import { ApiStundenplanung } from '../models/ApiStundenplanung';
+import { ApiGeschaeftszahlenListe } from '../models/ApiGeschaeftszahlenListe';
+import { ApiRollenbezeichnungsListe } from '../models/ApiRollenbezeichnungsListe';
+import { ApiPerson } from '../models/ApiPerson';
+import { ApiProdukt } from '../models/ApiProdukt';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VertragService {
-  private vertrageDetailUrl = '1_json_personen_dropdownlist_response.json';
 
-  constructor(private getitRestService : GetitRest2Service,
-     private http: HttpClient) { }
+  constructor(private getitRest3Service: GetitRest3Service) {}
 
-
-  getVetraegeData(): Observable<ApiVertrag[]> {
-    return this.http.get<ApiVertrag[]>(AppConstants.API_URL_VERTRAEGE + '?vertragdetailgrad=Uebersicht&berechneteStunden=true&verbrauchteStunden=false');
+  getPersonen1(): Observable<HttpResponse<ApiPerson[]>> {
+    return this.getitRest3Service.getPersonen();
   }
 
-  getVetraegeData1(): Observable<ApiVertrag[]> {
-    return this.getitRestService.getVertraege(true, false);
-   }
-
-   getVertragDetails(id: string) : Observable<ApiVertrag>{
-    return this.getitRestService.getVertrag(id, true);
-   }
-
-  loadVertragDetails(id : string): Observable<ApiVertrag> {
-    console.log(AppConstants.API_URL_VERTRAEGE);
-    let url = AppConstants.API_URL_VERTRAEGE + '/' + id + '?berechneteStunden=true';
-    return this.http.get<ApiVertrag>(url);
+  getVertraege(
+    berechneteStunden?: boolean,
+    verbraucheStunden?: boolean
+  ): Observable<HttpResponse<ApiVertrag[]>> {
+    return this.getitRest3Service.getVertraege(berechneteStunden, verbraucheStunden);
   }
 
-
-  getVertrageDetails(): Observable<any> {
-    return this.http.get<any>(this.vertrageDetailUrl).pipe(
-      catchError(this.handleError)
-    );
+  getVertrag(
+    id: string,
+    berechneteStunden?: boolean
+  ): Observable<HttpResponse<ApiVertrag>> {
+    return this.getitRest3Service.getVertrag(id, berechneteStunden);
   }
 
-  // Reusable error handler
-  private handleError(error: HttpErrorResponse) {
-    let userMessage = 'Ein unbekannter Fehler ist aufgetreten!';
-
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred.
-      console.error('Ein clientseitiger Fehler ist aufgetreten:', error.error.message);
-      userMessage = `Netzwerkfehler: ${error.error.message}`;
-    } else {
-      // The backend returned an unsuccessful response code.
-      console.error(
-        `Backend gab Fehlercode ${error.status} zurück, ` +
-        `Body war:`, error.error);
-
-      if (error.status === 404) {
-        userMessage = 'Die angeforderten Vertragsdaten konnten nicht gefunden werden (Fehler 404). Bitte überprüfen Sie den Dateipfad.';
-      } else if (error.status === 500) {
-        userMessage = 'Es gab einen Serverfehler (Fehler 500). Bitte versuchen Sie es später erneut.';
-      } else {
-        userMessage = `Fehler: ${error.statusText} (Code: ${error.status})`;
-      }
-    }
-    return throwError(() => userMessage);
+  createVertrag(vertrag: ApiVertrag): Observable<HttpResponse<ApiVertrag>> {
+    return this.getitRest3Service.createVertrag(vertrag);
   }
 
+  updateVertrag(id: string, vertrag: ApiVertrag): Observable<HttpResponse<ApiVertrag>> {
+    return this.getitRest3Service.updateVertrag(id, vertrag);
+  }
+
+  getAlleAktuellenGeschaeftszahlen(): Observable<HttpResponse<ApiGeschaeftszahlenListe>> {
+    return this.getitRest3Service.getAlleAktuellenGeschaeftszahlen();
+  }
+
+  getAlleAktuellenRollenbezeichnungen(): Observable<HttpResponse<ApiRollenbezeichnungsListe>> {
+    return this.getitRest3Service.getAlleAktuellenRollenbezeichnungen();
+  }
+
+  getProdukte(): Observable<HttpResponse<ApiProdukt[]>> {
+    return this.getitRest3Service.getProdukte();
+  }
+
+  getProdukt(id: string, filter?: string): Observable<HttpResponse<ApiProdukt>> {
+    return this.getitRest3Service.getProdukt(id, filter);
+  }
+
+  createVertragPosition(
+    position: ApiVertragPosition,
+    vertragId: string
+  ): Observable<HttpResponse<ApiVertragPosition>> {
+    return this.getitRest3Service.createVertragPosition(position, vertragId);
+  }
+
+  updateVertragPosition(
+    id: string,
+    position: ApiVertragPosition
+  ): Observable<HttpResponse<ApiVertragPosition>> {
+    return this.getitRest3Service.updateVertragPosition(id, position);
+  }
+
+  createVertragPositionVerbraucher(
+    position: ApiVertragPositionVerbraucher,
+    vertragPositionId: string
+  ): Observable<HttpResponse<ApiVertragPositionVerbraucher>> {
+    return this.getitRest3Service.createVertragPositionVerbraucher(position, vertragPositionId);
+  }
+
+  updateVertragPositionVerbraucher(
+    id: string,
+    position: ApiVertragPositionVerbraucher
+  ): Observable<HttpResponse<ApiVertragPositionVerbraucher>> {
+    return this.getitRest3Service.updateVertragPositionVerbraucher(id, position);
+  }
+
+  createStundenplanung(
+    object: ApiStundenplanung,
+    produktPositionId: string,
+    verbraucherId: string
+  ): Observable<HttpResponse<ApiStundenplanung>> {
+    return this.getitRest3Service.createStundenplanung(object, produktPositionId, verbraucherId);
+  }
+
+  updateStundenplanung(
+    id: string,
+    object: ApiStundenplanung
+  ): Observable<HttpResponse<ApiStundenplanung>> {
+    return this.getitRest3Service.updateStundenplanung(id, object);
+  }
 }

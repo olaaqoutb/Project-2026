@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -60,6 +61,11 @@ import { TaetigkeitenTimeBoxComponent } from '../../shared/components/taetigkeit
 import { TaetigkeitenLevel1Component } from '../../shared/taetigkeiten-level1/taetigkeiten-level1.component';
 import { TaetigkeitenLevel2Component } from '../../shared/taetigkeiten-level2/taetigkeiten-level2.component';
 import { TaetigkeitenLevel3Component } from '../../shared/taetigkeiten-level3/taetigkeiten-level3.component';
+import {
+  TAETIGKEITEN_BUCHEN_MESSAGES,
+  TAETIGKEITEN_BUCHEN_CONSTANTS,
+  buildYearDropdownOptions,
+} from '../../constants/taetigkeiten-buchen-messages';
 // In component.ts
 
 export const DATE_FORMATS = {
@@ -107,6 +113,9 @@ export const DATE_FORMATS = {
 
 })
 export class TaetigkeitenBuchenComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  /** Exposed so the template can read messages.fieldDisplay.* etc. */
+  readonly messages = TAETIGKEITEN_BUCHEN_MESSAGES;
 private readonly baseBuchungsartOptions = ['ARBEITSZEIT', 'REMOTEZEIT'];
 private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
@@ -136,7 +145,7 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
     return ApiZeitTyp[key as keyof typeof ApiZeitTyp] ?? key;
   }
 
-  dropdownOptions: string[] = ["2026","2025", "2024", "2023", "2022", "2021", "2020"];
+  dropdownOptions: string[] = buildYearDropdownOptions();
   selectedOption: string = this.dropdownOptions[0];
 
   // Tree control
@@ -166,24 +175,11 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
   personId!: string;
   private alarmDayKey: string | null = null;
 
-  // Field display map for validation
-  private fieldDisplayMap: { [key: string]: string } = {
-    'datum': 'Datum',
-    'buchungsart': 'Buchungsart',
-    'produkt': 'Produkt',
-    'produktposition': 'Produktposition',
-    'buchungspunkt': 'Buchungspunkt',
-    'taetigkeit': 'Tätigkeit',
-    'anmeldezeitStunde': 'Anmeldezeit Stunde',
-    'anmeldezeitMinuten': 'Anmeldezeit Minuten',
-    'abmeldezeitStunde': 'Abmeldezeit Stunde',
-    'abmeldezeitMinuten': 'Abmeldezeit Minuten',
-    'anmerkung': 'Anmerkung',
-    'jiraTicket': 'Jira-Ticket'
-  };
+  /** Maps form-control names to German display labels (used in validation messages). */
+  private fieldDisplayMap = TAETIGKEITEN_BUCHEN_MESSAGES.fieldDisplay;
 
   private readonly personRequest = {
-    detail: 'FullPvTlName',
+    detail: TAETIGKEITEN_BUCHEN_CONSTANTS.personDetailMode,
     berechneteStunden: true,
     addVertraege: false
   };
@@ -230,7 +226,7 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  private notificationService = inject(NotificationService);
+  // private notificationService = inject(NotificationService);
   private statusPanelService = inject(StatusPanelService);
 
   private openErrorDialog(title: string, detail: string): void {
@@ -240,7 +236,7 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
     });
   }
 
-  private openInfoDialog(detail: string, title: string = 'Erfolgreich'): void {
+  private openInfoDialog(detail: string, title: string = TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.success): void {
     this.dialog.open(InfoDialogComponent, {
       data: { title, detail },
       panelClass: 'custom-dialog-width'
@@ -283,18 +279,22 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
   }
 
  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const personId = params.get('id') || 'p-me';
-      if (personId) {
-        this.personId = personId;
-        this.loadData(personId);
-      }
-    });
-    this.taetigkeitForm.valueChanges.subscribe(() => {
-      if (this.isEditing) {
-        this.updateMinutenDauer();
-      }
-    });
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const personId = params.get('id') || TAETIGKEITEN_BUCHEN_CONSTANTS.defaultPersonId;
+        if (personId) {
+          this.personId = personId;
+          this.loadData(personId);
+        }
+      });
+    this.taetigkeitForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.isEditing) {
+          this.updateMinutenDauer();
+        }
+      });
   }
 
   private updateMinutenDauer(): void {
@@ -335,16 +335,20 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
       this.personRequest.detail,
       this.personRequest.berechneteStunden,
       this.personRequest.addVertraege
-    ).subscribe({
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (personResponse) => {
         const person = personResponse.body!;
         this.personName = `${person.vorname} ${person.nachname}`;
         forkJoin({
-          products: this.taetigkeitenBuchenService.getPersonProdukte(personId, "KORREKTUR", startDate, endDate),
+          products: this.taetigkeitenBuchenService.getPersonProdukte(personId, TAETIGKEITEN_BUCHEN_CONSTANTS.produktFilterKorrektur, startDate, endDate),
           stempelzeiten: this.taetigkeitenBuchenService.getPersonStempelzeiten(personId, startDate, endDate),
           vermerke: this.taetigkeitenBuchenService.getPersonVermerke(personId, startDate, endDate),
           abschlussInfo: this.taetigkeitenBuchenService.abschlussInfo(personId)
-        }).subscribe({
+        })
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
           next: (results) => {
             const duration = Date.now() - startTime;
             const products = results.products.body ?? [];
@@ -365,8 +369,8 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
             );
 
             const naechster = abschlussInfo?.naechsterBuchbarerTag ?? null;
-            treeData.forEach((month: any) => {
-              (month.children || []).forEach((day: any) => {
+            treeData.forEach((month: TaetigkeitNode) => {
+              (month.children || []).forEach((day: TaetigkeitNode) => {
                 if (!day.hasNotification && day.dateKey && naechster && day.dateKey < naechster) {
                   day.hasNotification = true;
                 }
@@ -465,8 +469,8 @@ private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
       if (missing.length > 0) {
         this.openErrorDialog(
-          'Pflichtfelder fehlen',
-          `Bitte füllen Sie folgende Pflichtfelder aus: ${missing.join(', ')}.`
+          TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.missingFields,
+          TAETIGKEITEN_BUCHEN_MESSAGES.errors.pflichtfelderTemplate(missing)
         );
         return;
       }
@@ -510,7 +514,10 @@ const resolvedDate: Date = formValue.datum instanceof Date
     const durationHours = formValue.durationStunde || 0;
     const durationMinutes = formValue.durationMinuten || 0;
     if (durationHours === 0 && durationMinutes === 0) {
-      this.openErrorDialog('Ungültige Dauer', 'Bitte geben Sie eine gültige Dauer ein.');
+      this.openErrorDialog(
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.invalidDuration,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.invalidDuration
+      );
       return;
     }
     const { endHour, endMinute } = this.activityFormService.calculateDurationEndTime(
@@ -551,8 +558,8 @@ datum: formValue.datum instanceof Date
 
     if (selectedDateStr < naechsterStr) {
       this.openErrorDialog(
-        'Zeitraum abgeschlossen',
-        `Dieser Zeitraum ist bereits abgeschlossen. Frühestens ab ${this.abschlussInfo.naechsterBuchbarerTag} buchbar.`
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedRange,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.rangeClosedTemplate(this.abschlussInfo.naechsterBuchbarerTag)
       );
       return;
     }
@@ -560,14 +567,17 @@ datum: formValue.datum instanceof Date
 
   if (this.isMonthClosedForDate(resolvedDate)) {
     this.openErrorDialog(
-      'Monat ist geschlossen',
-      'Der ausgewählte Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedMonth,
+      TAETIGKEITEN_BUCHEN_MESSAGES.errors.closedMonthSelected
     );
     return;
   }
       const validationResult = this.validateTimeEntryOverlap(formValueForValidation, isDurationBased);
   if (!validationResult.isValid) {
-    this.openErrorDialog('Ungültige Zeitangaben', validationResult.errorMessage || 'Die Zeitangaben sind ungültig.');
+    this.openErrorDialog(
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.invalidTime,
+      validationResult.errorMessage || TAETIGKEITEN_BUCHEN_MESSAGES.errors.invalidTime
+    );
     return;
   }
 
@@ -582,17 +592,19 @@ datum: formValue.datum instanceof Date
     return;
   }
 
-  this.openInfoDialog('Änderungen wurden gespeichert.');
+  this.openInfoDialog(TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.saveSuccessChanges);
   this.isEditing = false;
   this.isNewlyCreated = false;
   this.formValidationService.disableAllFormControls(this.taetigkeitForm);
 }
 
 private saveNewEntry(formValue: TaetigkeitFormValue, isDurationBased: boolean = false): void {
-  debugger
 const selectedDate = this.dateParserService.parseGermanDate(formValue.datum);
   if (!selectedDate) {
-    this.openErrorDialog('Ungültiges Datum', 'Das angegebene Datum ist ungültig.');
+    this.openErrorDialog(
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.invalidDate,
+      TAETIGKEITEN_BUCHEN_MESSAGES.errors.invalidDate
+    );
     return;
   }
 
@@ -618,6 +630,10 @@ const selectedDate = this.dateParserService.parseGermanDate(formValue.datum);
     formValue.abmeldezeitMinuten??0
   );
 const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchungspunkt;
+  // The "buchungsart" form control is misleadingly named — its options are
+  // ZeitTyp keys (ARBEITSZEIT / REMOTEZEIT). Treat it as the ZeitTyp source
+  // and default the DTO's actual buchungsart to BUCHUNG (a regular booking).
+  const selectedZeitTyp = formValue.buchungsart as ApiZeitTyp;
   const dto: ApiTaetigkeitsbuchung = {
     minutenDauer: this.calculateMinutenDauer(
       formValue.anmeldezeitStunde??0,
@@ -626,22 +642,26 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
       formValue.abmeldezeitMinuten??0
     ),
     taetigkeit: formValue.taetigkeit as ApiTaetigkeitTyp,
-  buchungspunkt: selectedBuchungspunkt,
+    buchungspunkt: selectedBuchungspunkt,
     jiraTicket: formValue.jiraTicket || '',
     anmerkung: formValue.anmerkung || '',
     datum: this.formatDateForBackend(selectedDate),
-    buchungsart: formValue.buchungsart as ApiBuchungsart,
+    buchungsart: ApiBuchungsart.BUCHUNG,
+    zeitTyp: selectedZeitTyp,
     stempelzeit: {
       login: loginDate.toISOString(),
       logoff: logoffDate.toISOString(),
-      zeitTyp: formValue.buchungsart as ApiZeitTyp,
+      zeitTyp: selectedZeitTyp,
       anmerkung: formValue.anmerkung || ''
     }
     };
 
   const buchungspunktId = selectedBuchungspunkt?.id ?? '';
   if (!buchungspunktId) {
-    this.openErrorDialog('Fehlende Auswahl', 'Bitte Buchungspunkt auswählen.');
+    this.openErrorDialog(
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.missingSelection,
+      TAETIGKEITEN_BUCHEN_MESSAGES.errors.pickBuchungspunkt
+    );
     return;
   }
 
@@ -651,16 +671,17 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
     dto,
     buchungspunktId,
     personId
-  ).subscribe({
+  )
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
     next: (response) => {
       const duration = Date.now() - startTime;
       const savedEntry = response.body!;
       const newStempelzeitData = savedEntry.stempelzeit || {
         login: loginDate.toISOString(),
         logoff: logoffDate.toISOString(),
-        zeitTyp: formValue.buchungsart as ApiZeitTyp,
+        zeitTyp: selectedZeitTyp,
         anmerkung: formValue.anmerkung || '',
-        // id: savedEntry.stempelzeit?.id
       };
 
       const newActivityData = this.activityFormService.createActivityData(
@@ -710,7 +731,10 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
       setTimeout(applyNewEntryData, 150);
 
       this.dialog.open(InfoDialogComponent, {
-        data: { title: 'Erfolgreich', detail: 'Die Tätigkeitsbuchung wurde erfolgreich erstellt!' },
+        data: {
+          title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.success,
+          detail: TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.createSuccess
+        },
         panelClass: 'custom-dialog-width'
       });
       this.statusPanelService.addMessageRequest(
@@ -719,7 +743,10 @@ const selectedBuchungspunkt = formValue.buchungspunkt as ApiProduktPositionBuchu
     error: (err) => {
       const duration = Date.now() - startTime;
       this.dialog.open(ErrorDialogComponent, {
-        data: { title: 'Fehler beim Erstellen', detail: err.error || 'Die Tätigkeitsbuchung konnte nicht erstellt werden.' },
+        data: {
+          title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.createFailed,
+          detail: err.error || TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.createFailed
+        },
         panelClass: 'custom-dialog-width'
       });
       this.statusPanelService.addMessageRequest(
@@ -749,8 +776,8 @@ private formatDateForBackend(date: Date): string {
 
     if (this.isMonthClosedForDayNode(node)) {
       this.openErrorDialog(
-        'Monat ist geschlossen',
-        'Dieser Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedMonth,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.closedMonthForBookings
       );
       return;
     }
@@ -789,8 +816,8 @@ private formatDateForBackend(date: Date): string {
 
     if (missing.length > 0) {
       this.openErrorDialog(
-        'Pflichtfelder fehlen',
-        `Bitte füllen Sie folgende Pflichtfelder aus: ${missing.join(', ')}.`
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.missingFields,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.pflichtfelderTemplate(missing)
       );
       return;
     }
@@ -803,7 +830,7 @@ private formatDateForBackend(date: Date): string {
     const alarmValue = this.alarmForm.value;
     const isRemote = this.isAlarmRemote();
 
-    const formValue: any = {
+    const formValue: TaetigkeitFormValue = {
       datum: alarmValue.datum,
       buchungsart: alarmValue.buchungsart as ApiBuchungsart,
       produkt: alarmValue.produkt,
@@ -827,11 +854,11 @@ private formatDateForBackend(date: Date): string {
     if (!isRemote && this.isAlarmDurationOver10h()) {
       const dialogRef = this.dialog.open(QuestionDialogComponent, {
         data: {
-          title: 'Buchungslimit',
-          message: 'Sie überschreiten das Buchungslimit von 10 Stunden pro Tag. Wenn Sie trotzdem buchen möchten, bitte eine Begründung eingeben.',
-          label: 'Begründung für mehr als 10 Std./Tag:',
-          confirmText: 'Buchen',
-          cancelText: 'Abbrechen'
+          title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.bookingLimit,
+          message: TAETIGKEITEN_BUCHEN_MESSAGES.errors.bookingLimitWarning,
+          label: TAETIGKEITEN_BUCHEN_MESSAGES.errors.bookingLimitLabel,
+          confirmText: TAETIGKEITEN_BUCHEN_MESSAGES.errors.confirm,
+          cancelText: TAETIGKEITEN_BUCHEN_MESSAGES.errors.cancel
         },
         panelClass: 'custom-dialog-width'
       });
@@ -867,7 +894,7 @@ private formatDateForBackend(date: Date): string {
       this.alarmForm,
       this.fieldDisplayMap
     );
-    this.openErrorDialog('Validierungsfehler', errors.join('\n'));
+    this.openErrorDialog(TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.validationError, errors.join('\n'));
   }
 
  deleteEntry(): void {
@@ -879,8 +906,8 @@ private formatDateForBackend(date: Date): string {
   const parentDay = this.findParentDay(this.selectedNode);
   if (parentDay?.hasNotification) {
     this.openErrorDialog(
-      'Tag ist geschlossen',
-      'Dieser Tag ist abgeschlossen. Bitte öffnen Sie den Tag, bevor Sie Einträge löschen.'
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedDay,
+      TAETIGKEITEN_BUCHEN_MESSAGES.errors.closedDayForDeletion
     );
     return;
   }
@@ -888,8 +915,8 @@ private formatDateForBackend(date: Date): string {
   const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
     width: '500px',
     data: {
-      title: 'Löschen einer Tätigkeitsbuchung',
-      message: 'Wollen Sie die Tätigkeitsbuchung löschen?'
+      title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.deleteEntry,
+      message: TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.deleteConfirm
     }
   });
 
@@ -1001,7 +1028,7 @@ toggleMonthOpenClose(monthNode: FlatNode): void {
     }
 
     this.recomputeAlarmDayKey();
-    this.openInfoDialog(willBeClosed ? 'Der Monat wurde geschlossen.' : 'Der Monat wurde geöffnet.');
+    this.openInfoDialog(willBeClosed ? TAETIGKEITEN_BUCHEN_MESSAGES.monthDayInfo.monthClosed : TAETIGKEITEN_BUCHEN_MESSAGES.monthDayInfo.monthOpened);
   });
 }
 
@@ -1010,8 +1037,8 @@ toggleDayOpenClose(dayNode: FlatNode): void {
 
   if (this.isMonthClosedForDayNode(dayNode)) {
     this.openErrorDialog(
-      'Monat ist geschlossen',
-      'Der zugehörige Monat ist abgeschlossen. Bitte öffnen Sie zuerst den Monat, bevor Sie Tage öffnen oder schließen.'
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedMonth,
+      TAETIGKEITEN_BUCHEN_MESSAGES.errors.closedMonthForDayToggle
     );
     return;
   }
@@ -1022,8 +1049,8 @@ toggleDayOpenClose(dayNode: FlatNode): void {
     const previousOpenDay = this.findPreviousOpenDay(dayNode);
     if (previousOpenDay) {
       this.openErrorDialog(
-        'Tag kann nicht geschlossen werden',
-        `Bitte schließen Sie zuerst den vorherigen offenen Tag (${previousOpenDay.dayName}). Tage müssen in chronologischer Reihenfolge abgeschlossen werden.`
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedDayBlocker,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.pickPreviousDayTemplate(previousOpenDay.dayName ?? '')
       );
       return;
     }
@@ -1052,7 +1079,7 @@ toggleDayOpenClose(dayNode: FlatNode): void {
     }
 
     this.recomputeAlarmDayKey();
-    this.openInfoDialog(willBeClosed ? 'Der Tag wurde geschlossen.' : 'Der Tag wurde geöffnet.');
+    this.openInfoDialog(willBeClosed ? TAETIGKEITEN_BUCHEN_MESSAGES.monthDayInfo.dayClosed : TAETIGKEITEN_BUCHEN_MESSAGES.monthDayInfo.dayOpened);
   });
 }
 
@@ -1061,7 +1088,10 @@ private performDelete(): void {
 
   const buchungId = this.selectedNode.buchungData?.id ?? this.selectedNode.stempelzeitData?.id;
   if (!buchungId) {
-    this.openErrorDialog('Fehler beim Löschen', 'Keine ID zum Löschen gefunden.');
+    this.openErrorDialog(
+      TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.deleteFailed,
+      TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.deleteIdMissing
+    );
     return;
   }
 
@@ -1078,8 +1108,10 @@ private performDelete(): void {
   this.taetigkeitenBuchenService.updateTaetigkeitsbuchung(
     buchungId,
     dto,
-    'delete'
-  ).subscribe({
+    TAETIGKEITEN_BUCHEN_CONSTANTS.deleteVorgang
+  )
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
       next: (response) => {
         const duration = Date.now() - startTime;
         if (this.deleteNodeFromTree()) {
@@ -1088,7 +1120,10 @@ private performDelete(): void {
           this.taetigkeitForm.reset();
         }
         this.dialog.open(InfoDialogComponent, {
-          data: { title: 'Erfolgreich', detail: 'Die Tätigkeitsbuchung wurde erfolgreich gelöscht!' },
+          data: {
+            title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.success,
+            detail: TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.deleteSuccess
+          },
           panelClass: 'custom-dialog-width'
         });
         this.statusPanelService.addMessageRequest(
@@ -1097,7 +1132,10 @@ private performDelete(): void {
       error: (err) => {
         const duration = Date.now() - startTime;
         this.dialog.open(ErrorDialogComponent, {
-          data: { title: 'Fehler beim Löschen', detail: err.error || 'Die Tätigkeitsbuchung konnte nicht gelöscht werden.' },
+          data: {
+            title: TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.deleteFailed,
+            detail: err.error || TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.deleteFailed
+          },
           panelClass: 'custom-dialog-width'
         });
         this.statusPanelService.addMessageRequest(
@@ -1214,37 +1252,33 @@ private performDelete(): void {
       val = prefix + tail;
     }
 
-    if (val.length > 30) val = val.slice(0, 30);
+    if (val.length > TAETIGKEITEN_BUCHEN_CONSTANTS.jiraTicketMaxLength) {
+      val = val.slice(0, TAETIGKEITEN_BUCHEN_CONSTANTS.jiraTicketMaxLength);
+    }
 
     input.value = val;
     form.get('jiraTicket')?.patchValue(val, { emitEvent: false });
   }
 
-  private positionKeys(v: any): string[] {
+  private positionKeys(v: ApiProduktPosition | string | null | undefined): string[] {
     if (v == null) return [];
     if (typeof v === 'string') return [v.toLowerCase()];
-    if (typeof v === 'object') {
-      const keys: string[] = [];
-      if (v.id) keys.push(String(v.id).toLowerCase());
-      if (v.produktPositionname) keys.push(String(v.produktPositionname).toLowerCase());
-      return keys;
-    }
-    return [String(v).toLowerCase()];
+    const keys: string[] = [];
+    if (v.id) keys.push(String(v.id).toLowerCase());
+    if (v.produktPositionname) keys.push(String(v.produktPositionname).toLowerCase());
+    return keys;
   }
 
-  private buchungspunktKeys(v: any): string[] {
+  private buchungspunktKeys(v: ApiProduktPositionBuchungspunkt | string | null | undefined): string[] {
     if (v == null) return [];
     if (typeof v === 'string') return [v.toLowerCase()];
-    if (typeof v === 'object') {
-      const keys: string[] = [];
-      if (v.id) keys.push(String(v.id).toLowerCase());
-      if (v.buchungspunkt) keys.push(String(v.buchungspunkt).toLowerCase());
-      return keys;
-    }
-    return [String(v).toLowerCase()];
+    const keys: string[] = [];
+    if (v.id) keys.push(String(v.id).toLowerCase());
+    if (v.buchungspunkt) keys.push(String(v.buchungspunkt).toLowerCase());
+    return keys;
   }
 
-  comparePosition = (a: any, b: any): boolean => {
+  comparePosition = (a: ApiProduktPosition | string | null | undefined, b: ApiProduktPosition | string | null | undefined): boolean => {
     if (a === b) return true;
     const ka = this.positionKeys(a);
     const kb = this.positionKeys(b);
@@ -1252,7 +1286,7 @@ private performDelete(): void {
     return ka.some(k => kb.includes(k));
   };
 
-  compareBuchungspunkt = (a: any, b: any): boolean => {
+  compareBuchungspunkt = (a: ApiProduktPositionBuchungspunkt | string | null | undefined, b: ApiProduktPositionBuchungspunkt | string | null | undefined): boolean => {
     if (a === b) return true;
     const ka = this.buchungspunktKeys(a);
     const kb = this.buchungspunktKeys(b);
@@ -1260,16 +1294,16 @@ private performDelete(): void {
     return ka.some(k => kb.includes(k));
   };
 
-  compareString = (a: any, b: any): boolean => {
+  compareString = (a: string | null | undefined, b: string | null | undefined): boolean => {
     if (a === b) return true;
     if (a == null || b == null) return false;
     return String(a).toLowerCase() === String(b).toLowerCase();
   };
 
-  compareTaetigkeit = (a: any, b: any): boolean => {
+  compareTaetigkeit = (a: ApiTaetigkeitTyp | string | null | undefined, b: ApiTaetigkeitTyp | string | null | undefined): boolean => {
     if (a === b) return true;
     if (a == null || b == null) return false;
-    const norm = (v: any): string => {
+    const norm = (v: ApiTaetigkeitTyp | string): string => {
       const s = String(v);
       const enumMap = ApiTaetigkeitTyp as unknown as Record<string, string>;
       if (enumMap[s] !== undefined) return enumMap[s].toLowerCase();
@@ -1278,10 +1312,10 @@ private performDelete(): void {
     return norm(a) === norm(b);
   };
 
-  compareBuchungsart = (a: any, b: any): boolean => {
+  compareBuchungsart = (a: ApiBuchungsart | string | null | undefined, b: ApiBuchungsart | string | null | undefined): boolean => {
     if (a === b) return true;
     if (a == null || b == null) return false;
-    const norm = (v: any): string => {
+    const norm = (v: ApiBuchungsart | string): string => {
       const s = String(v);
       const enumMap = ApiBuchungsart as unknown as Record<string, string>;
       if (enumMap[s] !== undefined) return enumMap[s].toLowerCase();
@@ -1393,7 +1427,7 @@ private performDelete(): void {
       this.selectedNode.hasNotification = formValue.abgeschlossen;
       this.selectedNode.gebuchtTotal = formValue.gebuchtTotal;
 
-      this.openInfoDialog('Monatsänderungen wurden gespeichert.');
+      this.openInfoDialog(TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.saveSuccessMonth);
       this.isEditing = false;
       this.formValidationService.disableAllFormControls(this.monthForm);
       this.dataSource.data = [...this.dataSource.data];
@@ -1412,7 +1446,7 @@ private performDelete(): void {
         this.selectedNode.stempelzeitenList[0] = formValue.stempelzeiten;
       }
 
-      this.openInfoDialog('Tagesänderungen wurden gespeichert.');
+      this.openInfoDialog(TAETIGKEITEN_BUCHEN_MESSAGES.vertrag.saveSuccessDay);
       this.isEditing = false;
       this.formValidationService.disableAllFormControls(this.dayForm);
       this.dataSource.data = [...this.dataSource.data];
@@ -1422,8 +1456,8 @@ private performDelete(): void {
   addTimeEntryFromHeader() {
     if (this.isMonthClosedForDate(new Date())) {
       this.openErrorDialog(
-        'Monat ist geschlossen',
-        'Der aktuelle Monat ist abgeschlossen. Bitte öffnen Sie den Monat, bevor Sie Buchungen anlegen.'
+        TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.closedMonth,
+        TAETIGKEITEN_BUCHEN_MESSAGES.errors.closedMonthCurrent
       );
       return;
     }
@@ -1507,7 +1541,7 @@ private validateTimeEntryOverlap(
       this.taetigkeitForm,
       this.fieldDisplayMap
     );
-    this.openErrorDialog('Validierungsfehler', errors.join('\n'));
+    this.openErrorDialog(TAETIGKEITEN_BUCHEN_MESSAGES.dialogTitles.validationError, errors.join('\n'));
   }
 
   getFullDayOfWeekFromNode(node: FlatNode | null): string {

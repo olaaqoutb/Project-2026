@@ -75,6 +75,38 @@ export class AppConstants {
   static readonly MSG_TAETIGKEITEN_DELETED_SUCCESS = 'Die Tätigkeitsbuchung wurde erfolgreich gelöscht';
   static readonly MSG_TAETIGKEITEN_DELETED_ERROR = 'Die Tätigkeitsbuchung wurde nicht gelöscht';
 
+  // Vertrag
+  static readonly MSG_VERTRAG_LOADED_SUCCESS  = 'Der Vertrag wurde erfolgreich geladen';
+  static readonly MSG_VERTRAG_LOADED_ERROR    = 'Der Vertrag wurde nicht geladen';
+  static readonly MSG_VERTRAG_CREATED_SUCCESS = 'Der Vertrag wurde erfolgreich erzeugt';
+  static readonly MSG_VERTRAG_CREATED_ERROR   = 'Der Vertrag wurde nicht erzeugt';
+  static readonly MSG_VERTRAG_UPDATED_SUCCESS = 'Der Vertrag wurde erfolgreich geändert';
+  static readonly MSG_VERTRAG_UPDATED_ERROR   = 'Der Vertrag wurde nicht geändert';
+
+  // Vertragsposition
+  static readonly MSG_VERTRAGSPOSITION_CREATED_SUCCESS = 'Die Vertragsposition wurde erfolgreich erzeugt';
+  static readonly MSG_VERTRAGSPOSITION_CREATED_ERROR   = 'Die Vertragsposition wurde nicht erzeugt';
+  static readonly MSG_VERTRAGSPOSITION_UPDATED_SUCCESS = 'Die Vertragsposition wurde erfolgreich geändert';
+  static readonly MSG_VERTRAGSPOSITION_UPDATED_ERROR   = 'Die Vertragsposition wurde nicht geändert';
+  static readonly MSG_VERTRAGSPOSITION_DELETED_SUCCESS = 'Die Vertragsposition wurde erfolgreich gelöscht';
+  static readonly MSG_VERTRAGSPOSITION_DELETED_ERROR   = 'Die Vertragsposition wurde nicht gelöscht';
+
+  // Verbraucher (VertragPositionVerbraucher)
+  static readonly MSG_VERBRAUCHER_CREATED_SUCCESS = 'Der Verbraucher wurde erfolgreich erzeugt';
+  static readonly MSG_VERBRAUCHER_CREATED_ERROR   = 'Der Verbraucher wurde nicht erzeugt';
+  static readonly MSG_VERBRAUCHER_UPDATED_SUCCESS = 'Der Verbraucher wurde erfolgreich geändert';
+  static readonly MSG_VERBRAUCHER_UPDATED_ERROR   = 'Der Verbraucher wurde nicht geändert';
+  static readonly MSG_VERBRAUCHER_DELETED_SUCCESS = 'Der Verbraucher wurde erfolgreich gelöscht';
+  static readonly MSG_VERBRAUCHER_DELETED_ERROR   = 'Der Verbraucher wurde nicht gelöscht';
+
+  // Stundenplanung
+  static readonly MSG_STUNDENPLANUNG_CREATED_SUCCESS = 'Die Stundenplanung wurde erfolgreich erzeugt';
+  static readonly MSG_STUNDENPLANUNG_CREATED_ERROR   = 'Die Stundenplanung wurde nicht erzeugt';
+  static readonly MSG_STUNDENPLANUNG_UPDATED_SUCCESS = 'Die Stundenplanung wurde erfolgreich geändert';
+  static readonly MSG_STUNDENPLANUNG_UPDATED_ERROR   = 'Die Stundenplanung wurde nicht geändert';
+  static readonly MSG_STUNDENPLANUNG_DELETED_SUCCESS = 'Die Stundenplanung wurde erfolgreich gelöscht';
+  static readonly MSG_STUNDENPLANUNG_DELETED_ERROR   = 'Die Stundenplanung wurde nicht gelöscht';
+
   static getFunctionValue(label: string): string {
         const item = PERSON_FUNCTION_TYPEN.find(item => item.label === label);
         return item ? item.value : label; // fallback to value if not found

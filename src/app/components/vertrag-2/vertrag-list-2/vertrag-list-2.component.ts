@@ -14,7 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { VertraegeService } from '../../../services/vertraege.service';
+import { VertragService } from '../../../services/vertrag.service';
 import { NavigationRefreshService } from '../../../services/navigation-refresh.service';
 import { ApiVertrag } from '../../../models/ApiVertrag';
 
@@ -75,13 +75,12 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
   };
 
   constructor(
-    private vertraegeService: VertraegeService,
+    private vertragService: VertragService,
     private router: Router,
     private host: ElementRef<HTMLElement>,
     private refreshService: NavigationRefreshService,
   ) {
-    // Install the router listener once (root-level cleanup logic). It nukes
-    // savedState whenever the user navigates outside the /vertraege-2 area.
+
     if (!VertragList2Component.routerSubInstalled) {
       VertragList2Component.routerSubInstalled = true;
       this.router.events
@@ -127,9 +126,10 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
   }
 
   private loadVertraege(): void {
-    this.vertraegeService.getVertraege().subscribe({
-      next: (data) => {
-        this.vertraege = this.sortData(data ?? []);
+    this.vertragService.getVertraege().subscribe({
+      next: (response) => {
+        const data = response.body ?? [];
+        this.vertraege = this.sortData(data);
         this.filterData();
         if (this.activeSortColumn) {
           this.applySort(this.activeSortColumn);
@@ -160,13 +160,13 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
         case 'zusatz':
           return (item.vertragszusatz ?? '').toString().toLowerCase();
         case 'geplan':
-          return parseFloat((item as any).stundenGeplant) || 0;
+          return parseFloat(item.stundenGeplant ?? '') || 0;
         case 'org-Einheit':
           return (item.vertragsverantwortlicher?.organisationseinheit?.kurzBezeichnung ?? '')
             .toString()
             .toLowerCase();
         case 'verbrauchtDate':
-          return parseFloat((item as any).stundenGebucht) || 0;
+          return parseFloat(item.stundenGebucht ?? '') || 0;
         default:
           return ((item as Record<string, unknown>)[property] ?? '').toString().toLowerCase();
       }
@@ -210,13 +210,13 @@ export class VertragList2Component implements AfterViewInit, OnDestroy {
       case 'zusatz':
         return (item.vertragszusatz ?? '').toString().toLowerCase();
       case 'geplan':
-        return parseFloat((item as any).stundenGeplant) || 0;
+        return parseFloat(item.stundenGeplant ?? '') || 0;
       case 'org-Einheit':
         return (item.vertragsverantwortlicher?.organisationseinheit?.kurzBezeichnung ?? '')
           .toString()
           .toLowerCase();
       case 'verbrauchtDate':
-        return parseFloat((item as any).stundenGebucht) || 0;
+        return parseFloat(item.stundenGebucht ?? '') || 0;
       default:
         return ((item as Record<string, unknown>)[field] ?? '').toString().toLowerCase();
     }

@@ -137,6 +137,7 @@
                   formControlName="vertragsverantwortlicher"
                   panelClass="drop-down"
                 >
+                  <mat-option [value]="''" disabled>{{ messages.placeholders.vertragsverantwortlicher }}</mat-option>
                   <mat-option
                     *ngFor="let person of verantwortlicherOptions"
                     [value]="person.id"
@@ -155,6 +156,7 @@
                   class="input-height"
                   panelClass="drop-down"
                 >
+                  <mat-option [value]="''" disabled>{{ messages.placeholders.bezugsart }}</mat-option>
                   <mat-option
                     *ngFor="let bez of bezugsartenOptions"
                     [value]="bez"
@@ -312,6 +314,7 @@
                   formControlName="vertragstype"
                   panelClass="drop-down"
                 >
+                  <mat-option [value]="''" disabled>{{ messages.placeholders.vertragstyp }}</mat-option>
                   <mat-option
                     *ngFor="let vert of vertragsTypOptions"
                     [value]="vert"
@@ -455,7 +458,7 @@
                   >
                 </div>
 
-                <!-- Level 3: Buchungspunkt -->
+                <!-- Level 3: Stundenplanung -->
                 <!-- Always rendered so the row height matches the 2-line state.
                      When the node is collapsed and inactive we hide the line
                      with visibility:hidden, which keeps the reserved height. -->
@@ -470,7 +473,7 @@
                   >
                 </div>
 
-                <!-- Show dates for Buchungspunkt (Level 3) -->
+                <!-- Show dates for Stundenplanung (Level 3) -->
                 <!-- <div class="position-dates" *ngIf="node.level === 3 && node.start && node.ende">
       <mat-icon class="inline-icon">event</mat-icon>
       Start: {{ node.start | date : "dd.MM.yyyy" }} – Ende:
@@ -490,14 +493,14 @@
                 <i class="mdi mdi-account-plus mdi-flip-h mdi-24px"></i>
               </button>
 
-              <!-- Add Buchungspunkt button on Level 2 -->
+              <!-- Add Stundenplanung button on Level 2 -->
               <button
                 type="button"
                 *ngIf="node.level === 2"
                 class="add-buchungspunkt-btn"
-                [class.disabled-btn]="!canAddBuchungspunkt(node)"
-                matTooltip="Buchungspunkt hinzufügen"
-                (click)="addBuchungspunkt(node, $event)"
+                [class.disabled-btn]="!canAddStundenplanung(node)"
+                matTooltip="Stundenplanung hinzufügen"
+                (click)="addStundenplanung(node, $event)"
               >
                 <i class="mdi mdi-alarm mdi-24px"></i>
               </button>
@@ -609,7 +612,7 @@
             >
             <span
               class="title"
-              *ngIf="selectedPosition?.typ === 'Buchungspunkt'"
+              *ngIf="selectedPosition?.typ === 'Stundenplanung'"
               >Stundenplanung</span
             >
           </div>
@@ -745,6 +748,7 @@
                     formControlName="rollenbezRahmenvertrag"
                     panelClass="drop-down-bottom"
                   >
+                    <mat-option [value]="''" disabled>{{ messages.placeholders.rollenbez }}</mat-option>
                     <mat-option
                       *ngFor="let rolle of rollenbezeichnungOptions"
                       [value]="rolle"
@@ -796,6 +800,7 @@
                     formControlName="verbraucherTyp"
                     panelClass="drop-down-bottom"
                   >
+                    <mat-option [value]="''" disabled>{{ messages.placeholders.verbrauchertyp }}</mat-option>
                     <mat-option
                       [value]="verb"
                       *ngFor="let verb of verbraucherArray"
@@ -834,6 +839,7 @@
                       formControlName="person"
                       panelClass="drop-down-bottom"
                     >
+                      <mat-option [value]="''" disabled>{{ messages.placeholders.person }}</mat-option>
                       <mat-option
                         *ngFor="let person of verantwortlicherOptions"
                         [value]="person.id"
@@ -929,7 +935,7 @@
         class="position-details-content position-details-container"
         *ngIf="
           selectedPosition?.typ === 'Dokumentation' ||
-          selectedPosition?.typ === 'Buchungspunkt'
+          selectedPosition?.typ === 'Stundenplanung'
         "
       >
         <mat-card>
@@ -955,6 +961,7 @@
                     class="child-input"
                     panelClass="drop-down-bottom"
                   >
+                    <mat-option [value]="''" disabled>{{ messages.placeholders.produkt }}</mat-option>
                     <mat-option *ngFor="let p of vertragList" [value]="p.id">
                       {{ p.produktname }}
                     </mat-option>
@@ -972,6 +979,7 @@
                     class="child-input"
                     panelClass="drop-down-bottom"
                   >
+                    <mat-option [value]="''" disabled>{{ messages.placeholders.produktposition }}</mat-option>
                     <mat-option
                       *ngFor="let pos of vertragPositionTypenList"
                       [value]="pos.id"
