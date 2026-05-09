@@ -105,7 +105,8 @@
     min-width: 0;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    overflow: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     height: 100%;
   }
   table {
@@ -201,6 +202,19 @@
     align-items: center;
     cursor: pointer;
     user-select: none;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .sort-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
   }
   
   .detail-section {
@@ -344,6 +358,7 @@
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    font-size: 18px;
     margin: auto !important;
       background-color: #d4dce0;
       height: 40px;
@@ -671,4 +686,52 @@
   .left-container .mat-mdc-cell {
     height: 36px !important;
     box-sizing: border-box;
+  }
+
+  /* Uniform 14px font for both tables (cells + headers).
+     Middle "Tätigkeitsbuchungen" heading keeps its own 18px via .table-header. */
+  .left-container .mat-mdc-cell,
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-size: 14px !important;
+  }
+
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-weight: bold !important;
+  }
+
+  /* Keep table content on a single line — no wrapping into two lines. */
+  .left-container .mat-mdc-cell,
+  .right-container .mat-mdc-cell,
+  .detail-table .mat-mdc-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* MDI pencil icon inside the Bearbeiten button — match Material icon sizing. */
+  #save-btn .mdi {
+    font-size: 17px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Fixed table layout — columns share the container width, long values
+     get clipped with ellipsis instead of forcing a horizontal scrollbar. */
+  .left-container table.mat-mdc-table,
+  .right-container table.mat-mdc-table,
+  .detail-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+  }
+
+  .right-container .detail-section {
+    overflow-x: hidden;
   }

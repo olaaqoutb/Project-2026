@@ -30,13 +30,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  
+
     .header-main {
       margin:0 auto!important;
-  
-  
+
+
     }
-  
+
     .header-edit-mode {
       display: flex;
       align-items: center;
@@ -44,7 +44,7 @@
       width: 100%;
       padding: 0 16px; // Add some padding for the buttons
     }
-  
+
     .title {
       font-size: 1.5rem;
       font-weight: normal;
@@ -56,13 +56,13 @@
         text-align: center; // Center the text
       }
     }
-  
+
     .dropdown {
       width: 200px;
       margin-bottom: 0;
-  
+
     }
-  
+
     .cancel-button, .save-button {
       background-color: transparent;
       color: white;
@@ -76,10 +76,10 @@
   }
   #cancel-btn{width:110px!important}
   /* legacy override removed — width handled below */
-  
-  
-  
-  
+
+
+
+
   .mat-mdc-header-cell,
   th.mat-header-cell {
     background-color: #d4dce0 !important;
@@ -106,62 +106,62 @@
     min-height: 0;
     min-width: 0;
     border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    overflow: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     height: 100%;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-  
+
     .mat-header-cell,
     .mat-cell {
       padding: 0 16px;
       text-align: left;
-  
+
       &:not(:last-child) {
         border-right: 1px solid #e0e0e0;
       }
     }
-  
+
     .mat-header-row {
       background-color: #f5f5f5;
-  
+
       .mat-header-cell {
         font-weight: bold;
         color: rgba(0, 0, 0, 0.87);
       }
     }
-  
+
     .mat-row {
       &:nth-child(even) {
         background-color: #fafafa;
       }
-  
+
       &:hover {
         cursor: pointer;
       }
     }
   }
-  
+
   .actions-cell {
     button {
       width: 40px;
       height: 40px;
-  
+
       mat-icon {
         font-size: 20px;
       }
     }
   }
-  
+
   .detail-view {
-    padding: 4px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     flex: 1; // Allow it to fill the right container
     overflow: auto; // Add scroll if content is too long
-  
+
     h3 {
       margin-top: 0;
       color: #333;
@@ -169,7 +169,7 @@
       padding-bottom: 8px;
     }
   }
-  
+
   .placeholder-content {
     padding: 16px;
     text-align: center;
@@ -182,55 +182,55 @@
   .mat-mdc-row:not(:nth-child(2n + 1)) {
     background-color: #f8f9fa;
   }
-  
+
   .mat-table {
     .mat-header-row {
       border-bottom-width: 0;
-  
+
       .mat-header-cell {
         border-bottom: none;
       }
     }
   }
-  
+
   .bolded-icon {
     font-weight: bold;
   }
   /* td height consolidated at end of file */
-  
+
   .sort-header {
     display: flex;
     align-items: center;
     cursor: pointer;
     user-select: none;
   }
-  
+
   .detail-section {
-    margin-bottom: 20px;
-    padding: 4px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
   }
-  
+
   .detail-table {
     width: 100%;
     // margin: 15px 0;
-  
+
     .mat-header-row {
       background-color: #f5f5f5;
     }
-  
+
     .mat-header-cell {
       font-weight: bold;
     }
   }
-  
+
   .edit-button-container {
     button {
       min-width: 120px;
     }
   }
-  
+
   .right-container {
     display: flex;
     flex-direction: column;
@@ -244,7 +244,7 @@
       overflow: auto;
     }
   }
-  
+
   #save-btn {
     color: white;
     background-color: #2e4155 !important;
@@ -274,98 +274,137 @@
     line-height: 1;
   }
 
+  /* Vertrage-style selection: light blue, no bold, keeps the row's text color. */
   .mat-mdc-row.row-selected,
-  tr.mat-mdc-row.row-selected {
-    background-color: #c7e4ea !important;
+  tr.mat-mdc-row.row-selected,
+  .mat-mdc-row.row-selected:hover,
+  tr.mat-mdc-row.row-selected:hover {
+    background-color: #e3f2fd !important;
+    td.mat-mdc-cell,
     td {
-      background-color: #c7e4ea !important;
-      font-weight: 600;
+      background-color: #e3f2fd !important;
+      font-weight: normal;
     }
   }
 
-  /* Uniform row height — overrides all earlier conflicting rules. */
-  .left-container tr.mat-mdc-row,
-  .left-container .mat-mdc-row {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+  /* Subtle hover for non-selected rows in the LEFT table only. The right
+     (detail) table has no hover effect. */
+  .left-container tr.mat-mdc-row:not(.row-selected):hover {
+    background-color: #f0f7fa !important;
   }
-  .left-container tr.mat-mdc-row td.mat-mdc-cell,
-  .left-container tr.mat-mdc-row td {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    line-height: 35px !important;
-    vertical-align: middle !important;
-    box-sizing: border-box;
+  .left-container tr.mat-mdc-row:not(.row-selected):hover td {
+    background-color: #f0f7fa !important;
   }
-  .left-container tr.mat-mdc-row .actions-cell button.mat-mdc-icon-button {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    line-height: 28px;
-    vertical-align: middle;
+  .right-container tr.mat-mdc-row,
+  .right-container tr.mat-mdc-row:hover,
+  .right-container tr.mat-mdc-row td,
+  .right-container tr.mat-mdc-row:hover td,
+  .detail-table tr.mat-mdc-row,
+  .detail-table tr.mat-mdc-row:hover,
+  .detail-table tr.mat-mdc-row td,
+  .detail-table tr.mat-mdc-row:hover td {
+    background-color: inherit;
+    cursor: default;
   }
 
-  /* Same uniform 35px row height for the right-side detail table. */
+  /* Uniform 30px data-row height for both tables. */
+  .left-container tr.mat-mdc-row,
+  .left-container .mat-mdc-row,
   .right-container tr.mat-mdc-row,
   .right-container .mat-mdc-row,
   .detail-table tr.mat-mdc-row {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
   }
+  .left-container tr.mat-mdc-row td.mat-mdc-cell,
+  .left-container tr.mat-mdc-row td,
   .right-container tr.mat-mdc-row td.mat-mdc-cell,
   .right-container tr.mat-mdc-row td,
   .detail-table tr.mat-mdc-row td.mat-mdc-cell,
   .detail-table tr.mat-mdc-row td {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    line-height: 35px !important;
+    line-height: 30px !important;
     vertical-align: middle !important;
     box-sizing: border-box;
+  }
+  .left-container tr.mat-mdc-row .actions-cell button.mat-mdc-icon-button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    line-height: 26px;
+    vertical-align: middle;
+  }
+
+  /* Header heights:
+     - Left table column header: 40px
+     - "Tätigkeitsbuchungen" banner: 40px (so it lines up horizontally with
+       the left header)
+     - Right detail-table column header: 36px (a bit smaller than the banner) */
+  .left-container tr.mat-mdc-header-row,
+  .left-container .mat-mdc-header-row {
+    height: 40px !important;
+  }
+  .left-container .mat-mdc-header-cell {
+    height: 40px !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .right-container tr.mat-mdc-header-row,
+  .right-container .mat-mdc-header-row,
+  .detail-table tr.mat-mdc-header-row {
+    height: 36px !important;
+  }
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-header-cell {
+    height: 36px !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
   .contain-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 5px;
-      background-color: #d4dce0;
-     height: 40px;
+    margin: 0 0 8px 0; /* gap between banner and the column-header row below it */
+    background-color: #d4dce0;
+    height: 40px;
+    border: none;
   }
   .table-header {
     padding: 0;
     border: none;
     justify-content: center;
     align-items: center;
-    font-weight: bold;
+    font-size: 16px;
+    line-height: 40px;
     margin: auto !important;
      background-color: #d4dce0;
   }
-  
+
   .detail-table {
     width: 100%;
     // margin: 0 0 15px 0;
-  
+
     .mat-header-row {
       background-color: #d4dce0;
     }
-  
+
     .mat-header-cell {
       font-weight: bold;
       color: black;
     }
-  
+
     .mat-cell,
     .mat-header-cell {
       padding: 0 16px;
       text-align: left;
-  
+
       &:not(:last-child) {
         border-right: 1px solid #e0e0e0;
       }
@@ -379,35 +418,36 @@
   @media (width >= 96rem) {
     .container {
       max-width: 108vw;
-  
+
     }
   }
-  
+
   // New styles for the edit form
   .edit-form-container {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
-  
-  
-    h3 {
-      font-size: 1.2rem;
-      color: #333;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
-  
+
     mat-radio-group {
-      margin-bottom: 20px;
+      margin: 0;
       display: flex;
-      gap: 20px; // Space between radio buttons
+      gap: 20px;
     }
-  .second-group{margin:0 auto;}
+  /* Stack Freigabestatus + Anmerkung vertically, left-aligned at the same x.
+     Tight 8px row gap; outer margin/padding gives the form some breathing
+     room from the gray banner above and the right-pane edges. */
+  .second-group{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 24px 24px 0 24px;
+    padding: 0;
+  }
     .mat-radio-button {
       .mat-radio-label-content {
         color: #333;
@@ -416,8 +456,8 @@
           color: #c00; // Style for "Abgelehnt" if needed
       }
     }
-  
-  
+
+
     .anmerkung-textarea {
       width: 100%;
       .mat-mdc-form-field-flex {
@@ -428,105 +468,170 @@
       }
     }
   }
-  
-  
+
+
   .cell-main-form{cursor:pointer}
   .form-buttons-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 10px;
-    padding: 0 0;
-   height: 35px;
+    padding: 0;
+    height: 40px; /* match Tätigkeitsbuchungen banner so the banner doesn't change height in edit mode */
     background-color: #d4dce0;
     .cancel-button, .save-button {
       // min-width: 100px;
-  
+
         background-color: #2e4155;
         color: white;
          &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
       }
   }
   .Freigabe-heading{
-    position: relative;
-    top: 15%!important;
+    position: static;
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 40px;
   }
-  // Freigabestatus radio group styling
+  // Freigabestatus radio group styling — label + radios all on one line,
+  // tightly grouped (the previous wide gap came from Material's own
+  // touch-target padding around each radio button).
   .freigabestatus-group {
     display: flex;
     align-items: center;
-    position: relative;
-    right: 6%;
+    gap: 4px; /* matches #anmerkungField gap so the circle and input share the same x */
+    position: static;
+    margin: 0;
     .radio-label {
-      display: block;
-      margin-bottom: 10px;}
+      display: inline-block;
+      margin: 0;
+      font-size: 14px;
+      white-space: nowrap;
+    }
     .radio-group {
       display: flex;
-      gap: 30px;
-  
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+
       .radio-option {
-         font-size: 14px;
+        font-size: 14px;
         .mat-radio-label-content {
           font-weight: normal;
-  
         }
-  
         &.rejected-radio .mat-radio-label-content {
           color: #c00;
         }
       }
     }
   }
-  
-  #anmerkungField{display: flex;flex-direction: row;
-  input{width:50%;margin-left: 7px;border: 1px solid #338e9c}
-  input:focus{border: 1px solid gray!important;
+
+  /* Strip Material's internal margins/padding so the radio buttons sit
+     close to each other — the visible "huge space" was Material's
+     mdc-form-field padding around each button. The radio's own padding is
+     zeroed on the LEFT so the circle starts at the very edge of the
+     button — that's what makes the circle line up with the input below. */
+  ::ng-deep .freigabestatus-group .mat-mdc-radio-button {
+    margin: 0;
+    .mdc-form-field {
+      padding: 0;
+    }
+    .mdc-radio {
+      padding: 0 4px 0 0;
+    }
   }
+
+  /* Override Material's theme color so the selected radio "ball" is black,
+     not pink/red. Uses ::ng-deep because the inner mdc-radio markup is
+     rendered by Angular Material under view encapsulation. */
+  ::ng-deep .freigabestatus-group .mat-mdc-radio-button {
+    --mdc-radio-selected-icon-color: #000;
+    --mdc-radio-selected-hover-icon-color: #000;
+    --mdc-radio-selected-focus-icon-color: #000;
+    --mdc-radio-selected-pressed-icon-color: #000;
+    --mdc-radio-unselected-icon-color: #000;
+    --mdc-radio-unselected-hover-icon-color: #000;
+    --mdc-radio-unselected-focus-icon-color: #000;
+    --mdc-radio-unselected-pressed-icon-color: #000;
+    --mat-radio-checked-ripple-color: rgba(0, 0, 0, 0.12);
+    --mat-radio-ripple-color: rgba(0, 0, 0, 0.08);
   }
-  // Edit form container adjustments
+
+  #anmerkungField{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px; /* matches .freigabestatus-group gap so input left edge sits at the same x as the radio circle */
+    input.anmerkung-input{
+      width: 220px;
+      height: 28px;
+      margin: 0;
+      padding: 0 8px;
+      border: 1px solid #e6e3e3 !important;
+      background: #fff;
+      box-sizing: border-box;
+      font-size: 14px;
+      outline: none;
+    }
+    /* No focus highlight — keep the same light-gray border on focus, no shadow, no outline. */
+    input.anmerkung-input:focus{
+      border: 1px solid #e6e3e3 !important;
+      box-shadow: none;
+      outline: none;
+    }
+  }
+  // Edit form container adjustments — no inner padding/border/background so
+  // the gray Freigabe banner sits flush at the top of the right pane and
+  // there's no white line below it.
   .edit-form-container {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
-  
+
+    /* Reset h3 (Freigabe heading) styling — the bordered/spaced h3 was the
+       source of the white line under the banner and the large gap. */
     h3 {
-      font-size: 1.2rem;
-      color: #333;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      border: none;
+      line-height: 40px;
     }
   }
-  
+
   // Remove the header edit mode styles since buttons are now above the form
   .header-edit-mode {
     display: none !important;
   }
-  
-  
+
+
   .header {
     .header-edit-mode {
       display: none;
     }
   }
-  
+
   .produkt-position-display {
     display: flex;
     align-items: center;
     gap: 4px;
   }
-  
+
   .original-position {
     color: #666;
   }
-  
+
   // .current-position {
   //   font-weight: 500;
   // }
-  
+
   .arrow-icon {
     font-size: 16px;
     width: 16px;
@@ -543,20 +648,29 @@
     align-items: center;
     gap: 4px;
   }
-  
+
   .arrow-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
     margin: 0 4px;
   }
-  
+
   .original-position {
     color: #666;
   }
-  
+
+  /* Fixed (not min) width so both labels render with the EXACT same box —
+     this is what guarantees the radio circle and the Anmerkung input line
+     up at the same x-position. */
   .anmerkung-label, .radio-label{
     font-size: 14px;
+    display: inline-block;
+    width: 110px;
+    flex: 0 0 110px;
+    margin: 0;
+    padding: 0;
+    text-align: left;
   }
   .produkt-position-display {
     .current-position {
@@ -565,17 +679,20 @@
       }
     }
   }
-  
+ .anmerkung-label{
+position: relative;
+left: 20px;
+ }
   #shit{height:30px!important}
   .mdc-data-table__cell, .mdc-data-table__header-cell{
     padding: 0 14px !important;
   }
-  
-  
+
+
   .arrow-icon{font-size:15px!important;position:relative;top: 3px;}
-  
+
   /* Add these styles to your existing CSS */
-  
+
   // .produkt-position-display {
   //   display: flex;
   //   flex-direction: column;
@@ -583,54 +700,54 @@
   //   min-height: 30px;
   //   justify-content: center;
   // }
-  
+
   // .position-line {
   //   display: flex;
   //   align-items: center;
   //   width: 100%;
   //   line-height: 1.2;
   // }
-  
+
   // .first-line {
   //   white-space: nowrap;
   //   overflow: hidden;
   //   text-overflow: ellipsis;
   // }
-  
+
   // .second-line {
   //   flex-wrap: wrap;
   // }
-  
+
   // .arrow-icon {
   //   font-size: 15px !important;
   //   margin: 0 4px;
   //   flex-shrink: 0;
   // }
-  
+
   // /* Ensure the arrow inherits the row color */
   // .arrow-icon {
   //   color: inherit !important;
   // }
-  
+
   // .current-position, .original-position, .short-name {
   //   color: inherit;
   // }
-  
+
   // /* Adjust table cell height if needed */
   // .left-container td {
   //   height: auto !important;
   //   min-height: 30px;
   //   padding: 4px 16px !important;
   // }
-  
+
   // .mat-mdc-row {
   //   height: auto !important;
   //   min-height: 30px;
   // }
   /* Add/Update these styles in your existing CSS */
-  
+
   /* td/row height consolidated at end of file */
-  
+
   /* Produktposition display - keep values in same row when possible */
   .produkt-position-display {
     display: flex;
@@ -640,7 +757,7 @@
     min-height: 28px;
     align-content: center;
   }
-  
+
   .arrow-icon {
     font-size: 16px !important;
     width: 16px;
@@ -649,25 +766,125 @@
     flex-shrink: 0;
     color: inherit !important;
   }
-  
+
   .current-position, .original-position, .short-name {
     color: inherit;
     white-space: nowrap;
   }
-  
+
   /* Ensure the content stays in one line when there's enough space */
   .produkt-position-display {
     line-height: 1.2;
   }
-  
+
   /* If content needs to wrap, allow it but maintain proper spacing */
   .produkt-position-display {
     max-width: 100%;
   }
-  
+
   /* Adjust table cell padding and alignment */
   .mat-mdc-cell {
     vertical-align: middle !important;
   }
-  
-  /* cell height consolidated at end of file */
+
+  /* === Unified font sizing for both tables === */
+  .left-container .mat-mdc-cell,
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-size: 14px !important;
+  }
+
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-weight: bold !important;
+  }
+
+  /* Force every cell to render in plain black for now (no status colors). */
+  .left-container .mat-mdc-cell,
+  .right-container .mat-mdc-cell,
+  .detail-table .mat-mdc-cell {
+    color: #000 !important;
+  }
+
+  /* Sort-header / sort-icon sizing (matches vertrage). */
+  .sort-header {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .sort-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+  }
+
+  /* Keep cell text on a single line; truncate with ellipsis instead of
+     wrapping into two lines or pushing a horizontal scrollbar. */
+  .left-container .mat-mdc-cell,
+  .right-container .mat-mdc-cell,
+  .detail-table .mat-mdc-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Fixed-width table layout so columns share the container width and
+     long values clip cleanly. */
+  .left-container table.mat-mdc-table,
+  .right-container table.mat-mdc-table,
+  .detail-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+  }
+
+  .right-container .detail-section {
+    overflow-x: hidden;
+  }
+
+  /* Compact MDI icons used inside the action column — ~20px so they fit
+     comfortably in the 30px-tall row. */
+  .actions-cell .action-mdi-icon {
+    font-size: 20px;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* MDI pencil/check/close icons inside the Bearbeiten / Speichern /
+     Abbrechen buttons — match the existing 17px Material icon sizing. */
+  #save-btn .mdi {
+    font-size: 17px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Left-table column widths — wider Produktposition, narrower actions. */
+  .left-container .mat-column-Produktposition { width: 40%; }
+  .left-container .mat-column-Monat          { width: 15%; }
+  .left-container .mat-column-Mitarbeiter    { width: 27%; }
+  .left-container .mat-column-Std            { width: 12%; }
+  .left-container .mat-column-actions        { width: 6%; padding-left: 4px !important; padding-right: 4px !important; }
+
+  /* Header dropdown panel — opens 200px wide and shifted 16px to the right
+     of its trigger. Uses ::ng-deep because the panel renders inside the CDK
+     overlay, outside this component's view. */
+  ::ng-deep .korigieren-dropdown-panel.mat-mdc-select-panel {
+    width: 170px !important;
+    min-width: 170px !important;
+    max-width: 170px !important;
+    position: relative !important;
+    left: 16px !important;
+  }

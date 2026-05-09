@@ -15,7 +15,7 @@
     overflow: hidden;
     // width: 113vw!important;
   }
-  
+
   .header {
     min-height: 60px;
     height: auto;
@@ -23,18 +23,18 @@
     border-bottom: none;
     width: 100%;
     padding: 6px 12px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     background-color: #338e9c;
     border: 1px solid #0c4450;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
-  
+
     .header-main {
       margin:0 auto!important;
     }
-  
+
     .header-edit-mode {
       display: flex;
       align-items: center;
@@ -42,7 +42,7 @@
       width: 100%;
       padding: 0 16px; // Add some padding for the buttons
     }
-  
+
     .title {
       font-size: 1.5rem;
       font-weight: normal;
@@ -54,26 +54,26 @@
         text-align: center; // Center the text
       }
     }
-  
+
     .dropdown {
       width: 200px;
       margin-bottom: 0;
-  
+
     }
-  
+
     .cancel-button, .save-button {
       background-color: transparent;
       color: white;
       font-weight: bold;
       font-size: 1rem;
-  
+
       mat-icon {
         font-size: 1.2rem;
         margin-right: 5px;
       }
     }
   }
-  
+
   .mat-mdc-header-cell,
   th.mat-header-cell {
     background-color: #d4dce0 !important;
@@ -100,62 +100,62 @@
     min-height: 0;
     min-width: 0;
     border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    overflow: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     height: 100%;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-  
+
     .mat-header-cell,
     .mat-cell {
       padding: 0 16px;
       text-align: left;
-  
+
       &:not(:last-child) {
         border-right: 1px solid #e0e0e0;
       }
     }
-  
+
     .mat-header-row {
       background-color: #f5f5f5;
-  
+
       .mat-header-cell {
         font-weight: bold;
         color: rgba(0, 0, 0, 0.87);
       }
     }
-  
+
     .mat-row {
       &:nth-child(even) {
         background-color: #fafafa;
       }
-  
+
       &:hover {
         cursor: pointer;
       }
     }
   }
-  
+
   .actions-cell {
     button {
       width: 40px;
       height: 40px;
-  
+
       mat-icon {
         font-size: 20px;
       }
     }
   }
-  
+
   .detail-view {
-    padding: 4px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     flex: 1; // Allow it to fill the right container
     overflow: auto; // Add scroll if content is too long
-  
+
     h3 {
       margin-top: 0;
       color: #333;
@@ -163,7 +163,7 @@
       padding-bottom: 8px;
     }
   }
-  
+
   .placeholder-content {
     padding: 16px;
     text-align: center;
@@ -176,55 +176,55 @@
   .mat-mdc-row:not(:nth-child(2n + 1)) {
     background-color: #f8f9fa;
   }
-  
+
   .mat-table {
     .mat-header-row {
       border-bottom-width: 0;
-  
+
       .mat-header-cell {
         border-bottom: none;
       }
     }
   }
-  
+
   .bolded-icon {
     font-weight: bold;
   }
   /* td height consolidated at end of file */
-  
+
   .sort-header {
     display: flex;
     align-items: center;
     cursor: pointer;
     user-select: none;
   }
-  
+
   .detail-section {
-    margin-bottom: 20px;
-    padding: 4px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
   }
-  
+
   .detail-table {
     width: 100%;
     // margin: 15px 0;
-  
+
     .mat-header-row {
       background-color: #f5f5f5;
     }
-  
+
     .mat-header-cell {
       font-weight: bold;
     }
   }
-  
+
   .edit-button-container {
     button {
       min-width: 120px;
     }
   }
-  
+
   .right-container {
     display: flex;
     flex-direction: column;
@@ -238,7 +238,7 @@
       overflow: auto;
     }
   }
-  
+
   #save-btn {
     color: white;
     background-color: #2e4155 !important;
@@ -267,98 +267,138 @@
     line-height: 1;
   }
 
+  /* Match vertrage's selection: light-blue background, NO bold, keep the
+     row's existing text color (set by getRowStyle / freigabeStatus). */
   .mat-mdc-row.row-selected,
-  tr.mat-mdc-row.row-selected {
-    background-color: #c7e4ea !important;
+  tr.mat-mdc-row.row-selected,
+  .mat-mdc-row.row-selected:hover,
+  tr.mat-mdc-row.row-selected:hover {
+    background-color: #e3f2fd !important;
+    td.mat-mdc-cell,
     td {
-      background-color: #c7e4ea !important;
-      font-weight: 600;
+      background-color: #e3f2fd !important;
+      font-weight: normal;
     }
   }
 
-  /* Uniform row height — overrides all earlier conflicting rules. */
-  .left-container tr.mat-mdc-row,
-  .left-container .mat-mdc-row {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+  /* Subtle hover for non-selected rows in the LEFT table only.
+     Right (detail) table has no hover effect — it's display-only. */
+  .left-container tr.mat-mdc-row:not(.row-selected):hover {
+    background-color: #f0f7fa !important;
   }
-  .left-container tr.mat-mdc-row td.mat-mdc-cell,
-  .left-container tr.mat-mdc-row td {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    line-height: 35px !important;
-    vertical-align: middle !important;
-    box-sizing: border-box;
+  .left-container tr.mat-mdc-row:not(.row-selected):hover td {
+    background-color: #f0f7fa !important;
   }
-  .left-container tr.mat-mdc-row .actions-cell button.mat-mdc-icon-button {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    line-height: 28px;
-    vertical-align: middle;
+  .right-container tr.mat-mdc-row,
+  .right-container tr.mat-mdc-row:hover,
+  .right-container tr.mat-mdc-row td,
+  .right-container tr.mat-mdc-row:hover td,
+  .detail-table tr.mat-mdc-row,
+  .detail-table tr.mat-mdc-row:hover,
+  .detail-table tr.mat-mdc-row td,
+  .detail-table tr.mat-mdc-row:hover td {
+    background-color: inherit;
+    cursor: default;
   }
 
-  /* Same uniform 35px row height for the right-side detail table. */
+  /* Uniform 30px data row height for both tables. */
+  .left-container tr.mat-mdc-row,
+  .left-container .mat-mdc-row,
   .right-container tr.mat-mdc-row,
   .right-container .mat-mdc-row,
   .detail-table tr.mat-mdc-row {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
   }
+  .left-container tr.mat-mdc-row td.mat-mdc-cell,
+  .left-container tr.mat-mdc-row td,
   .right-container tr.mat-mdc-row td.mat-mdc-cell,
   .right-container tr.mat-mdc-row td,
   .detail-table tr.mat-mdc-row td.mat-mdc-cell,
   .detail-table tr.mat-mdc-row td {
-    height: 35px !important;
-    min-height: 35px !important;
-    max-height: 35px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    line-height: 35px !important;
+    line-height: 30px !important;
     vertical-align: middle !important;
     box-sizing: border-box;
+  }
+  .left-container tr.mat-mdc-row .actions-cell button.mat-mdc-icon-button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    line-height: 26px;
+    vertical-align: middle;
+  }
+
+  /* Header heights:
+     - Left table column header: 40px
+     - "Tätigkeitsbuchungen" banner: 40px (same as left header so the two
+        line up horizontally across the split view)
+     - Right detail-table column header: 36px (a bit smaller than the banner) */
+  .left-container tr.mat-mdc-header-row,
+  .left-container .mat-mdc-header-row {
+    height: 40px !important;
+  }
+  .left-container .mat-mdc-header-cell {
+    height: 40px !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .right-container tr.mat-mdc-header-row,
+  .right-container .mat-mdc-header-row,
+  .detail-table tr.mat-mdc-header-row {
+    height: 36px !important;
+  }
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-header-cell {
+    height: 36px !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
   .contain-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin: 0 0 8px 0;
     background-color: #d4dce0;
-     height: 40px;
+    height: 40px;
+    border: none;
   }
   .table-header {
     padding: 0;
     border: none;
     justify-content: center;
     align-items: center;
-    font-weight: bold;
+    font-size: 16px;
+    line-height: 40px;
     margin: auto !important;
       background-color: #d4dce0;
   }
-  
+
   .detail-table {
     width: 100%;
     // margin: 0 0 15px 0;
-  
+
     .mat-header-row {
       background-color: #d4dce0;
     }
-  
+
     .mat-header-cell {
       font-weight: bold;
       color: black;
     }
-  
+
     .mat-cell,
     .mat-header-cell {
       padding: 0 16px;
       text-align: left;
-  
+
       &:not(:last-child) {
         border-right: 1px solid #e0e0e0;
       }
@@ -372,10 +412,10 @@
   @media (width >= 96rem) {
     .container {
       max-width: 108vw;
-  
+
     }
   }
-  
+
   // New styles for the edit form
   .edit-form-container {
     padding: 20px;
@@ -385,8 +425,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-  
-  
+
+
     h3 {
       font-size: 1.2rem;
       color: #333;
@@ -394,7 +434,7 @@
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
-  
+
     mat-radio-group {
       margin-bottom: 20px;
       display: flex;
@@ -409,8 +449,8 @@
           color: #c00; // Style for "Abgelehnt" if needed
       }
     }
-  
-  
+
+
     .anmerkung-textarea {
       width: 100%;
       .mat-mdc-form-field-flex {
@@ -421,8 +461,8 @@
       }
     }
   }
-  
-  
+
+
   .cell-main-form{cursor:pointer;padding: 0 8px;}
   .form-buttons-container {
     display: flex;
@@ -433,7 +473,7 @@
     background-color: #d4dce0;
     .cancel-button, .save-button {
       min-width: 120px;
-  
+
         background-color: #2e4155;
         color: white;
          &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
@@ -455,19 +495,19 @@
     .radio-group {
       display: flex;
       gap: 30px;
-  
+
       .radio-option {
         .mat-radio-label-content {
           font-weight: normal;
         }
-  
+
         &.rejected-radio .mat-radio-label-content {
           color: #c00;
         }
       }
     }
   }
-  
+
   #anmerkungField{display: flex;flex-direction: row;
   input{width:50%;margin-left: 7px;border: 1px solid #338e9c}
   input:focus{border: 1px solid gray!important;
@@ -482,7 +522,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-  
+
     h3 {
       font-size: 1.2rem;
       color: #333;
@@ -491,19 +531,19 @@
       padding-bottom: 10px;
     }
   }
-  
+
   // Remove the header edit mode styles since buttons are now above the form
   .header-edit-mode {
     display: none !important;
   }
-  
-  
+
+
   .header {
     .header-edit-mode {
       display: none;
     }
   }
-  
+
   .menu-icon-right-top {
     background-color: #2e4155;
     color: white;
@@ -544,7 +584,7 @@
     align-items: center;
     z-index: 1000;
   }
-  
+
   .logbuch-dialog {
     background-color: white;
     padding: 20px;
@@ -555,7 +595,7 @@
     max-height: 90%;
     overflow-y: auto;
   }
-  
+
   .logbuch-header {
     display: flex;
     // justify-content: space-between;
@@ -563,35 +603,35 @@
     margin-bottom: 20px;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
-  
+
     .navigation-arrows {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-  
+
     .logbuch-title {
       font-size: 1.5em;
       font-weight: bold;
       margin: 0 100px;
     }
   }
-  
+
   .logbuch-content {
     .logbuch-section {
       margin-bottom: 15px;
       height:500px
     }
-  
+
     p {
       margin-bottom: 8px;
       line-height: 1.4;
     }
-  
+
     strong {
       font-weight: 600;
       color: #333;
-  
+
     }
   }
   .logbuch-section1{
@@ -602,10 +642,10 @@
     .mid2{margin-right:28%}
     .erstversion{margin-left:50%}
   }
-  
+
   // Second format specific styles
   .comparison-format {
-  
+
     .status-line {
       display: flex;
       justify-content: space-between;
@@ -616,30 +656,30 @@
       .status-comparison {
         flex: 1;
       }
-  
+
       .freigabestatus {
         flex-shrink: 0;
         // margin-left: 0px;
       }
-  
+
       .vorher-nachher {
         display: flex;
         align-items: center;
         gap: 100px;
         font-size: 0.95em;
         margin-left: 122px;
-  
+
         .vorher-label, .nachher-label {
           font-weight: 600;
           color: #666;
         }
-  
+
         .vorher-value, .nachher-value {
           padding: 2px 6px;
           border-radius: 3px;
-  
+
         }
-  
+
         .separator {
           color: #999;
           margin: 0 5px;
@@ -651,13 +691,13 @@
         }
     .metadaten-simple {
       margin: 10px 0;
-  
+
       p {
         margin: 5px 0;
       }
     }
   }
-  
+
   // First format styles
   .simple-format {
     .logbuch-section {
@@ -666,35 +706,35 @@
       }
     }
   }
-  
+
   .common-fields {
     margin-top: 20px;
     padding-top: 15px;
     border-top: 1px solid #eee;
   }
-  
+
   .no-entries {
     text-align: center;
     padding: 40px;
     color: #666;
   }
-  
+
   // Your existing styles remain the same
   .sort-header {
     display: flex;
     align-items: center;
     cursor: pointer;
   }
-  
+
   .sort-icon {
     margin-left: 5px;
     font-size: 18px;
   }
-  
+
   .bolded-icon {
     font-weight: bold;
   }
-  
+
   .detail-table {
     width: 100%;
     // margin-top: 15px;
@@ -712,7 +752,7 @@
     padding-top: 15px;
     border-top: 1px solid #eee;
   }
-  
+
   .close-button {
     border: 2px solid gray !important;
     padding: 8px 70px !important;
@@ -723,14 +763,14 @@
     background-color: #2e4155;
         color: white;
          &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); };color:white ;cursor:pointer;}
-  
+
     .close-btn-text {
       margin-top: 5px!important;
      color:white;
       font-size: 20px;
     }
-  
-  
+
+
   .download-button {
     border: 2px solid gray !important;
     padding: 8px 70px !important;
@@ -746,27 +786,153 @@
      color:white;
   font-size: 20px;
     }
-  
-  
+
+
   .produkt-position-display {
     display: flex;
     align-items: center;
     gap: 4px;
     flex-wrap: wrap;
   }
-  
+
   .arrow-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
     color: inherit;
   }
-  
+
   .current-position, .original-position {
     display: inline-flex;
     align-items: center;
   }
-  
+
   .short-name {
     margin-left: 2px;
+  }
+
+  /* === Unified font sizing for both tables === */
+  .left-container .mat-mdc-cell,
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-size: 14px !important;
+  }
+
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-header-cell {
+    font-weight: bold !important;
+  }
+
+  /* Sort-header / sort-icon sizing (matches vertrage). */
+  .sort-header {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .sort-header.no-sort {
+    cursor: default;
+  }
+  .sort-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+  }
+
+  /* Keep cell text on a single line; truncate with ellipsis instead of
+     wrapping into two lines or pushing a horizontal scrollbar. */
+  .left-container .mat-mdc-cell,
+  .right-container .mat-mdc-cell,
+  .detail-table .mat-mdc-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Fixed-width table layout so columns share the container width and
+     long values clip cleanly. */
+  .left-container table.mat-mdc-table,
+  .right-container table.mat-mdc-table,
+  .detail-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+  }
+
+  /* Consistent horizontal padding for cells and headers across both tables —
+     keeps text away from the column dividers (matches the left-table look). */
+  .left-container .mat-mdc-cell,
+  .left-container .mat-mdc-header-cell,
+  .right-container .mat-mdc-cell,
+  .right-container .mat-mdc-header-cell,
+  .detail-table .mat-mdc-cell,
+  .detail-table .mat-mdc-header-cell {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Left-table column widths — wider Produktposition and narrower actions
+     column (the icon cell sits closer to Std). */
+  .left-container .mat-column-Produktposition { width: 40%; }
+  .left-container .mat-column-Monat          { width: 15%; }
+  .left-container .mat-column-Mitarbeiter    { width: 27%; }
+  .left-container .mat-column-Std            { width: 12%; }
+  .left-container .mat-column-actions        { width: 6%; padding-left: 4px !important; padding-right: 4px !important; }
+
+  .right-container .detail-section {
+    overflow-x: hidden;
+  }
+
+  ::ng-deep .freigabe-dropdown-panel.mat-mdc-select-panel {
+    min-width: 168px !important;
+    max-width: 168px !important;
+    width: 168px !important;
+    position: relative!important;
+    left: 16px!important;
+  }
+  .freigabe-dropdown-panel{
+    width:168px!important;
+  }
+
+  ::ng-deep .mat-mdc-menu-panel.option-menu {
+    max-width: none !important;
+    min-width: 220px !important;
+  }
+  ::ng-deep .option-menu .mat-mdc-menu-item {
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  ::ng-deep .option-menu .mat-mdc-menu-item .mdc-list-item__primary-text,
+  ::ng-deep .option-menu .mat-mdc-menu-item .mat-mdc-menu-item-text {
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+  }
+  ::ng-deep .option-menu .mat-mdc-menu-item .mdi {
+    margin-right: 12px;
+    vertical-align: middle;
+    line-height: 1;
+  }
+
+  .actions-cell .action-mdi-icon {
+    font-size: 20px;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }

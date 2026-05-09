@@ -39,7 +39,7 @@
             >
               <div class="sort-header">
                 Produktposition
-                <mat-icon class="sort-icon">{{
+                <mat-icon class="sort-icon" *ngIf="activeSortColumn === 'Produktposition'">{{
                   getSortIcon("Produktposition")
                 }}</mat-icon>
               </div>
@@ -55,7 +55,7 @@
             <th mat-header-cell *matHeaderCellDef (click)="toggleSort('Monat')">
               <div class="sort-header">
                 Monat
-                <mat-icon class="sort-icon">{{ getSortIcon("Monat") }}</mat-icon>
+                <mat-icon class="sort-icon" *ngIf="activeSortColumn === 'Monat'">{{ getSortIcon("Monat") }}</mat-icon>
               </div>
             </th>
             <td mat-cell *matCellDef="let element" class="cell-main-form">
@@ -74,7 +74,7 @@
             >
               <div class="sort-header">
                 Mitarbeiter
-                <mat-icon class="sort-icon">{{
+                <mat-icon class="sort-icon" *ngIf="activeSortColumn === 'Mitarbeiter'">{{
                   getSortIcon("Mitarbeiter")
                 }}</mat-icon>
               </div>
@@ -89,7 +89,7 @@
             <th mat-header-cell *matHeaderCellDef (click)="toggleSort('Std')">
               <div class="sort-header">
                 Std.
-                <mat-icon class="sort-icon">{{ getSortIcon("Std") }}</mat-icon>
+                <mat-icon class="sort-icon" *ngIf="activeSortColumn === 'Std'">{{ getSortIcon("Std") }}</mat-icon>
               </div>
             </th>
             <td mat-cell *matCellDef="let element" class="cell-main-form">
@@ -146,7 +146,7 @@
                 (click)="toggleEditMode()"
                 [disabled]="!selectedEntry"
               >
-                <mat-icon id="edit-icon">edit</mat-icon>
+                <i class="mdi mdi-lead-pencil" aria-hidden="true"></i>
                 Bearbeiten
               </button>
             </div>
@@ -157,7 +157,7 @@
               <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Datum')">
                 <div class="sort-header">
                   Datum
-                  <mat-icon class="sort-icon">{{ getDetailSortIcon("Datum") }}</mat-icon>
+                  <mat-icon class="sort-icon" *ngIf="activeDetailSortColumn === 'Datum'">{{ getDetailSortIcon("Datum") }}</mat-icon>
                 </div>
               </th>
               <td mat-cell *matCellDef="let element">{{ element.Datum }}</td>
@@ -168,7 +168,7 @@
               <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Buchungspunkt')">
                 <div class="sort-header">
                   Buchungspunkt
-                  <mat-icon class="sort-icon">{{ getDetailSortIcon("Buchungspunkt") }}</mat-icon>
+                  <mat-icon class="sort-icon" *ngIf="activeDetailSortColumn === 'Buchungspunkt'">{{ getDetailSortIcon("Buchungspunkt") }}</mat-icon>
                 </div>
               </th>
               <td mat-cell *matCellDef="let element">
@@ -181,7 +181,7 @@
               <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Tatigkeit')">
                 <div class="sort-header">
                   Tätigkeit
-                  <mat-icon class="sort-icon">{{ getDetailSortIcon("Tatigkeit") }}</mat-icon>
+                  <mat-icon class="sort-icon" *ngIf="activeDetailSortColumn === 'Tatigkeit'">{{ getDetailSortIcon("Tatigkeit") }}</mat-icon>
                 </div>
               </th>
               <td mat-cell *matCellDef="let element">
@@ -194,7 +194,7 @@
               <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Stunden')">
                 <div class="sort-header">
                   Std.
-                  <mat-icon class="sort-icon">{{ getDetailSortIcon("Stunden") }}</mat-icon>
+                  <mat-icon class="sort-icon" *ngIf="activeDetailSortColumn === 'Stunden'">{{ getDetailSortIcon("Stunden") }}</mat-icon>
                 </div>
               </th>
               <td mat-cell *matCellDef="let element">

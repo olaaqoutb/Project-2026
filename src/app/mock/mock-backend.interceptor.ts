@@ -342,13 +342,24 @@ export class MockBackendInterceptor implements HttpInterceptor {
     }
 
     // ── freigabe-positionen ──────────────────────────────────────────────
-    if (endpoint === 'freigabePositionen' && m === 'GET') {
+    // Accept both `freigabePositionen` (camelCase, used by GetitRestService /
+    // GetitRest2Service) and `freigabe-positionen` (hyphen, used by
+    // GetitRest3Service) so all consumers hit the same mock data.
+    if ((endpoint === 'freigabePositionen' || endpoint === 'freigabe-positionen') && m === 'GET') {
       return MOCK_FREIGABE_POSITIONEN;
     }
-    if (endpoint === 'freigabePositionen/history' && m === 'GET') {
+    if ((endpoint === 'freigabePositionen' || endpoint === 'freigabe-positionen') && m === 'POST') {
+      return body;
+    }
+    if (
+      (endpoint === 'freigabePositionen/history' || endpoint === 'freigabe-positionen/history') &&
+      m === 'GET'
+    ) {
       return MOCK_FREIGABE_POSITIONEN_HISTORY;
     }
-    const tbMatch = endpoint.match(/^freigabePositionen\/([^/]+)\/taetigkeitsbuchungen$/);
+    const tbMatch = endpoint.match(
+      /^(?:freigabePositionen|freigabe-positionen)\/([^/]+)\/taetigkeitsbuchungen$/,
+    );
     if (tbMatch && m === 'GET') {
       const id = tbMatch[1];
       // Deterministically vary the detail rows per freigabe-position id so

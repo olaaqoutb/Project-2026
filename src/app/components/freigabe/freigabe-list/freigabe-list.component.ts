@@ -49,7 +49,6 @@ interface BookingData {
   buchungsZeitraum: string;
   produktPosition: {
     produktPositionname: string;
-    // ... other properties
   };
   bucher: {
     vorname: string;
@@ -96,13 +95,15 @@ export class FreigabeListComponent {
      Mitarbeiter: 'asc',
      Std: 'asc',
    };
+   activeSortColumn: string | null = null;
  detailSortState: { [key: string]: 'asc' | 'desc' } = {
     Datum: 'asc',
     Buchungspunkt: 'asc',
     Tatigkeit: 'asc',
     Stunden: 'asc',
   };
-   constructor(private http: HttpClient,  
+   activeDetailSortColumn: string | null = null;
+   constructor(private http: HttpClient,
     private freigabeKorigierenService : FreigabeKorigierenService,
     private freigabeService : FreigabeService) {
 
@@ -115,12 +116,12 @@ export class FreigabeListComponent {
  }
 
  loadFromServer(){
- 
-  
+
+
     this.freigabeService.getFreigabePositionen().subscribe({
       next: (data) => {
         console.log('loadFromServer-data', data);
-       
+
         this.originalDataSource = data; // [...mappedData];
         this.applyFilter(this.selectedOption);
       },
@@ -151,7 +152,7 @@ formatProduktPositionDisplay(produktPositionName: string, kurzName: string): str
   console.log('Extracting produktPositionName from:', item);
   return  item.produktPosition.produkt.kurzName + ' » ' + item.produktPosition.produktPositionname; //  parts.length ? parts.join(' » ') : 'No'
 
-   
+
 }
 private extractKurzName(item: any): string {
   console.log('Extracting kurzName from:', item);
@@ -211,7 +212,12 @@ loadData() {
 
 
 toggleDetailSort(field: string) {
-    this.detailSortState[field] = this.detailSortState[field] === 'asc' ? 'desc' : 'asc';
+    if (this.activeDetailSortColumn === field) {
+      this.detailSortState[field] = this.detailSortState[field] === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.detailSortState[field] = 'asc';
+    }
+    this.activeDetailSortColumn = field;
     this.applyDetailSorting(field);
   }
 
@@ -246,12 +252,7 @@ toggleDetailSort(field: string) {
   }
 
   getDetailSortIcon(column: string): string {
-    if (this.detailSortState[column] === 'asc') {
-      return 'keyboard_arrow_up';
-    } else if (this.detailSortState[column] === 'desc') {
-      return 'keyboard_arrow_down';
-    }
-    return 'swap_vert';
+    return this.detailSortState[column] === 'desc' ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
   }
 
 
@@ -313,6 +314,7 @@ formatProduktPosition(item: any): string {
 
    loadDetailedData(entryId: string) {
      this.isLoading = true;
+     this.activeDetailSortColumn = null;
      this.freigabeService.getFreigabePositionenDetail(entryId).subscribe({
        next: (data: any[]) => {
          this.isLoading = false;
@@ -339,7 +341,12 @@ formatProduktPosition(item: any): string {
    }
 
    toggleSort(field: string) {
-     this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+     if (this.activeSortColumn === field) {
+       this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+     } else {
+       this.sortState[field] = 'asc';
+     }
+     this.activeSortColumn = field;
      this.applySorting(field);
    }
 
@@ -357,28 +364,27 @@ formatProduktPosition(item: any): string {
 
    private getSortValue(item: TimeEntry, field: string): any {
      switch (field) {
-       case 'Produktposition':
-         return (item.Produktposition || '').toString().toLowerCase();
-       case 'Monat':
-         const [month, year] = (item.Monat || '00-0000').split('-');
-         return parseInt(year + month, 10);
+       case 'Produktposition': {
+         const kurz = item.produktPosition?.produkt?.kurzName || '';
+         const name = item.produktPosition?.produktPositionname || '';
+         return `${kurz} ${name}`.trim().toLowerCase();
+       }
+       case 'Monat': {
+         const monatStr = this.formatMonth(item.buchungsZeitraum || '');
+         const [year, month] = (monatStr || '0000-00').split('-');
+         return parseInt((year || '0000') + (month || '00'), 10);
+       }
        case 'Mitarbeiter':
-         return (item.Mitarbeiter || '').toString().toLowerCase();
+         return `${item.bucher?.nachname || ''} ${item.bucher?.vorname || ''}`.trim().toLowerCase();
        case 'Std':
-         const [hours, minutes] = (item.Std || '0:00').split(':').map(Number);
-         return hours * 60 + minutes;
+         return item.minutenDauer || 0;
        default:
          return (item[field as keyof TimeEntry] || '').toString().toLowerCase();
      }
    }
 
    getSortIcon(column: string): string {
-     if (this.sortState[column] === 'asc') {
-       return 'keyboard_arrow_up';
-     } else if (this.sortState[column] === 'desc') {
-       return 'keyboard_arrow_down';
-     }
-     return 'swap_vert';
+     return this.sortState[column] === 'desc' ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
    }
 
    formatMonth(dateString: string): string {
@@ -513,7 +519,8 @@ applyFilter(filterType: string) {
   this.selectedEntry = null;
   this.detailedData = [];
 
-  // Apply default sorting
+  // Apply default sorting (no icon shown until user clicks a column)
+  this.activeSortColumn = null;
   this.applySorting('Produktposition');
 }
  getProductShortName(element: TimeEntry): string {

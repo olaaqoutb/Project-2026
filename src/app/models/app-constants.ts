@@ -75,6 +75,10 @@ export class AppConstants {
   static readonly MSG_TAETIGKEITEN_DELETED_SUCCESS = 'Die Tätigkeitsbuchung wurde erfolgreich gelöscht';
   static readonly MSG_TAETIGKEITEN_DELETED_ERROR = 'Die Tätigkeitsbuchung wurde nicht gelöscht';
 
+  // Freigabeposition
+  static readonly MSG_FREIGABEPOSITIONEN_UPDATED_SUCCESS = 'Die Freigabeposition wurde erfolgreich geändert';
+  static readonly MSG_FREIGABEPOSITIONEN_UPDATED_ERROR = 'Die Freigabeposition wurde nicht geändert';
+
   // Vertrag
   static readonly MSG_VERTRAG_LOADED_SUCCESS  = 'Der Vertrag wurde erfolgreich geladen';
   static readonly MSG_VERTRAG_LOADED_ERROR    = 'Der Vertrag wurde nicht geladen';

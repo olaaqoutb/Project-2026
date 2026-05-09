@@ -2,184 +2,51 @@
 <div class="container">
     <div class="header">
       <button
-          [matMenuTriggerFor]="menu"
           class="custom-menu menu-icon-right-top"
+          aria-label="Optionen"
+          type="button"
         >
-          <mat-icon>menu</mat-icon>
+          <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
         </button>
-  
+
       <div class="header-main">
-  
-        <mat-menu #menu="matMenu">
-          <!-- Call openLogbuch when this menu item is clicked -->
-          <button mat-menu-item id="option-menu" (click)="openLogbuch()">
-            <mat-icon>article</mat-icon>Logbuch
-          </button>
+
+        <!-- <mat-menu #menu="matMenu" class="option-menu">
           <button mat-menu-item (click)="exportData()">
-            <mat-icon>file_download</mat-icon>Exportieren
+            <i class="mdi mdi-download-box-outline mdi-24px" aria-hidden="true"></i>Exportieren
           </button>
           <button mat-menu-item (click)="refreshData()">
-            <mat-icon>refresh</mat-icon>Aktualisieren
+            <i class="mdi mdi-refresh mdi-24px" aria-hidden="true"></i>Aktualisieren
           </button>
-        </mat-menu>
-  
+        </mat-menu> -->
+
         <span class="title">Freigabe</span>
       <mat-form-field appearance="outline" class="dropdown">
-    <mat-select [(value)]="selectedOption" id="drop" (selectionChange)="onDropdownChange()">
+    <mat-select
+      [(value)]="selectedOption"
+      id="drop"
+      panelClass="freigabe-dropdown-panel"
+      [panelWidth]="null"
+      (selectionChange)="onDropdownChange()"
+    >
       <mat-option *ngFor="let option of dropdownOptions" [value]="option">
         {{ option }}
       </mat-option>
     </mat-select>
   </mat-form-field>
       </div>
-  
-      <!-- Logbuch Overlay -->
-    <div class="logbuch-overlay" *ngIf="showLogbuch">
-    <div class="logbuch-dialog">
-      <div class="logbuch-header">
-        <div class="arrows">
-          <button
-            mat-icon-button
-            (click)="navigateLogbuch('prev')"
-            [disabled]="currentLogbuchEntryIndex === 0"
-          >
-            <mat-icon class="menu-arrows">keyboard_arrow_left</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            (click)="navigateLogbuch('next')"
-            [disabled]="currentLogbuchEntryIndex >= logbuchEntries.length - 1"
-          >
-            <mat-icon class="menu-arrows">keyboard_arrow_right</mat-icon>
-          </button>
-        </div>
-        <div class="navigation-arrows">
-          <span class="logbuch-title">Logbuch</span>
-        </div>
-      </div>
-  
-      <div class="logbuch-content" *ngIf="selectedLogbuchEntry">
-        <!-- First Format: Simple display without vorher/nachher -->
-        <div *ngIf="shouldShowSimpleFormat()" class="simple-format">
-          <div class="logbuch-section logbuch-section1">
-            <p>
-              <strong class="field-group-mid">Geändert am</strong>
-              {{ selectedLogbuchEntry["Bearbeitungszeit"] }}
-            </p>
-            <p id="geander-von">
-              <strong class="field-group-mid">Geändert von</strong>
-              {{ selectedLogbuchEntry["Bearbeiter"] }} ({{
-                selectedLogbuchEntry["Bearbeiter Id"]
-              }})
-            </p>
-            <p><strong class="erstversion">Erstversion</strong></p>
-  
-            <p>
-              <strong class="field-group-mid">Minutendauer</strong>
-              {{ selectedLogbuchEntry["Minutendauer"] }} Minuten
-            </p>
-  
-            <p>
-              <strong class="field-group-mid mid2">Freigabestatus</strong>
-              {{ selectedLogbuchEntry["Freigabestatus"] }}
-            </p>
-            <p>
-              <strong class="field-group-lg">Buchungszeitraum</strong>
-              {{ selectedLogbuchEntry["Buchungszeitraum"] }}
-            </p>
-  
-            <p>
-              <strong class="field-group-sm">Bucher</strong>
-              {{ selectedLogbuchEntry["Bucher"] }}
-            </p>
-    <p>
-              <strong class="field-group-mid mid2">Produktposition</strong>
-              {{ selectedLogbuchEntry["ProduktPosition"] }}
-            </p>
-            <p>
-              <strong class="field-group-lge"
-                >Original Produktposition</strong
-              >
-              {{ selectedLogbuchEntry["OriginalProduktPosition"] }}
-            </p>
-          </div>
-          <div class="action-buttons">
-             <button mat-icon-button (click)="downloadCsv()" class="download-button">
-              <p class="download-btn-text">Download</p>
-            </button>
-  
-            <button mat-icon-button (click)="closeLogbuch()" class="close-button">
-              <p class="close-btn-text">schließen</p>
-            </button>
-  
-          </div>
-        </div>
-            <!-- Second Format: With vorher/nachher comparison -->
-            <div *ngIf="!shouldShowSimpleFormat()" class="comparison-format">
-              <div class="logbuch-section">
-                <p>
-                  <strong>Geändert am&nbsp; </strong>
-                  {{ selectedLogbuchEntry["Bearbeitungszeit"] }}
-                </p>
-                <p>
-                  <strong>Geändert von&nbsp; </strong>
-                  {{ selectedLogbuchEntry["Bearbeiter"] }} ({{
-                    selectedLogbuchEntry["Bearbeiter Id"]
-                  }})
-                </p>
-  
-                <!-- Vorher/Nachher and Freigabestatus in same line -->
-                <div class="status-line">
-                  <span class="status-comparison">
-                    <span class="vorher-nachher">
-                      <span class="vorher-label">Vorher</span>
-                      <!-- <span class="vorher-value">{{ getPreviousStatus() }}</span> -->
-  
-                      <span class="nachher-label">Nachher</span>
-                      <!-- <span class="nachher-value">{{ selectedLogbuchEntry['Freigabestatus'] }}</span> -->
-                    </span>
-                    <span class="freigabestatus">
-                      <strong>Freigabestatus &nbsp; </strong>
-                      {{ selectedLogbuchEntry["Freigabestatus"] }}
-                   <span id="vorher-value">{{ getPreviousStatus() }}</span>
-                    </span>
-                  </span>
-                </div>
-  
-                <!-- Metadaten displayed as simple text -->
-                <div
-                  class="metadaten-simple"
-                  *ngIf="selectedLogbuchEntry['Metadaten']"
-                >
-                  <p><strong>Metadaten &nbsp; </strong> {{ getFormattedMetadaten() }}</p>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Common fields for both formats
-            <div class="common-fields">
-              <p *ngIf="selectedLogbuchEntry['Vorgang']"><strong>Vorgang:</strong> {{ selectedLogbuchEntry['Vorgang'] }}</p>
-              <p *ngIf="selectedLogbuchEntry['Anmerkung']"><strong>Anmerkung:</strong> {{ selectedLogbuchEntry['Anmerkung'] }}</p>
-            </div> -->
-          </div>
-  
-          <div *ngIf="!selectedLogbuchEntry" class="no-entries">
-            <p>Keine Logbuch-Einträge verfügbar.</p>
-          </div>
-        </div>
-      </div>
-  
+
       <div class="header-edit-mode" *ngIf="isEditMode">
         <button mat-button class="cancel-button">
-          <mat-icon>close</mat-icon> Abbrechen
+          <i class="mdi mdi-close" aria-hidden="true"></i> Abbrechen
         </button>
         <span class="title">Freigabe</span>
         <button mat-button class="save-button" (click)="saveChanges()">
-          <mat-icon>check</mat-icon> Speichern
+          <i class="mdi mdi-check" aria-hidden="true"></i> Speichern
         </button>
       </div>
     </div>
-  
+
     <div class="content">
       <div class="left-container">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
@@ -188,23 +55,23 @@
                 <th mat-header-cell *matHeaderCellDef (click)="toggleSort('Produktposition')">
                 <div class="sort-header">
                     Produktposition
-                    <mat-icon class="sort-icon">{{getSortIcon("Produktposition")}}</mat-icon>
+                    <span class="mdi sort-icon" [ngClass]="getSortIcon('Produktposition')" *ngIf="activeSortColumn === 'Produktposition'"></span>
                 </div>
                 </th>
             <td mat-cell *matCellDef="let element"  class="cell-main-form">
-               
+
                 {{ extractProduktPositionName(element)  }}
 
             </td>
-            
+
             </ng-container>
-  
+
           <!-- Monat Column -->
           <ng-container matColumnDef="Monat">
             <th mat-header-cell *matHeaderCellDef (click)="toggleSort('Monat')">
               <div class="sort-header">
                 Monat
-                <mat-icon class="sort-icon">{{ getSortIcon("Monat") }}</mat-icon>
+                <span class="mdi sort-icon" [ngClass]="getSortIcon('Monat')" *ngIf="activeSortColumn === 'Monat'"></span>
               </div>
             </th>
             <td mat-cell *matCellDef="let element" class="cell-main-form">
@@ -212,7 +79,7 @@
               {{ formatMonth(element.buchungsZeitraum) }}
             </td>
           </ng-container>
-  
+
           <!-- Mitarbeiter Column -->
           <ng-container matColumnDef="Mitarbeiter">
             <th
@@ -222,24 +89,22 @@
             >
               <div class="sort-header">
                 Mitarbeiter
-                <mat-icon class="sort-icon">{{
-                  getSortIcon("Mitarbeiter")
-                }}</mat-icon>
+                <span class="mdi sort-icon" [ngClass]="getSortIcon('Mitarbeiter')" *ngIf="activeSortColumn === 'Mitarbeiter'"></span>
               </div>
             </th>
             <td mat-cell *matCellDef="let element" class="cell-main-form">
             <!--  {{ element.Mitarbeiter }} -->
-              {{element.bucher.nachname}} {{element.bucher.vorname}}  
+              {{element.bucher.nachname}} {{element.bucher.vorname}}
 
             </td>
           </ng-container>
-  
+
           <!-- Std Column -->
           <ng-container matColumnDef="Std">
             <th mat-header-cell *matHeaderCellDef (click)="toggleSort('Std')">
               <div class="sort-header">
                 Std.
-                <mat-icon class="sort-icon">{{ getSortIcon("Std") }}</mat-icon>
+                <span class="mdi sort-icon" [ngClass]="getSortIcon('Std')" *ngIf="activeSortColumn === 'Std'"></span>
               </div>
             </th>
             <td mat-cell *matCellDef="let element" class="cell-main-form">
@@ -248,7 +113,7 @@
 
             </td>
           </ng-container>
-  
+
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
@@ -258,19 +123,31 @@
               class="actions-cell cell-main-form"
             >
               <ng-container [ngSwitch]="element.freigabeStatus">
-                <button mat-icon-button *ngSwitchCase="'ABGELEHNT'">
-                  <mat-icon>close</mat-icon>
+                <button
+                  mat-icon-button
+                  *ngSwitchCase="'ABGELEHNT'"
+                  [matTooltip]="tooltips['ABGELEHNT']"
+                >
+                  <i class="mdi mdi-close action-mdi-icon" aria-hidden="true"></i>
                 </button>
-                <button mat-icon-button *ngSwitchCase="'PRUEFEN_DV'">
-                  <mat-icon class="bolded-icon">manage_search</mat-icon>
+                <button
+                  mat-icon-button
+                  *ngSwitchCase="'PRUEFEN_DV'"
+                  [matTooltip]="tooltips['PRUEFEN_DV']"
+                >
+                  <i class="mdi mdi-layers-search action-mdi-icon" aria-hidden="true"></i>
                 </button>
-                <button mat-icon-button *ngSwitchCase="'FREIGEGEBEN'">
-                  <mat-icon>check</mat-icon>
+                <button
+                  mat-icon-button
+                  *ngSwitchCase="'FREIGEGEBEN'"
+                  [matTooltip]="tooltips['FREIGEGEBEN']"
+                >
+                  <i class="mdi mdi-check action-mdi-icon" aria-hidden="true"></i>
                 </button>
               </ng-container>
             </td>
           </ng-container>
-  
+
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
           <tr
             mat-row
@@ -281,7 +158,7 @@
           ></tr>
         </table>
       </div>
-  
+
       <div class="right-container">
         <div *ngIf="selectedEntry" class="detail-view">
           <ng-container *ngIf="!isEditMode">
@@ -293,38 +170,38 @@
               <table mat-table [dataSource]="detailedData" class="detail-table">
                 <!-- Datum Column -->
                 <ng-container matColumnDef="Datum">
-                  <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('datum')">
+                  <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Datum')">
                     <div class="sort-header">
                       Datum
-                      <mat-icon class="sort-icon">{{ getDetailSortIcon("Datum") }}</mat-icon>
+                      <span class="mdi sort-icon" [ngClass]="getDetailSortIcon('Datum')" *ngIf="activeDetailSortColumn === 'Datum'"></span>
                     </div>
                   </th>
            <!--       <td mat-cell *matCellDef="let element">{{ element.Datum }}</td> -->
                   <td mat-cell *matCellDef="let element">{{ formatDate(element.datum)   }}</td>
 
                 </ng-container>
-  
+
                 <!-- Buchungspunkt Column -->
                 <ng-container matColumnDef="Buchungspunkt">
                   <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Buchungspunkt')">
                     <div class="sort-header">
                       Buchungspunkt
-                      <mat-icon class="sort-icon">{{ getDetailSortIcon("Buchungspunkt") }}</mat-icon>
+                      <span class="mdi sort-icon" [ngClass]="getDetailSortIcon('Buchungspunkt')" *ngIf="activeDetailSortColumn === 'Buchungspunkt'"></span>
                     </div>
                   </th>
                   <td mat-cell *matCellDef="let element">
-                    
+
                     {{ element.buchungspunkt.buchungspunkt
                     }}
                   </td>
                 </ng-container>
-  
+
                 <!-- Tatigkeit Column -->
                 <ng-container matColumnDef="Tatigkeit">
                   <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Tatigkeit')">
                     <div class="sort-header">
                       Tätigkeit
-                      <mat-icon class="sort-icon">{{ getDetailSortIcon("Tatigkeit") }}</mat-icon>
+                      <span class="mdi sort-icon" [ngClass]="getDetailSortIcon('Tatigkeit')" *ngIf="activeDetailSortColumn === 'Tatigkeit'"></span>
                     </div>
                   </th>
                   <td mat-cell *matCellDef="let element">
@@ -332,20 +209,19 @@
                     }}
                   </td>
                 </ng-container>
-  
-                <!-- Stunden Column -->
+
+                <!-- Stunden Column (sorting disabled per request) -->
                 <ng-container matColumnDef="Stunden">
-                  <th mat-header-cell *matHeaderCellDef (click)="toggleDetailSort('Stunden')">
-                    <div class="sort-header">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <div class="sort-header no-sort">
                       Std.
-                      <mat-icon class="sort-icon">{{ getDetailSortIcon("Stunden") }}</mat-icon>
                     </div>
                   </th>
                   <td mat-cell *matCellDef="let element">
                      {{ formatMinutesToHoursMinutes(element.minutenDauer) }}
                   </td>
                 </ng-container>
-  
+
                 <tr mat-header-row *matHeaderRowDef="detailDisplayedColumns; sticky: true"></tr>
                 <tr
                   mat-row
@@ -353,7 +229,7 @@
                 ></tr>
               </table>
             </div>
-  
+
             <!-- Loading/No data messages for original view -->
             <div *ngIf="selectedEntry && isLoading" class="placeholder-content">
               <p>Lade Detaildaten...</p>
