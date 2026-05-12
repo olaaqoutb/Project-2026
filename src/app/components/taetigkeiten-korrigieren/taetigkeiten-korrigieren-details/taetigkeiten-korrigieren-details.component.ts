@@ -876,7 +876,7 @@ export class TaetigkeitenKorrigierenDetailsComponent {
     return false;
   }
 
-  validateTime(timeType: 'anmeldezeit' | 'abmeldezeit'): void {
+  validateTime(timeType: 'anmeldezeit' | 'abmeldezeit' | 'duration'): void {
     this.timeUtilityService.validateTime(this.taetigkeitForm, timeType);
   }
 
