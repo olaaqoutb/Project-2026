@@ -59,6 +59,7 @@ $tablet: 900px;
   .mat-table {
     width: 100%;
     min-width: 600px;
+    table-layout: fixed;
   }
 
   ::ng-deep .mat-mdc-header-cell {
@@ -111,9 +112,17 @@ $tablet: 900px;
   animation: fadeIn 0.5s ease-in;
 }
 
-.sort-arrow {
-  position: relative;
-  top: 8px;
+.sort-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-icon {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .list-row {
@@ -123,6 +132,29 @@ $tablet: 900px;
   &:hover {
     background-color: #f5f5f5;
   }
+
+  &.selected-row,
+  &.selected-row:hover {
+    background-color: #e3f2fd !important;
+  }
+
+  &.selected-row td.mat-mdc-cell {
+    background-color: #e3f2fd !important;
+  }
+}
+
+.mat-mdc-row.active-row {
+  color: #15803d !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-row.inactive-row {
+  color: #b91c1c !important;
+  opacity: 1 !important;
+}
+
+.active-row {
+  color: #15803d !important;
 }
 
 .inactive-row {
@@ -130,10 +162,62 @@ $tablet: 900px;
 }
 
 .check-icon {
-  padding-right: 75px;
   color: green;
 }
 
+.status-icon {
+  font-size: 20px;
+  line-height: 1;
+
+  &.status-icon-active {
+    color: green;
+  }
+
+  &.status-icon-inactive {
+    color: #b91c1c;
+  }
+}
+
 .first-column {
-  width: 30px !important;
+  width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
+}
+
+/* Fixed column widths — same pattern as vertrag-list-2. Prevents layout
+   shift when sorting changes which row has the longest text per column. */
+::ng-deep .table-container table {
+  th.mat-column-icon,
+  td.mat-column-icon {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+  }
+  th.mat-column-nachname,
+  td.mat-column-nachname {
+    width: 20% !important;
+    min-width: 20% !important;
+    max-width: 20% !important;
+  }
+  th.mat-column-vorname,
+  td.mat-column-vorname {
+    width: 30% !important;
+    min-width: 30% !important;
+    max-width: 30% !important;
+  }
+  th.mat-column-mitarbeiterart,
+  td.mat-column-mitarbeiterart {
+    width: calc(35% - 40px) !important;
+  }
+
+  td.mat-column-nachname,
+  td.mat-column-vorname,
+  td.mat-column-mitarbeiterart {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.checkbox-label{
+  color: white;
 }

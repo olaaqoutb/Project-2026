@@ -1,9 +1,19 @@
 <div class="form-header" *ngIf="showHeader">
-  <button mat-button class="header-btn" (click)="onLeftHeaderClick()">
-    <mat-icon [class.delete-icon]="!isEditing && !isCreatingNew && !isNewlyCreated">
-      {{ isEditing || isCreatingNew || isNewlyCreated ? 'close' : 'delete' }}
-    </mat-icon>
-    <span>{{ isEditing || isCreatingNew || isNewlyCreated ? 'Abbrechen' : 'Löschen' }}</span>
+  <button
+    mat-button
+    (click)="onLeftHeaderClick()"
+    class="header-btn"
+    [class.btn-loeschen]="!isEditing && !isCreatingNew && !isNewlyCreated"
+    [matTooltip]="leftButtonTooltip"
+    matTooltipPosition="below"
+  >
+    <i
+      class="mdi mdi-20px"
+      [class.mdi-close]="isEditing || isCreatingNew || isNewlyCreated"
+      [class.mdi-delete-forever]="!isEditing && !isCreatingNew && !isNewlyCreated"
+      aria-hidden="true"
+    ></i>
+    <span>{{ leftButtonTooltip }}</span>
   </button>
 
   <h2 class="right-header">{{ title }}</h2>
@@ -13,9 +23,11 @@
     *ngIf="isNewlyCreated || isCreatingNew"
     (click)="save.emit()"
     class="header-btn primary"
+    [matTooltip]="tooltips.speichern"
+    matTooltipPosition="below"
   >
-    <mat-icon>check</mat-icon>
-    <span>Speichern</span>
+    <i class="mdi mdi-check" aria-hidden="true"></i>
+    <span>{{ tooltips.speichern }}</span>
   </button>
 
   <button
@@ -24,15 +36,16 @@
     (click)="onEditOrSave()"
     class="header-btn"
     [class.primary]="isEditing"
+    [matTooltip]="editSaveTooltip"
+    matTooltipPosition="below"
   >
-    <ng-container *ngIf="isEditing; else editIcon">
-      <mat-icon>check</mat-icon>
-      <span>Speichern</span>
-    </ng-container>
-    <ng-template #editIcon>
-      <i class="mdi mdi-lead-pencil"></i>
-      <span>Bearbeiten</span>
-    </ng-template>
+    <i
+      class="mdi mdi-20px"
+      [class.mdi-check]="isEditing"
+      [class.mdi-lead-pencil]="!isEditing"
+      aria-hidden="true"
+    ></i>
+    <span>{{ editSaveTooltip }}</span>
   </button>
 </div>
 
@@ -119,7 +132,7 @@
     </mat-form-field>
   </div>
 
-  <div class="form-field-group">
+  <div class="form-field-group" *ngIf="showDatum">
     <label class="field-label">Datum</label>
     <mat-form-field appearance="outline" class="field-input date-field"
       [class.field-empty]="isFieldEmpty('datum') && saveAttempted">
@@ -145,7 +158,37 @@
     </mat-form-field>
   </div>
 
-  <div class="time-section"
+  <!-- Duration mode: shown when showDuration is true (alarm new-booking, non-remote) -->
+  <div class="time-section" *ngIf="showDuration"
+    [class.time-section-locked]="!canEditTimeSection"
+    [class.duration-empty]="isDauerEmpty && saveAttempted">
+    <div class="time-group">
+      <label class="time-label">Dauer [Stunden]</label>
+      <div class="time-inputs-horizontal">
+        <div class="time-column">
+          <app-taetigkeiten-time-box
+            [value]="formGroup.get('durationStunde')?.value || 0"
+            [max]="dauerStundenMax"
+            [disabled]="!canEditTimeSection"
+            (valueChange)="onDurationHourChange($event)"
+          />
+        </div>
+        <div class="time-column">
+          <div class="mint"><span class="time-unit">[Minuten]</span></div>
+          <app-taetigkeiten-time-box
+            [value]="formGroup.get('durationMinuten')?.value || 0"
+            [max]="59"
+            [step]="5"
+            [disabled]="!canEditTimeSection || (formGroup.get('durationStunde')?.value || 0) === dauerStundenMax"
+            (valueChange)="onDurationMinuteChange($event)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Anmelde/Abmelde mode: default behavior -->
+  <div class="time-section" *ngIf="!showDuration"
     [class.time-section-locked]="!canEditTimeSection"
     [class.time-section-empty]="isTimeEmpty && saveAttempted">
     <div class="time-group">

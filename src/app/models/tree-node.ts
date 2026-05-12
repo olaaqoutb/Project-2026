@@ -4,6 +4,7 @@ export interface TreeNode {
   name: string;
   level: number;
   expandable: boolean;
+  isExpanded?: boolean;
   year?: string;
   sollArbeitszeit?: string;
   saldo?: string;

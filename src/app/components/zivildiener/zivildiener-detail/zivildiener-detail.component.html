@@ -4,226 +4,141 @@
     <div class="left-panel">
       <div class="header">
         <div class="header-content">
-          <button class="icon-button" (click)="goBackToList()">
-            <mat-icon>arrow_back</mat-icon>
+          <button
+            class="icon-button"
+            (click)="goBackToList()"
+            matTooltip="Zurück"
+            matTooltipPosition="below"
+          >
+            <i class="mdi mdi-chevron-left mdi-24px" aria-hidden="true"></i>
           </button>
           <h2 class="header-title">Arbeitszeiten - {{ personName }}</h2>
           <button
-
             class="icon-button"
             (click)="addNewStempelzeit()"
+            matTooltip="Neue Stempelzeit"
+            matTooltipPosition="below"
           >
-            <mat-icon>alarm</mat-icon>
+            <i class="mdi mdi-alarm mdi-24px" aria-hidden="true"></i>
           </button>
         </div>
       </div>
 
-      <!-- NESTED TREE STRUCTURE -->
-      <mat-tree
-        [dataSource]="dataSource"
-        [treeControl]="treeControl"
-        class="tree"
-      >
-        <mat-nested-tree-node *matTreeNodeDef="let node">
-          <div [ngSwitch]="node.level" (click)="onNodeClick(node)">
-            <!-- MONTH LEVEL (0) -->
-            <div
-              *ngSwitchCase="0"
-              class="node-content month-node"
-              [class.selected-month]="selectedMonth === node.name"
-            >
-              <div class="tree-node-header">
-                <button
+      <!-- VERTRAGE-STYLE RECURSIVE TREE -->
+      <!-- Plain array bound to a recursive *ngTemplateOutlet. Direct
+           mutations on treeData re-render automatically — no MatTree. -->
+      <div class="tree">
+        <ng-container
+          *ngTemplateOutlet="renderTreeNode; context: { $implicit: treeData }"
+        ></ng-container>
 
-                  matTreeNodeToggle
-                  [attr.aria-label]="'toggle ' + node.name"
-                  (click)="$event.stopPropagation()"
-                >
-                  <mat-icon class="mat-icon-rtl-mirror">
-                    {{
-                      treeControl.isExpanded(node)
-                        ? "expand_more"
-                        : "chevron_right"
-                    }}
-                  </mat-icon>
-                </button>
-                <div class="row">
-                  <div class="month-header">
-                    <mat-icon class="month-icon">calendar_month</mat-icon>
-                    <span class="month-name">{{ node.name }}</span>
-                  </div>
+        <ng-template #renderTreeNode let-nodes>
+          <ng-container *ngFor="let node of nodes; trackBy: trackTreeNode">
+            <div [ngSwitch]="node.level"
+                 (click)="onNodeClick(node)"
+                 (dblclick)="onNodeDblClick(node, $event)">
 
-                  <div class="month-details">
-                    <div class="zivild-first-line">
-                      <div class="detail-row">
-                        <mat-icon class="detail-icon2">drag_indicator</mat-icon>
-                        <span
-                          class="detail-label"
-                          [style.color]="getArbeitszeitLabelColor(node.arbeitszeit)"
-                          [style.font-weight]="getValueFontWeight(node.arbeitszeit)"
-                        >
-                      Arbeitszeit:
-                    </span>
-                        <span
-                          class="detail-value arbeitszeit-value"
-                          [style.color]="getArbeitszeitValueColor(node.arbeitszeit)"
-                          [style.font-weight]="getValueFontWeight(node.arbeitszeit)"
-                        >
-                      {{ node.arbeitszeit || "00:00" }}
-                    </span>
-                      </div>
-
-                      <div class="detail-row">
-                        <span class="detail-label">Soll-Arbeitszeit:</span>
-                        <span class="detail-value">{{
-                            node.sollArbeitszeit || "00:00"
-                          }}</span>
-                      </div>
-
-                      <div class="detail-row">
-                    <span
-                      class="detail-label"
-                      [style.color]="getSaldoColorValue(node.saldo)"
-                      [style.font-weight]="getValueFontWeight(node.saldo)"
-                    >
-                      Saldo:
-                    </span>
-                        <span
-                          class="detail-value saldo-value"
-                          [style.color]="getSaldoColorValue(node.saldo)"
-                          [style.font-weight]="getValueFontWeight(node.saldo)"
-                        >
-                      {{ node.saldo || "00:00" }}
-                    </span>
-                      </div>
+              <!-- MONTH LEVEL (0) -->
+              <div *ngSwitchCase="0"
+                   class="node-content month-node"
+                   [class.selected-month]="selectedMonth === node.name">
+                <div class="tree-node-header">
+                  <div class="row">
+                    <div class="month-header">
+                      <i class="mdi mdi-calendar-multiple month-icon" aria-hidden="true"></i>
+                      <span class="month-name">{{ node.name }}</span>
                     </div>
-                    <div class="zivild-second-line">
-                      <div class="detail-row">
-                      <span
-                        class="detail-label"
-                        [style.color]="getUrlaubstageColor(node.urlaubstage)"
-                        [style.font-weight]="
-                          getValueFontWeight(node.urlaubstage)
-                        "
-                      >
-                        Urlaubstage:
-                      </span>
-                        <span
-                          class="detail-value"
-                          [style.color]="getUrlaubstageColor(node.urlaubstage)"
-                          [style.font-weight]="
-                          getValueFontWeight(node.urlaubstage)
-                        "
-                        >
-                        {{ node.urlaubstage || "0" }}
-                      </span>
+                    <div class="month-details">
+                      <div class="zivild-first-line">
+                        <div class="detail-row detail-row-arbeitszeit">
+                          <i class="mdi mdi-file-tree detail-icon2" aria-hidden="true"></i>
+                          <span class="detail-label arbeitszeit-label">Arbeitszeit:</span>
+                          <span class="detail-value arbeitszeit-value arbeitszeit-value-level1">
+                            {{ node.arbeitszeit || "00:00" }}
+                          </span>
+                        </div>
+                        <div class="detail-row detail-row-soll">
+                          <span class="detail-label">Soll-Arbeitszeit:</span>
+                          <span class="detail-value">{{ node.sollArbeitszeit || "00:00" }}</span>
+                        </div>
+                        <div class="detail-row detail-row-saldo">
+                          <span class="detail-label" [style.color]="getSaldoColorValue(node.saldo)">Saldo:</span>
+                          <span class="detail-value saldo-value" [style.color]="getSaldoColorValue(node.saldo)">
+                            {{ node.saldo || "00:00" }}
+                          </span>
+                        </div>
                       </div>
-
-                      <div class="detail-row" *ngIf="node.urlaub">
-                      <span
-                        class="detail-label"
-                        [style.color]="getUrlaubColor(node.urlaub)"
-                        [style.font-weight]="getValueFontWeight(node.urlaub)"
-                      >
-                        Urlaub:
-                      </span>
-                        <span
-                          class="detail-value"
-                          [style.color]="getUrlaubColor(node.urlaub)"
-                          [style.font-weight]="getValueFontWeight(node.urlaub)"
-                        >
-                        {{ node.urlaub }}
-                      </span>
+                      <div class="zivild-second-line">
+                        <div class="detail-row detail-row-urlaubstage">
+                          <span class="detail-label"
+                                [style.color]="getUrlaubstageColor(node.urlaubstage)"
+                                [style.font-weight]="getValueFontWeight(node.urlaubstage)">Urlaubstage:</span>
+                          <span class="detail-value"
+                                [style.color]="getUrlaubstageColor(node.urlaubstage)"
+                                [style.font-weight]="getValueFontWeight(node.urlaubstage)">
+                            {{ node.urlaubstage || "0" }}
+                          </span>
+                        </div>
+                        <div class="detail-row detail-row-urlaub" *ngIf="node.urlaub">
+                          <span class="detail-label"
+                                [style.color]="getUrlaubColor(node.urlaub)"
+                                [style.font-weight]="getValueFontWeight(node.urlaub)">Urlaub:</span>
+                          <span class="detail-value"
+                                [style.color]="getUrlaubColor(node.urlaub)"
+                                [style.font-weight]="getValueFontWeight(node.urlaub)">
+                            {{ node.urlaub }}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- DAY LEVEL (1) -->
-            <div
-              *ngSwitchCase="1"
-              class="node-content day-node"
-              [class.selected-day]="selectedDayNode === node"
-            >
-              <div class="tree-node-header">
-                <button
-                  [attr.aria-label]="'toggle ' + node.name"
-                  (click)="onDayToggle(node, $event)"
-                  class="day-button-toggle"
-                >
-                  <mat-icon class="icon-level1">
-                    {{
-                      treeControl.isExpanded(node)
-                        ? "expand_more"
-                        : "chevron_right"
-                    }}
-                  </mat-icon>
-                </button>
-
-                <div class="detail-line">
-                  <mat-icon class="event-icon">event</mat-icon>
-                  <span class="day-of-week"
-                  >{{ getDayOfWeekFromNode(node) }}.</span
-                  >
-                  <span class="date-display">{{
-                      getDateDisplayFromNode(node)
-                    }}</span>
-                  <span
-                    class="type-time-display arbeitszeit-value"
-                    [style.color]="
-                      isPositive(node.arbeitszeit)
-                        ? 'green'
-                        : isNegative(node.arbeitszeit)
-                        ? 'red'
-                        : 'purple'
-                    "
-                  >
-                    {{ getTypeDisplay(node.zeitTyp || "") }}:
-                    {{ node.arbeitszeit }}
-                  </span>
-                  <button
-                    class="icon-button"
-                    id="alarm-icon"
-                    (click)="
-                      addNewStempelzeitForDay(node); $event.stopPropagation()
-                    "
-                  >
-                    <mat-icon>alarm</mat-icon>
-                  </button>
+              <!-- DAY LEVEL (1) -->
+              <div *ngSwitchCase="1"
+                   class="node-content day-node"
+                   [class.selected-day]="selectedDayNode === node">
+                <div class="tree-node-header">
+                  <div class="detail-line">
+                    <i class="mdi mdi-calendar-plus event-icon" aria-hidden="true"></i>
+                    <span class="day-of-week">{{ getDayOfWeekFromNode(node) }}.</span>
+                    <span class="date-display">{{ getDateDisplayFromNode(node) }}</span>
+                    <span class="type-time-display">
+                      <span class="day-type-label">{{ getTypeDisplay(node.zeitTyp || "") }}:</span>
+                      <span class="day-type-value arbeitszeit-value">{{ node.arbeitszeit }}</span>
+                    </span>
+                    <button class="icon-button" id="alarm-icon"
+                            (click)="addNewStempelzeitForDay(node); $event.stopPropagation()"
+                            matTooltip="Neue Stempelzeit"
+                            matTooltipPosition="below">
+                      <i class="mdi mdi-alarm mdi-24px" aria-hidden="true"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!-- STEMPELZEIT LEVEL (2) -->
-            <div
-              *ngSwitchCase="2"
-              class="stempelzeit-line"
-              [class.selected]="selectedStempelzeitNode === node"
-            >
-              <span class="stempelzeit-range">{{ node.name }}</span>
-              <span class="stempelzeit-type">{{
-                  getTypeDisplay(node.zeitTyp || "")
-                }}</span>
 
-              <span
-                *ngIf="node.stempelzeit?.anmerkung"
-                class="stempelzeit-anmerkung"
-              >
-                [{{ node.stempelzeit.anmerkung }}]
-              </span>
+              <!-- STEMPELZEIT LEVEL (2) -->
+              <div *ngSwitchCase="2"
+                   class="stempelzeit-line"
+                   [class.selected]="selectedStempelzeitNode === node">
+                <span class="stempelzeit-range">{{ node.name }}</span>
+                <span class="stempelzeit-type">{{ getTypeDisplay(node.zeitTyp || "") }}</span>
+                <span *ngIf="node.stempelzeit?.anmerkung" class="stempelzeit-anmerkung">
+                  [{{ node.stempelzeit.anmerkung }}]
+                </span>
+              </div>
             </div>
-          </div>
 
-          <!-- CHILDREN CONTAINER -->
-          <div
-            *ngIf="node.level !== 2 && treeControl.isExpanded(node)"
-            class="tree-node-children"
-          >
-            <ng-container matTreeNodeOutlet></ng-container>
-          </div>
-        </mat-nested-tree-node>
-      </mat-tree>
+            <!-- RECURSE INTO CHILDREN — only when this node is expanded -->
+            <div *ngIf="node.isExpanded && node.children?.length" class="tree-node-children">
+              <ng-container
+                *ngTemplateOutlet="renderTreeNode; context: { $implicit: node.children }"
+              ></ng-container>
+            </div>
+          </ng-container>
+        </ng-template>
+      </div>
     </div>
 
     <!-- Right Panel - Table or Form -->
@@ -234,9 +149,18 @@
       >
         <div class="header">
           <div class="header-right">
-            <button class="icon-button">
-              <mat-icon>menu</mat-icon>
+            <button class="icon-button"
+                    [matMenuTriggerFor]="monthMenu"
+                    matTooltip="Optionen"
+                    matTooltipPosition="below">
+              <i class="mdi mdi-menu mdi-24px" aria-hidden="true"></i>
             </button>
+            <mat-menu #monthMenu="matMenu" class="month-menu-panel option-menu">
+              <button mat-menu-item (click)="printMonthOverview()">
+                <i class="mdi mdi-file mdi-24px menu-mdi-icon" aria-hidden="true"></i>
+                <span>Druck-Monatsübersicht</span>
+              </button>
+            </mat-menu>
             <h2 class="header-title month-name">{{ selectedMonth }}</h2>
             <span></span>
           </div>
@@ -254,6 +178,7 @@
               >
                 {{ getTypeDisplay(entry.zeitTyp) }}
               </td>
+              <td mat-footer-cell *matFooterCellDef class="summe-cell">Summe</td>
             </ng-container>
 
             <ng-container matColumnDef="space">
@@ -265,6 +190,7 @@
               >
                 {{ getWeek(entry) }}
               </td>
+              <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
 
             <ng-container matColumnDef="datum">
@@ -277,6 +203,7 @@
 
                 {{ getFormattedDate(entry.login) }}
               </td>
+              <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
 
             <ng-container matColumnDef="uhrzeit">
@@ -289,6 +216,7 @@
                 {{ getFormattedTime(entry.login) }} -
                 {{ getFormattedTime(entry.logoff) }}
               </td>
+              <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
 
             <ng-container matColumnDef="stunden">
@@ -299,6 +227,9 @@
                 [class]="getRowBackgroundClass(entry.zeitTyp)"
               >
                 {{ calculateHours(entry.login, entry.logoff) }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="summe-value-cell">
+                {{ getTotalStunden() }}
               </td>
             </ng-container>
 
@@ -318,6 +249,14 @@
                   {{ calculateSaldo(entry) }}
                 </span>
               </td>
+              <td mat-footer-cell *matFooterCellDef class="summe-value-cell">
+                <span
+                  [style.color]="getSaldoColorValue(getTotalSaldo())"
+                  [style.font-weight]="getSaldoFontWeight(getTotalSaldo())"
+                >
+                  {{ getTotalSaldo() }}
+                </span>
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="anmerkung">
@@ -327,12 +266,16 @@
                 *matCellDef="let entry"
                 [class]="getRowBackgroundClass(entry.zeitTyp)"
               >
-                {{ entry.anmerkung || "-" }}
+                <ng-container *ngIf="entry.anmerkung">
+                  [{{ entry.anmerkung }}]
+                </ng-container>
               </td>
+              <td mat-footer-cell *matFooterCellDef></td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-footer-row *matFooterRowDef="displayedColumns" class="table-summe-row"></tr>
           </table>
         </div>
       </div>
@@ -348,28 +291,29 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="group-one">
-            <label>Arbeitszeit [std:min]:</label>
+        <div class="form-field-group">
+          <label class="field-label">Arbeitszeit [std:min]</label>
+          <mat-form-field appearance="outline" class="field-input">
             <input
+              matInput
               type="text"
-              class="form-control"
               [value]="selectedDayNode.arbeitszeit || '00:00'"
               readonly
             />
-          </div>
+          </mat-form-field>
+        </div>
 
-          <div class="group-two">
-            <label>Stempelzeiten:</label>
+        <div class="form-field-group">
+          <label class="field-label">Stempelzeiten</label>
+          <mat-form-field appearance="outline" class="field-input">
             <textarea
+              matInput
               name="stempelzeiten"
               id="stempelzeiten"
-              class="form-control"
               rows="3"
               readonly
-            >{{ getDayStempelzeitenText(selectedDayNode) }}</textarea
-            >
-          </div>
+            >{{ getDayStempelzeitenText(selectedDayNode) }}</textarea>
+          </mat-form-field>
         </div>
       </div>
 
@@ -380,6 +324,7 @@
           <button
             mat-button
             class="header-btn"
+            [class.btn-loeschen]="!isCreatingNew && !isEditing"
             [disabled]="!selectedStempelzeitNode"
             (click)="
               isCreatingNew
@@ -388,10 +333,15 @@
                 ? cancelFormChanges()
                 : deleteStempelzeit()
             "
+            [matTooltip]="isCreatingNew || isEditing ? 'Abbrechen' : 'Löschen'"
+            matTooltipPosition="below"
           >
-            <mat-icon class="{{ isEditing ? '' : 'delete-icon' }}">
-              {{ isCreatingNew || isEditing ? "close" : "delete" }}
-            </mat-icon>
+            <i
+              class="mdi mdi-24px"
+              [class.mdi-close]="isCreatingNew || isEditing"
+              [class.mdi-delete-forever]="!isCreatingNew && !isEditing"
+              aria-hidden="true"
+            ></i>
             <span>
               {{ isCreatingNew || isEditing ? "Abbrechen" : "Löschen" }}
             </span>
@@ -414,10 +364,15 @@
             class="header-btn"
             [class.primary]="isEditing || isCreatingNew"
             [disabled]="!selectedStempelzeitNode && !isCreatingNew"
+            [matTooltip]="isCreatingNew || isEditing ? 'Speichern' : 'Bearbeiten'"
+            matTooltipPosition="below"
           >
-            <mat-icon>
-              {{ isCreatingNew ? "check" : isEditing ? "check" : "edit" }}
-            </mat-icon>
+            <i
+              class="mdi mdi-24px"
+              [class.mdi-check]="isCreatingNew || isEditing"
+              [class.mdi-lead-pencil]="!isCreatingNew && !isEditing"
+              aria-hidden="true"
+            ></i>
             <span>
               {{
                 isCreatingNew
@@ -445,7 +400,7 @@
                 [disabled]="!isEditing && !isCreatingNew"
                 (selectionChange)="onZeittypChange($event)"
                 (closed)="onDropdownClosed()"
-                panelClass="zeittyp-panel"
+                panelClass="zivildiener-drop-down"
               >
                 <mat-option
                   *ngFor="let zeittyp of ZeittypDrop"
@@ -459,14 +414,21 @@
           <!-- Datum Field -->
           <div class="form-field-group">
             <label class="field-label">Datum</label>
-            <mat-form-field appearance="outline" class="field-input">
+            <mat-form-field appearance="outline" class="field-input date-field">
               <input
                 matInput
+                [matDatepicker]="datumPicker"
                 formControlName="datum"
                 [readonly]="!isEditing && !isCreatingNew"
+                [disabled]="!isEditing && !isCreatingNew"
                 class="datum"
-
               />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="datumPicker"
+                [disabled]="!isEditing && !isCreatingNew"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #datumPicker panelClass="zivildiener-date-panel"></mat-datepicker>
             </mat-form-field>
           </div>
 
@@ -478,41 +440,16 @@
               <div class="time-inputs-horizontal">
                 <!-- Stunde -->
                 <div class="time-column">
-                  <div class="time-box">
-                    <button
-                      type="button"
-                      class="time-btn minus dash"
-                      (click)="decreaseHour('anmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getHour('anmeldezeit') <= 0
-                      "
-                    >
-                      <mat-icon>remove</mat-icon>
-                    </button>
-                    <div class="time-value">
-                      <input
-                        type="number"
-                        formControlName="anmeldezeitStunde"
-                        min="0"
-                        max="24"
-                        [readonly]="!isEditing && !isCreatingNew"
-                        class="time-input"
-                        (change)="validateTime('anmeldezeit')"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      class="time-btn plus dash"
-                      (click)="increaseHour('anmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getHour('anmeldezeit') >= 24
-                      "
-                    >
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </div>
+                  <app-time-box
+                    field="anmeldezeitStunde"
+                    [value]="stempelzeitForm.get('anmeldezeitStunde')?.value || 0"
+                    [max]="24"
+                    [disabled]="!isEditing && !isCreatingNew"
+                    (valueChange)="
+                      stempelzeitForm.get('anmeldezeitStunde')?.patchValue($event);
+                      validateTime('anmeldezeit')
+                    "
+                  />
                 </div>
 
                 <!-- Minuten -->
@@ -520,43 +457,19 @@
                   <div class="mint">
                     <span class="time-unit">[Minuten]</span>
                   </div>
-                  <div class="time-box">
-                    <button
-                      type="button"
-                      class="time-btn minus dash"
-                      (click)="decreaseMinute('anmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getMinute('anmeldezeit') <= 0 ||
-                        getHour('anmeldezeit') === 24
-                      "
-                    >
-                      <mat-icon>remove</mat-icon>
-                    </button>
-                    <div class="time-value">
-                      <input
-                        type="number"
-                        formControlName="anmeldezeitMinuten"
-                        min="0"
-                        max="59"
-                        [readonly]="!isEditing && !isCreatingNew"
-                        class="time-input"
-                        (change)="validateTime('anmeldezeit')"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      class="time-btn plus dash"
-                      (click)="increaseMinute('anmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getMinute('anmeldezeit') >= 59 ||
-                        getHour('anmeldezeit') === 24
-                      "
-                    >
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </div>
+                  <app-time-box
+                    field="anmeldezeitMinuten"
+                    [value]="stempelzeitForm.get('anmeldezeitMinuten')?.value || 0"
+                    [max]="59"
+                    [disabled]="
+                      (!isEditing && !isCreatingNew) ||
+                      stempelzeitForm.get('anmeldezeitStunde')?.value === 24
+                    "
+                    (valueChange)="
+                      stempelzeitForm.get('anmeldezeitMinuten')?.patchValue($event);
+                      validateTime('anmeldezeit')
+                    "
+                  />
                 </div>
               </div>
             </div>
@@ -567,41 +480,16 @@
               <div class="time-inputs-horizontal">
                 <!-- Stunde -->
                 <div class="time-column">
-                  <div class="time-box">
-                    <button
-                      type="button"
-                      class="time-btn minus dash"
-                      (click)="decreaseHour('abmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getHour('abmeldezeit') <= 0
-                      "
-                    >
-                      <mat-icon>remove</mat-icon>
-                    </button>
-                    <div class="time-value">
-                      <input
-                        type="number"
-                        formControlName="abmeldezeitStunde"
-                        min="0"
-                        max="24"
-                        [readonly]="!isEditing && !isCreatingNew"
-                        class="time-input"
-                        (change)="validateTime('abmeldezeit')"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      class="time-btn plus dash"
-                      (click)="increaseHour('abmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getHour('abmeldezeit') >= 24
-                      "
-                    >
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </div>
+                  <app-time-box
+                    field="abmeldezeitStunde"
+                    [value]="stempelzeitForm.get('abmeldezeitStunde')?.value || 0"
+                    [max]="24"
+                    [disabled]="!isEditing && !isCreatingNew"
+                    (valueChange)="
+                      stempelzeitForm.get('abmeldezeitStunde')?.patchValue($event);
+                      validateTime('abmeldezeit')
+                    "
+                  />
                 </div>
 
                 <!-- Minuten -->
@@ -609,43 +497,19 @@
                   <div class="mint">
                     <span class="time-unit">[Minuten]</span>
                   </div>
-                  <div class="time-box">
-                    <button
-                      type="button"
-                      class="time-btn minus dash"
-                      (click)="decreaseMinute('abmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getMinute('abmeldezeit') <= 0 ||
-                        getHour('abmeldezeit') === 24
-                      "
-                    >
-                      <mat-icon>remove</mat-icon>
-                    </button>
-                    <div class="time-value">
-                      <input
-                        type="number"
-                        formControlName="abmeldezeitMinuten"
-                        min="0"
-                        max="59"
-                        [readonly]="!isEditing && !isCreatingNew"
-                        class="time-input"
-                        (change)="validateTime('abmeldezeit')"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      class="time-btn plus dash"
-                      (click)="increaseMinute('abmeldezeit')"
-                      [disabled]="
-                        (!isEditing && !isCreatingNew) ||
-                        getMinute('abmeldezeit') >= 59 ||
-                        getHour('abmeldezeit') === 24
-                      "
-                    >
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </div>
+                  <app-time-box
+                    field="abmeldezeitMinuten"
+                    [value]="stempelzeitForm.get('abmeldezeitMinuten')?.value || 0"
+                    [max]="59"
+                    [disabled]="
+                      (!isEditing && !isCreatingNew) ||
+                      stempelzeitForm.get('abmeldezeitStunde')?.value === 24
+                    "
+                    (valueChange)="
+                      stempelzeitForm.get('abmeldezeitMinuten')?.patchValue($event);
+                      validateTime('abmeldezeit')
+                    "
+                  />
                 </div>
               </div>
             </div>
@@ -654,14 +518,16 @@
           <!-- Anmerkung Field -->
           <div class="form-field-group">
             <label class="field-label">Anmerkung</label>
-            <mat-form-field appearance="outline" class="field-input full-width">
-              <textarea
+            <mat-form-field appearance="outline" class="field-input">
+              <input
                 matInput
+                type="text"
                 formControlName="anmerkung"
-                rows="3"
-                [attr.readonly]="!isEditing && !isCreatingNew ? true : null"
+                maxlength="30"
+                [readonly]="!isEditing && !isCreatingNew"
                 placeholder="Anmerkung eingeben..."
-              ></textarea>
+                class="border"
+              />
             </mat-form-field>
           </div>
         </form>

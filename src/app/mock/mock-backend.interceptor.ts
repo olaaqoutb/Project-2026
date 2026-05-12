@@ -155,7 +155,24 @@ export class MockBackendInterceptor implements HttpInterceptor {
     const stempelzeitenByPersonMatch = endpoint.match(/^personen\/([^/]+)\/stempelzeiten$/);
     if (stempelzeitenByPersonMatch && m === 'GET') {
       const pid = stempelzeitenByPersonMatch[1];
-      return MOCK_STEMPELZEITEN.filter(s => s.person?.id === pid);
+      const direct = MOCK_STEMPELZEITEN.filter(s => s.person?.id === pid);
+      if (direct.length > 0) return direct;
+
+      // Fallback: synthesize a deterministic slice for persons with no
+      // dedicated entries so every zivildiener row shows data.
+      const person = MOCK_PERSONEN.find(p => p.id === pid);
+      if (!person) return [];
+      let seed = 0;
+      for (let i = 0; i < pid.length; i++) seed = (seed * 31 + pid.charCodeAt(i)) >>> 0;
+      const total = MOCK_STEMPELZEITEN.length;
+      const count = 5 + (seed % 8); // 5..12 rows
+      const start = seed % total;
+      const slice: any[] = [];
+      for (let i = 0; i < count; i++) {
+        const src = MOCK_STEMPELZEITEN[(start + i) % total];
+        slice.push({ ...src, id: `${src.id}-${pid}`, person });
+      }
+      return slice;
     }
     if (endpoint.match(/^personen\/[^/]+\/abwesenheiten$/) && m === 'GET') {
       return MOCK_STEMPELZEITEN.filter(

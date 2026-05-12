@@ -1,7 +1,6 @@
 import { Component, Injectable, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -13,24 +12,53 @@ import { CommonModule, Time } from '@angular/common';
 import { ZivildienerService } from '../../../services/zivildiener.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { GetitRestService } from '../../../services/getit-rest.service';
 import { ApiStempelzeit } from '../../../models/ApiStempelzeit';
 import { ApiZeitTyp } from '../../../models/ApiZeitTyp';
  import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatOption } from "@angular/material/core";
+import { MatOption, MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, NativeDateAdapter, MAT_DATE_FORMATS, MatDateFormats } from "@angular/material/core";
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 //import { StempelzeitService } from '../../../services/stempelzeit.service';
 import { TreeNode } from '../../../models/tree-node';
 import { FormDataStempelzeit } from '../../../models/form-data-stempelzeit'; // '../../../models/Form-data-stempelzeit';
 //import { ConfirmationDialogComponent } from '../../stempelzeit/stempelzeit-details-2/confirmation-dialog.component';
 import { ApiPerson } from '../../../models/ApiPerson';
-import {StempelzeitService} from '../../../services/stempelzeit.service';
-import {ConfirmationDialogComponent} from '../../confirmation-dialog/confirmation-dialog/confirmation-dialog.component';
+import {ConfirmationDialogComponent} from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
+import {TimeBoxComponent} from '../../../shared/components/time-box/time-box.component';
+import {InfoDialogComponent} from '../../dialogs/info-dialog/info-dialog.component';
+import {ErrorDialogComponent} from '../../dialogs/error-dialog/error-dialog.component';
+import { StatusPanelService } from '../../../services/utils/status-panel-status.service';
+import { AppConstants } from '../../../models/app-constants';
 
+
+@Injectable()
+export class ZivildienerDateAdapter extends NativeDateAdapter {
+  override format(date: Date, displayFormat: Object): string {
+    if (displayFormat === 'dd.MM.yyyy') {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+    return super.format(date, displayFormat);
+  }
+}
+
+export const ZIVILDIENER_DATE_FORMATS: MatDateFormats = {
+  parse: { dateInput: 'dd.MM.yyyy' },
+  display: {
+    dateInput: 'dd.MM.yyyy',
+    monthYearLabel: 'MMMM yyyy',
+    dateA11yLabel: 'dd.MM.yyyy',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
 
 @Component({
   selector: 'app-zivildiener-detail',
@@ -43,16 +71,23 @@ import {ConfirmationDialogComponent} from '../../confirmation-dialog/confirmatio
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatOption,
     CommonModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    TimeBoxComponent
   ],
   providers: [
     { provide: 'BASE_URL', useValue: 'http://localhost:8080/api' },
       GetitRestService
     , ZivildienerService,
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    { provide: DateAdapter, useClass: ZivildienerDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: ZIVILDIENER_DATE_FORMATS }
    // StempelzeitService
   ],
   templateUrl: './zivildiener-detail.component.html',
@@ -79,18 +114,21 @@ export class ZivildienerDetailComponent {
   treeControl = new NestedTreeControl<TreeNode>(node => node.children);
   hasChild = (_: number, node: TreeNode) => !!node.children && node.children.length > 0;
   dataSource = new MatTreeNestedDataSource<TreeNode>();
+  // Vertrage-style tree: plain array bound to a recursive *ngTemplateOutlet.
+  // Direct mutations on this array re-render the tree automatically.
+  treeData: TreeNode[] = [];
   originalFormData: FormDataStempelzeit | undefined; // Use imported interface
   personName: string = '';
 
 
   constructor(
      private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-    private dataService: StempelzeitService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private router: Router,
+    private zivildienerService: ZivildienerService,
+    private statusPanelService: StatusPanelService,
 
   ) {
     this.dataSource.data = [];
@@ -111,17 +149,26 @@ export class ZivildienerDetailComponent {
 
 
   ngOnInit() {
-    const stored = sessionStorage.getItem('selectedPerson');
-    if (stored) {
-      this.selectedPerson = JSON.parse(stored) as ApiPerson;
-      console.log("Selected-Person", this.selectedPerson );
-      this.personName = `${this.selectedPerson.vorname} ${this.selectedPerson.nachname}`;
-
-    }
     this.route.paramMap.subscribe(params => {
       this.personId = params.get('id');
       if (this.personId) {
+        this.loadPerson(this.personId);
         this.loadData(this.personId);
+      }
+    });
+  }
+
+  private loadPerson(id: string): void {
+    this.zivildienerService.getZivildienerById(id).subscribe({
+      next: (response) => {
+        const person = response.body;
+        if (person) {
+          this.selectedPerson = person;
+          this.personName = `${person.vorname ?? ''} ${person.nachname ?? ''}`.trim();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading zivildiener:', error);
       }
     });
   }
@@ -215,10 +262,10 @@ export class ZivildienerDetailComponent {
 
   loadData(id: string) {
     this.isLoading = true;
-  //  console.log('Loading data with smart service for person:', id);
 
-    this.dataService.getStempelzeitenSmart(id).subscribe({
-      next: (stempelzeiten: ApiStempelzeit[]) => {
+    this.zivildienerService.getZivildienerStempelzeiten(id).subscribe({
+      next: (response) => {
+        const stempelzeiten: ApiStempelzeit[] = response.body ?? [];
      //   console.log('Smart service returned:', stempelzeiten.length, 'entries');
         this.isLoading = false;
 
@@ -238,8 +285,12 @@ export class ZivildienerDetailComponent {
             }
           }
           this.dataSource.data = treeData;
+          this.treeData = treeData;
 
           if (treeData.length > 0) {
+            // Expand the first month by default (both in MatTree and in our
+            // own isExpanded-based tree).
+            treeData[0].isExpanded = true;
             setTimeout(() => {
               if (treeData[0]) {
                 this.treeControl.expand(treeData[0]);
@@ -249,18 +300,47 @@ export class ZivildienerDetailComponent {
         } else {
           console.warn('No stempelzeiten found');
           this.dataSource.data = [];
-          this.snackBar.open('Keine Stempelzeiten gefunden', 'Schließen', { duration: 3000 });
+          this.treeData = [];
+          this.showWarningDialog('Keine Stempelzeiten gefunden');
         }
       },
       error: (error) => {
         console.error('Error loading data from both sources:', error);
         this.isLoading = false;
-        this.snackBar.open('Fehler beim Laden der Daten', 'Schließen', {
-          duration: 5000,
-          verticalPosition: 'top'
-        });
+        this.showErrorDialog('Fehler beim Laden der Daten');
         this.dataSource.data = [];
+        this.treeData = [];
       }
+    });
+  }
+
+  // Vertrage-style toggle for the recursive *ngTemplateOutlet tree.
+  toggleExpand(node: TreeNode, event?: Event) {
+    if (event) event.stopPropagation();
+    node.isExpanded = !node.isExpanded;
+  }
+
+  // ----- Dialog-based notifications (replaces MatSnackBar) -----
+  private showInfoDialog(detail: string, title: string = 'Erfolgreich'): void {
+    this.dialog.open(InfoDialogComponent, {
+      data: { title, detail },
+      panelClass: 'custom-dialog-width'
+    });
+  }
+
+  private showErrorDialog(detail: string, title: string = 'Fehler'): void {
+    this.dialog.open(ErrorDialogComponent, {
+      data: { title, detail },
+      panelClass: 'custom-dialog-width'
+    });
+  }
+
+  private showWarningDialog(detail: string, title: string = 'Hinweis'): void {
+    // No dedicated warning dialog in this project — reuse the info dialog
+    // with a different title, same shape as vertrage uses for advisory msgs.
+    this.dialog.open(InfoDialogComponent, {
+      data: { title, detail },
+      panelClass: 'custom-dialog-width'
     });
   }
   private createDayNodes(stempelzeiten: ApiStempelzeit[]): TreeNode[] {
@@ -465,7 +545,7 @@ export class ZivildienerDetailComponent {
     console.log('Populating form with:', formData);
 
     this.stempelzeitForm.patchValue({
-      datum: formData.datum,
+      datum: this.parseDatumToDate(formData.datum),
       zeittyp: formData.zeittyp,
       anmeldezeitStunde: formData.anmeldezeit.stunde,
       anmeldezeitMinuten: formData.anmeldezeit.minuten,
@@ -478,6 +558,21 @@ export class ZivildienerDetailComponent {
     setTimeout(() => {
       this.updateFormControlsState();
     }, 0);
+  }
+
+  private parseDatumToDate(datum: string | Date | null | undefined): Date | null {
+    if (!datum) return new Date();
+    if (datum instanceof Date) return datum;
+    const parts = datum.split('.');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      return isNaN(d.getTime()) ? new Date() : d;
+    }
+    const parsed = new Date(datum);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
   }
   startEditing() {
     if (!this.selectedStempelzeitNode) return;
@@ -502,11 +597,12 @@ export class ZivildienerDetailComponent {
       this.stempelzeitForm.get('abmeldezeitStunde')?.enable();
       this.stempelzeitForm.get('abmeldezeitMinuten')?.enable();
       this.stempelzeitForm.get('anmerkung')?.enable();
+      this.stempelzeitForm.get('datum')?.enable();
 
       if (this.isCreatingNew) {
         this.stempelzeitForm.get('datum')?.enable();
       } else {
-        this.stempelzeitForm.get('datum')?.disable();
+        this.stempelzeitForm.get('datum')?.enable();
       }
     } else {
       this.stempelzeitForm.get('datum')?.disable();
@@ -612,30 +708,27 @@ export class ZivildienerDetailComponent {
       }, 0);
     }
   }
-  private parseGermanDate(dateString: string): Date | null {
-    if (!dateString || typeof dateString !== 'string') {
-      return null;
+  private parseGermanDate(dateValue: string | Date | null | undefined): Date | null {
+    if (!dateValue) return null;
+
+    // Datepicker now stores a Date object directly.
+    if (dateValue instanceof Date) {
+      return isNaN(dateValue.getTime()) ? null : dateValue;
     }
 
-    const parts = dateString.split('.');
-    if (parts.length !== 3) {
-      return null;
-    }
+    if (typeof dateValue !== 'string') return null;
+
+    const parts = dateValue.split('.');
+    if (parts.length !== 3) return null;
 
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; // Months are 0-based in JavaScript
     const year = parseInt(parts[2], 10);
 
-    if (isNaN(day) || isNaN(month) || isNaN(year)) {
-      return null;
-    }
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
 
     const date = new Date(year, month, day);
-    if (isNaN(date.getTime())) {
-      return null;
-    }
-
-    return date;
+    return isNaN(date.getTime()) ? null : date;
   }
   // NEW: Save stempelzeit using the service
   saveStempelzeit() {
@@ -661,26 +754,20 @@ export class ZivildienerDetailComponent {
       const selectedDate = this.parseGermanDate(formValue.datum);
       if (!selectedDate) {
         if (wasDatumDisabled) datumControl?.disable();
-        this.snackBar.open('Ungültiges Datumformat', 'Schließen', { duration: 3000, verticalPosition: 'top' });
+        this.showErrorDialog('Ungültiges Datumformat', 'Validierungsfehler');
         return;
       }
 
       // Validate time
       if (!this.isTimeValid(formValue)) {
         if (wasDatumDisabled) datumControl?.disable();
-        this.snackBar.open('Ungültige Zeitangaben: Abmeldezeit muss nach Anmeldezeit liegen', 'Schließen', {
-          duration: 5000,
-          verticalPosition: 'top'
-        });
+        this.showErrorDialog('Ungültige Zeitangaben: Abmeldezeit muss nach Anmeldezeit liegen', 'Validierungsfehler');
         return;
       }
       const validationResult = this.validateTimeEntryOverlap(formValue);
       if (!validationResult.isValid) {
         if (wasDatumDisabled) datumControl?.disable();
-        this.snackBar.open(validationResult.errorMessage || 'Ungültige Zeitangaben', 'Schließen', {
-          duration: 5000,
-          verticalPosition: 'top'
-        });
+        this.showErrorDialog(validationResult.errorMessage || 'Ungültige Zeitangaben', 'Validierungsfehler');
         return;
       }
 
@@ -695,11 +782,26 @@ export class ZivildienerDetailComponent {
 
       console.log('Saving stempelzeit:', stempelzeit);
 
-      this.dataService.saveStempelzeitSmart(stempelzeit, this.personId, this.isCreatingNew).subscribe({
-        next: (savedStempelzeit: ApiStempelzeit) => {
+      const stempelzeitIdForUpdate = this.selectedStempelzeitNode?.stempelzeit?.id;
+      const wasCreating = this.isCreatingNew;
+
+      const startTime = Date.now();
+      this.zivildienerService.saveStempelzeit(
+        stempelzeit,
+        this.personId,
+        this.isCreatingNew,
+        stempelzeitIdForUpdate
+      ).subscribe({
+        next: (response) => {
+          const duration = Date.now() - startTime;
+          const savedStempelzeit = response.body as ApiStempelzeit;
           console.log('Save successful:', savedStempelzeit);
-          if (this.isCreatingNew) {
+
+          // Vertrage-style: mutate the data arrays directly, then reassign
+          // the top-level dataSource.data so MatTree picks up the change.
+          if (wasCreating) {
             this.allTimeEntries.push(savedStempelzeit);
+            this.insertStempelzeitNode(savedStempelzeit);
           } else {
             const index = this.allTimeEntries.findIndex(entry =>
               entry.login === this.selectedStempelzeitNode?.stempelzeit?.login &&
@@ -708,23 +810,23 @@ export class ZivildienerDetailComponent {
             if (index !== -1) {
               this.allTimeEntries[index] = savedStempelzeit;
             }
+            this.replaceStempelzeitNode(savedStempelzeit, stempelzeitIdForUpdate);
           }
-          this.refreshTree();
 
-          this.snackBar.open('Stempelzeit gespeichert!', 'Schließen', {
-            duration: 3000,
-            verticalPosition: 'top'
-          });
-
+          this.showInfoDialog('Stempelzeit wurde erfolgreich gespeichert.', 'Erfolgreich gespeichert');
+          this.statusPanelService.addMessageRequest(
+            wasCreating ? AppConstants.MSG_STEMPELZEITEN_CREATED_SUCCESS : AppConstants.MSG_STEMPELZEITEN_UPDATED_SUCCESS,
+            'POST', duration, response);
           this.resetForm();
         },
         error: (error: any) => {
+          const duration = Date.now() - startTime;
           console.error('Save failed:', error);
           if (wasDatumDisabled) datumControl?.disable();
-          this.snackBar.open('Fehler beim Speichern', 'Schließen', {
-            duration: 3000,
-            verticalPosition: 'top'
-          });
+          this.showErrorDialog('Fehler beim Speichern der Stempelzeit.');
+          this.statusPanelService.addMessageRequest(
+            wasCreating ? AppConstants.MSG_STEMPELZEITEN_CREATED_ERROR : AppConstants.MSG_STEMPELZEITEN_UPDATED_ERROR,
+            'POST', duration, error);
         }
       });
     } else {
@@ -753,15 +855,9 @@ export class ZivildienerDetailComponent {
 
     if (errors.length > 0) {
       const errorMessage = this.formatValidationErrors(errors);
-      this.snackBar.open(errorMessage, 'Schließen', {
-        duration: 5000,
-        verticalPosition: 'top'
-      });
+      this.showErrorDialog(errorMessage, 'Validierungsfehler');
     } else {
-      this.snackBar.open('Bitte füllen Sie alle erforderlichen Felder aus', 'Schließen', {
-        duration: 3000,
-        verticalPosition: 'top'
-      });
+      this.showErrorDialog('Bitte füllen Sie alle erforderlichen Felder aus', 'Validierungsfehler');
     }
   }
   private getFormValidationErrors(): string[] {
@@ -848,7 +944,11 @@ export class ZivildienerDetailComponent {
       abmeldezeitStunde, abmeldezeitMinuten
     } = formValue;
 
-    if (!datum || typeof datum !== 'string' || datum.trim() === '') {
+    // Accept either a Date (from the datepicker) or a non-empty string.
+    const datumIsValid =
+      (datum instanceof Date && !isNaN(datum.getTime())) ||
+      (typeof datum === 'string' && datum.trim() !== '');
+    if (!datum || !datumIsValid) {
       return {
         isValid: false,
         errorMessage: 'Datum ist erforderlich'
@@ -927,25 +1027,192 @@ export class ZivildienerDetailComponent {
   }
 
   private refreshTree() {
-    const treeData = this.transformServiceDataToTree(this.allTimeEntries);
-    console.log('treeData', treeData);
+    // Capture which months/days are currently expanded so we can restore
+    // them after the dataSource is replaced (node references change on
+    // every rebuild, so isExpanded() against old refs is useless).
+    const expandedNames = new Set<string>();
+    const collectExpanded = (nodes: TreeNode[] | undefined) => {
+      if (!nodes) return;
+      for (const n of nodes) {
+        if (this.treeControl.isExpanded(n)) expandedNames.add(n.name);
+        if (n.children?.length) collectExpanded(n.children);
+      }
+    };
+    collectExpanded(this.dataSource.data as TreeNode[]);
 
+    const treeData = this.transformServiceDataToTree(this.allTimeEntries);
+    // MatTreeNestedDataSource doesn't always re-render nested children
+    // when you just reassign .data. Clear → flush → set forces a full
+    // rerender so newly-pushed / removed entries actually appear.
+    this.dataSource.data = [];
+    this.cdr.detectChanges();
     this.dataSource.data = treeData;
     this.cdr.detectChanges();
-    setTimeout(() => {
-      if (this.treeControl?.dataNodes) {
-        this.treeControl.dataNodes.forEach(node => {
-          console.log('refreshTree-node', node);
 
-          if (node.level === 0 && this.treeControl.isExpanded(node)) {
-            this.treeControl.expand(node);
+    // Re-expand any node whose name was expanded before the refresh.
+    const restoreExpanded = (nodes: TreeNode[] | undefined) => {
+      if (!nodes) return;
+      for (const n of nodes) {
+        if (expandedNames.has(n.name)) this.treeControl.expand(n);
+        if (n.children?.length) restoreExpanded(n.children);
+      }
+    };
+    setTimeout(() => restoreExpanded(treeData));
+  }
+
+  // --- Direct tree mutation helpers (vertrage-style) ---
+  // Instead of rebuilding the whole tree from allTimeEntries on every
+  // save/delete, we mutate the existing tree in place and reassign the
+  // top-level data array so MatTreeNestedDataSource picks up the change.
+
+  private buildStempelzeitNode(sz: ApiStempelzeit): TreeNode {
+    const loginTime = sz.login ? new Date(sz.login) : new Date();
+    const logoffTime = sz.logoff ? new Date(sz.logoff) : new Date();
+    const formData: FormDataStempelzeit = {
+      datum: loginTime.toLocaleDateString('de-DE'),
+      zeittyp: sz.zeitTyp || ApiZeitTyp.ARBEITSZEIT,
+      anmeldezeit: { stunde: loginTime.getHours(), minuten: loginTime.getMinutes() },
+      abmeldezeit: { stunde: logoffTime.getHours(), minuten: logoffTime.getMinutes() },
+      anmerkung: sz.anmerkung || ''
+    };
+    return {
+      name: `${this.formatTime(loginTime)} - ${this.formatTime(logoffTime)}`,
+      level: 2,
+      expandable: false,
+      formData,
+      zeitTyp: sz.zeitTyp || ApiZeitTyp.ARBEITSZEIT,
+      stempelzeit: sz
+    };
+  }
+
+  // INSERT — find/create the right month + day in this.treeData, push the
+  // stempelzeit in. Recursive ng-template re-renders on array mutation.
+  private insertStempelzeitNode(saved: ApiStempelzeit) {
+    if (!saved?.login) return;
+    const loginDate = new Date(saved.login);
+    const monthName = this.getGermanMonthName(loginDate.getMonth() + 1) + ' ' + loginDate.getFullYear();
+    const dayName = this.formatDayName(loginDate);
+
+    let monthNode = this.treeData.find(m => m.name === monthName);
+    if (!monthNode) {
+      monthNode = {
+        name: monthName,
+        level: 0,
+        expandable: true,
+        isExpanded: true,
+        year: loginDate.getFullYear().toString(),
+        children: []
+      };
+      this.treeData.push(monthNode);
+    }
+    monthNode.isExpanded = true;
+    if (!monthNode.children) monthNode.children = [];
+
+    let dayNode = monthNode.children.find(d => d.name === dayName);
+    if (!dayNode) {
+      dayNode = { name: dayName, level: 1, expandable: true, isExpanded: true, children: [] };
+      monthNode.children.push(dayNode);
+    }
+    dayNode.isExpanded = true;
+    if (!dayNode.children) dayNode.children = [];
+
+    dayNode.children.push(this.buildStempelzeitNode(saved));
+    this.refreshDayStats(dayNode);
+
+    // Reassign top-level array so Angular sees a fresh reference.
+    this.treeData = [...this.treeData];
+    // Keep MatTreeNestedDataSource in sync (in case anything else reads it).
+    this.dataSource.data = this.treeData;
+  }
+
+  /**
+   * Recompute a day node's `arbeitszeit` and `zeitTyp` from its current
+   * children. Must be called after any insert/replace/remove so the
+   * "Arbeitszeit: HH:MM" header on the day row stays in sync.
+   */
+  private refreshDayStats(dayNode: TreeNode): void {
+    const stempelzeiten = (dayNode.children || [])
+      .map(c => c.stempelzeit)
+      .filter((sz): sz is ApiStempelzeit => !!sz);
+    const stats = this.calculateDayStats(stempelzeiten);
+    dayNode.arbeitszeit = stats.arbeitszeit;
+    dayNode.zeitTyp = stats.mainType;
+  }
+
+  // UPDATE — walk the tree, find the stempelzeit node by id (or by
+  // login/logoff fallback), replace it with a fresh node.
+  private replaceStempelzeitNode(updated: ApiStempelzeit, oldId?: string) {
+    const newNode = this.buildStempelzeitNode(updated);
+    const oldLogin = this.selectedStempelzeitNode?.stempelzeit?.login;
+    const oldLogoff = this.selectedStempelzeitNode?.stempelzeit?.logoff;
+
+    for (const month of this.treeData) {
+      if (!month.children) continue;
+      for (const day of month.children) {
+        if (!day.children) continue;
+        const idx = day.children.findIndex(sz =>
+          (oldId && sz.stempelzeit?.id === oldId) ||
+          (sz.stempelzeit?.login === oldLogin && sz.stempelzeit?.logoff === oldLogoff)
+        );
+        if (idx !== -1) {
+          day.children[idx] = newNode;
+          this.refreshDayStats(day);
+          this.treeData = [...this.treeData];
+          this.dataSource.data = this.treeData;
+          return;
+        }
+      }
+    }
+    // Not found in tree — treat as insert (e.g. date changed).
+    this.insertStempelzeitNode(updated);
+  }
+
+  // REMOVE — walk the tree, find the stempelzeit by id (or login/logoff),
+  // splice it out. Also prune empty days/months.
+  private removeStempelzeitNode(stempelzeit: ApiStempelzeit) {
+    for (let mi = this.treeData.length - 1; mi >= 0; mi--) {
+      const month = this.treeData[mi];
+      if (!month.children) continue;
+      for (let di = month.children.length - 1; di >= 0; di--) {
+        const day = month.children[di];
+        if (!day.children) continue;
+        const idx = day.children.findIndex(sz =>
+          (stempelzeit.id && sz.stempelzeit?.id === stempelzeit.id) ||
+          (sz.stempelzeit?.login === stempelzeit.login && sz.stempelzeit?.logoff === stempelzeit.logoff)
+        );
+        if (idx !== -1) {
+          day.children.splice(idx, 1);
+          if (day.children.length === 0) {
+            month.children.splice(di, 1);
+          } else {
+            this.refreshDayStats(day);
           }
-        });
+          if (!month.children.length) this.treeData.splice(mi, 1);
+          this.treeData = [...this.treeData];
+          this.dataSource.data = this.treeData;
+          return;
+        }
       }
-      else{
-        console.warn('treeControl.dataNodes is undefined');
-      }
+    }
+  }
 
+  // After a save, expand the month / day node that contains the new entry
+  // so the user actually sees it (refreshTree only restores what was open
+  // before — a newly-created entry can land in a collapsed month).
+  private expandTreeForStempelzeit(stempelzeit: ApiStempelzeit) {
+    if (!stempelzeit?.login) return;
+    const loginDate = new Date(stempelzeit.login);
+    const targetMonthName = this.getGermanMonthName(loginDate.getMonth() + 1) + ' ' + loginDate.getFullYear();
+    const targetDayKey = this.formatDayName(loginDate);
+
+    setTimeout(() => {
+      const months = (this.dataSource.data as TreeNode[]) || [];
+      const month = months.find(m => m.name === targetMonthName);
+      if (!month) return;
+      this.treeControl.expand(month);
+      const day = month.children?.find(d => d.name === targetDayKey);
+      if (day) this.treeControl.expand(day);
+      this.cdr.detectChanges();
     });
   }
 
@@ -965,28 +1232,34 @@ export class ZivildienerDetailComponent {
           console.log('Deleting:', stempelzeitToDelete);
 
           stempelzeitToDelete.deleted = true;
-          this.dataService.deleteStempelzeitSmart(stempelzeitToDelete, stempelzeitToDelete?.id!).subscribe({
-            next: () => {
-              this.allTimeEntries = this.allTimeEntries.filter(entry =>
-                !(entry.login === stempelzeitToDelete.login && entry.logoff === stempelzeitToDelete.logoff)
-              );
-
-              this.timeEntries = [...this.allTimeEntries];
-              const treeData = this.transformServiceDataToTree(this.allTimeEntries);
-              this.dataSource.data = treeData;
-
-              this.snackBar.open('Stempelzeit gelöscht!', 'Schließen', {
-                duration: 3000,
-                verticalPosition: 'top'
+          const startTime = Date.now();
+          this.zivildienerService.deleteStempelzeit(stempelzeitToDelete, stempelzeitToDelete?.id).subscribe({
+            next: (response) => {
+              const duration = Date.now() - startTime;
+              // Remove from the flat backing list
+              this.allTimeEntries = this.allTimeEntries.filter(entry => {
+                if (stempelzeitToDelete.id && entry.id) {
+                  return entry.id !== stempelzeitToDelete.id;
+                }
+                return !(entry.login === stempelzeitToDelete.login && entry.logoff === stempelzeitToDelete.logoff);
               });
+              this.timeEntries = [...this.allTimeEntries];
+
+              // Vertrage-style: prune the node directly from the tree and
+              // reassign dataSource.data so MatTree re-renders.
+              this.removeStempelzeitNode(stempelzeitToDelete);
+
+              this.showInfoDialog('Stempelzeit wurde erfolgreich gelöscht.', 'Erfolgreich gelöscht');
+              this.statusPanelService.addMessageRequest(
+                AppConstants.MSG_STEMPELZEITEN_DELETED_SUCCESS, 'DELETE', duration, response);
               this.resetForm();
             },
             error: (error) => {
+              const duration = Date.now() - startTime;
               console.error('Delete failed:', error);
-              this.snackBar.open('Fehler beim Löschen', 'Schließen', {
-                duration: 3000,
-                verticalPosition: 'top'
-              });
+              this.showErrorDialog('Fehler beim Löschen der Stempelzeit.');
+              this.statusPanelService.addMessageRequest(
+                AppConstants.MSG_STEMPELZEITEN_DELETED_ERROR, 'DELETE', duration, error);
             }
           });
         } else {
@@ -995,9 +1268,21 @@ export class ZivildienerDetailComponent {
       });
     }
   }
-  private createDateTimeString(dateStr: string, hours: number, minutes: number): string {
-    const [day, month, year] = dateStr.split('.');
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hours, minutes);
+  private createDateTimeString(dateValue: string | Date, hours: number, minutes: number): string {
+    let year: number, month: number, day: number;
+
+    if (dateValue instanceof Date) {
+      year = dateValue.getFullYear();
+      month = dateValue.getMonth();
+      day = dateValue.getDate();
+    } else {
+      const parts = dateValue.split('.');
+      day = parseInt(parts[0], 10);
+      month = parseInt(parts[1], 10) - 1;
+      year = parseInt(parts[2], 10);
+    }
+
+    const date = new Date(year, month, day, hours, minutes);
     return date.toISOString();
   }
   private resetForm() {
@@ -1319,6 +1604,45 @@ export class ZivildienerDetailComponent {
 
     return `${diffHrs.toString().padStart(2, '0')}:${diffMins.toString().padStart(2, '0')}`;
   }
+
+  getTotalStunden(): string {
+    let totalMinutes = 0;
+    for (const entry of this.timeEntries) {
+      if (!entry.login || !entry.logoff) continue;
+      const loginDate = new Date(entry.login);
+      const logoffDate = new Date(entry.logoff);
+      const diffMs = logoffDate.getTime() - loginDate.getTime();
+      if (diffMs > 0) {
+        totalMinutes += Math.floor(diffMs / (1000 * 60));
+      }
+    }
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  getTotalSaldo(): string {
+    let totalSaldoMinutes = 0;
+    for (const entry of this.timeEntries) {
+      if (!entry.login || !entry.logoff) continue;
+      const loginDate = new Date(entry.login);
+      const logoffDate = new Date(entry.logoff);
+      const diffMs = logoffDate.getTime() - loginDate.getTime();
+      const actualMinutes = Math.floor(diffMs / (1000 * 60));
+      const standardMinutes = 8 * 60;
+      totalSaldoMinutes += actualMinutes - standardMinutes;
+    }
+    const sign = totalSaldoMinutes >= 0 ? '+' : '-';
+    const abs = Math.abs(totalSaldoMinutes);
+    const hours = Math.floor(abs / 60);
+    const minutes = abs % 60;
+    return `${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  printMonthOverview(): void {
+    console.log("Druck option clicked")
+  }
+
   getWeek(entry: ApiStempelzeit): string {
     if (!entry.login) return '';  // Add null check
     const date = new Date(entry.login);
@@ -1621,11 +1945,11 @@ export class ZivildienerDetailComponent {
   // Get color value for saldo
   getSaldoColorValue(saldo: string): string {
     if (this.isPositive(saldo)) {
-      return '#28a745';
+      return '#502832E6';
     } else if (this.isNegative(saldo)) {
       return '#dc3545';
     } else {
-      return '#6f42c1';
+      return '#502832E6';
     }
   }
   // Get font weight for saldo
@@ -1662,21 +1986,21 @@ export class ZivildienerDetailComponent {
   // Get color for Arbeitszeit value
   getArbeitszeitValueColor(arbeitszeit: string | undefined): string {
     if (this.isPositive(arbeitszeit)) {
-      return '#28a745';
+      return '#502832E6';
     } else if (this.isNegative(arbeitszeit)) {
       return '#dc3545';
     } else {
-      return 'gray';
+      return '#502832E6';
     }
   }
   // Get color for Urlaubstage (vacation days count)
   getUrlaubstageColor(urlaubstage: string | undefined): string {
-    if (!urlaubstage) return 'gray';
+    if (!urlaubstage) return '#502832E6';
     const days = parseInt(urlaubstage, 10);
     if (days > 5) {
-      return '#28a745';
+      return '#502832E6';
     } else {
-      return 'gray';
+      return '#502832E6';
     }
   }
 
@@ -1727,6 +2051,20 @@ export class ZivildienerDetailComponent {
     }
   }
 
+  onNodeDblClick(node: TreeNode, event: Event): void {
+    event.stopPropagation();
+    if (node.level === 1) {
+      this.onDayToggle(node, event);
+    } else if (node.level === 0) {
+      this.treeControl.toggle(node);
+      node.isExpanded = !node.isExpanded;
+    }
+  }
+
+  // Vertrage-style trackBy — keeps Angular's *ngFor stable across mutations.
+  trackTreeNode = (_: number, node: TreeNode) =>
+    node.stempelzeit?.id || node.name + '|' + node.level;
+
   onDayToggle(node: TreeNode, event: Event): void {
     event.stopPropagation(); // Prevent the click from bubbling to parent
 
@@ -1740,17 +2078,21 @@ export class ZivildienerDetailComponent {
 
     // Now toggle the current node (expand or collapse)
     this.treeControl.toggle(node);
+    node.isExpanded = !isCurrentlyExpanded;
   }
 
   private closeAllDayNodesExcept(nodeToKeepOpen: TreeNode): void {
-    // Iterate through all month nodes in the data source
-    this.dataSource.data.forEach(monthNode => {
+    // Iterate through all month nodes in the tree
+    this.treeData.forEach(monthNode => {
       if (monthNode.children) {
         // Iterate through all day nodes within each month
         monthNode.children.forEach(dayNode => {
           // If this day node is not the one we want to keep open, collapse it
-          if (dayNode !== nodeToKeepOpen && this.treeControl.isExpanded(dayNode)) {
-            this.treeControl.collapse(dayNode);
+          if (dayNode !== nodeToKeepOpen) {
+            if (this.treeControl.isExpanded(dayNode)) {
+              this.treeControl.collapse(dayNode);
+            }
+            dayNode.isExpanded = false;
           }
         });
       }

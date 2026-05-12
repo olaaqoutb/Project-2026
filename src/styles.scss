@@ -12,6 +12,66 @@
   margin-left: 15px !important;
 }
 
+/* Zivildiener stempelzeit form: Zeittyp dropdown + Datum picker.
+   IMPORTANT: panelClass is applied to the INNER content node
+   (.mat-mdc-select-panel / .mat-datepicker-content), NOT to the
+   .cdk-overlay-pane container that actually controls position.
+   To move or resize the visible dropdown BOX itself we have to target
+   the overlay pane via :has(). Use transform to shift it — position
+   on the inner content only moves content inside that container. */
+
+// ---- Zeittyp select ----
+// CONTAINER (overlay pane) — width + position go here.
+.cdk-overlay-pane:has(.zivildiener-drop-down) {
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  transform: translateX(15px); // shift the whole dropdown box right
+}
+// Inner panel — match the container so the visible surface fills it.
+.mat-mdc-select-panel.zivildiener-drop-down {
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  box-sizing: border-box !important;
+}
+
+// ---- Datum picker ----
+// CONTAINER (overlay pane) — width + position go here.
+.cdk-overlay-pane:has(.zivildiener-date-panel) {
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  transform: translateX(15px); // shift the whole calendar left
+}
+// Inner mat-datepicker-content — match the container.
+.mat-datepicker-content.zivildiener-date-panel,
+.cdk-overlay-pane .zivildiener-date-panel {
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  box-sizing: border-box !important;
+}
+
+// ---- Vertrag Stundensatz-Änderung create dialog: Datum picker ----
+// Same pattern as zivildiener — panelClass goes on .mat-datepicker-content,
+// so we use :has() to target the overlay pane that actually controls width.
+.cdk-overlay-pane:has(.vertrag-stundensatz-date-panel) {
+  width: 230px !important;
+  min-width: 230px !important;
+  max-width: 230px !important;
+  transform: translateX(15px); // shift the whole calendar left
+}
+.mat-datepicker-content.vertrag-stundensatz-date-panel,
+.cdk-overlay-pane .vertrag-stundensatz-date-panel {
+  width: 230px !important;
+  min-width: 230px !important;
+  max-width: 230px !important;
+  box-sizing: border-box !important;
+
+}
+
+
 /* mat-menu panels also render in the CDK overlay. Force MDI icons inside
    option-menu items down to 16px (overrides mdi-24px on the inline element). */
 .mat-mdc-menu-panel .mat-mdc-menu-item i.mdi,
@@ -72,18 +132,11 @@ body {
   min-height: 0;
   overflow: hidden;
 }
-
-/* Make sure the main content area fills exactly the remaining space and
-   becomes the single scroll container when routed content is too tall. */
 .main-content {
   min-height: 0;
   min-width: 0;
 }
 
-/* Freigabe tables only — force their .table-container / .table-content to
-   fill only their parent so the table's internal scrollbar is the ONLY
-   scroll on those routes. Applied narrowly so other pages (personen, etc.)
-   keep their own viewport-based sizing. */
 app-freigabe-list .table-container,
 app-freigabe-korigieren-list .table-container,
 app-freigabe-historisch-list .table-container {
@@ -122,9 +175,6 @@ app-freigabe-historisch-list .table-content {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Disable the entrance "fadeIn" animation that several list components
-   apply to their root container. The slight upward slide on every route
-   change was distracting; remove it everywhere in one place. */
 .fade-in,
 .container.fade-in,
 .section-content {
@@ -169,13 +219,8 @@ app-personen-detail .date-range-row .date-range {
   }
 }
 
-/* Personen-Detail invalid fields — global so selectors aren't scoped away
-   by Angular view encapsulation. Paints only the inner input/textbox area
-   light red (inside the notched outline), not the wrapper background. */
 app-personen-detail .mat-mdc-form-field.mat-form-field-invalid,
 app-personen-detail .mat-mdc-form-field.ng-invalid.ng-touched {
-  /* Token tweaks so Material's own label / outline colours follow.
-     Declarations kept before nested rules to satisfy Sass mixed-decls. */
   --mdc-outlined-text-field-outline-color: #d32f2f;
   --mdc-outlined-text-field-hover-outline-color: #d32f2f;
   --mdc-outlined-text-field-focus-outline-color: #d32f2f;

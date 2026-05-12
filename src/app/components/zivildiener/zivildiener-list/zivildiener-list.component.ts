@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {  HttpClientModule } from '@angular/common/http';
  import { MatInputModule } from '@angular/material/input';
@@ -13,10 +13,13 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Person } from "../../../models/person";
 import { MatCellDef, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatHeaderRowDef } from "@angular/material/table";
 import { ZivildienerService } from '../../../services/zivildiener.service';
+import { NavigationRefreshService } from '../../../services/navigation-refresh.service';
 import { ApiPerson } from '../../../models/ApiPerson';
 import { ApiMitarbeiterart } from '../../../models/ApiMitarbeiterart';
 
@@ -44,7 +47,7 @@ import { ApiMitarbeiterart } from '../../../models/ApiMitarbeiterart';
   templateUrl: './zivildiener-list.component.html',
   styleUrl: './zivildiener-list.component.scss'
 })
-export class ZivildienerListComponent {
+export class ZivildienerListComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = [
     'icon',
@@ -64,69 +67,100 @@ export class ZivildienerListComponent {
   isLoading: boolean = false;
   errorMessage: string = '';
 
+  selectedRowId: string | null = null;
+  activeSortColumn: string | null = null;
+
   sortState: { [key: string]: 'asc' | 'desc' } = {
-    nachname: 'asc',        // changed from famName
-    vorname: 'asc',         // changed from vorName
+    aktiv: 'asc',
+    nachname: 'asc',
+    vorname: 'asc',
     mitarbeiterart: 'asc'
   };
 
+  /**
+   * In-memory state preserved across detail-back navigation. Static so it
+   * survives this component's destroy/recreate when navigating to
+   * /zivildiener/:id and back. Cleared via Router events when leaving the
+   * route, and via NavigationRefreshService on sidebar refresh.
+   */
+  private static savedState: {
+    searchTerm: string;
+    showInactive: boolean;
+    activeSortColumn: string | null;
+    sortState: { [key: string]: 'asc' | 'desc' };
+    selectedRowId: string | null;
+  } | null = null;
+  private static routerSubInstalled = false;
+  private refreshSub?: Subscription;
 
   constructor(
     private renderer: Renderer2,
     private router: Router,
-    private zivildienerService: ZivildienerService
+    private zivildienerService: ZivildienerService,
+    private host: ElementRef<HTMLElement>,
+    private refreshService: NavigationRefreshService,
+  ) {
+    if (!ZivildienerListComponent.routerSubInstalled) {
+      ZivildienerListComponent.routerSubInstalled = true;
+      this.router.events
+        .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+        .subscribe((e) => {
+          if (!/^\/zivildiener(?:\/|$)/.test(e.urlAfterRedirects)) {
+            ZivildienerListComponent.savedState = null;
+          }
+        });
+    }
 
-  ) { }
+    const saved = ZivildienerListComponent.savedState;
+    if (saved) {
+      this.searchTerm = saved.searchTerm;
+      this.showInactive = saved.showInactive;
+      this.activeSortColumn = saved.activeSortColumn;
+      this.sortState = { ...this.sortState, ...saved.sortState };
+      this.selectedRowId = saved.selectedRowId;
+    }
+
+    this.refreshSub = this.refreshService.refresh$.subscribe((route) => {
+      if (route === '/zivildiener') {
+        this.resetAndReload();
+      }
+    });
+  }
 
   ngOnInit(): void {
- //   this.loadDataFromJson();
-      this.loadDataFromServer();
+    this.loadDataFromServer();
   }
 
   loadDataFromServer(): void {
     this.isLoading = true;
     this.errorMessage = '';
 
-    console.log('loadDataFromServer()');
-
-        this.zivildienerService.getZivildiener().subscribe({
-      next: (data : ApiPerson[]) => {
-        console.log('data-length', data.length);
-        console.log('data', data);
-
-        data = data.filter( person => person.mitarbeiterart === ApiMitarbeiterart.ZIVILDIENSTLEISTENDER.toUpperCase());
-        console.log('data-length-after', data.length);
-        console.log('data-after', data);
-
-        this.attendanceData = data ;//  this.transformData(data);
+    this.zivildienerService.getZivildiener().subscribe({
+      next: (response) => {
+        const data = (response.body ?? []).filter(
+          person => person.mitarbeiterart === ApiMitarbeiterart.ZIVILDIENSTLEISTENDER
+        );
+        this.attendanceData = data;
         this.applyFilter();
         this.isLoading = false;
+        this.scrollToSelectedRow();
       },
       error: (error) => {
-        console.error('Error loading data from JSON:', error);
+        console.error('Error loading zivildiener:', error);
         this.errorMessage = 'Fehler beim Laden der Daten';
         this.isLoading = false;
       }
     });
   }
 
-  loadDataFromJson(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.zivildienerService.getZivildiener().subscribe({
-      next: (data) => {
-        console.log('data-length', data.length);
-        this.attendanceData = data;// this.transformData(data);
-        this.applyFilter();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading data from JSON:', error);
-        this.errorMessage = 'Fehler beim Laden der Daten';
-        this.isLoading = false;
-      }
-    });
+  private resetAndReload(): void {
+    this.searchTerm = '';
+    this.showInactive = false;
+    this.activeSortColumn = null;
+    this.sortState['nachname'] = 'asc';
+    this.selectedRowId = null;
+    ZivildienerListComponent.savedState = null;
+    this.loadDataFromServer();
   }
 
 
@@ -158,7 +192,28 @@ export class ZivildienerListComponent {
   }
   */
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {
+    ZivildienerListComponent.savedState = {
+      searchTerm: this.searchTerm,
+      showInactive: this.showInactive,
+      activeSortColumn: this.activeSortColumn,
+      sortState: { ...this.sortState },
+      selectedRowId: this.selectedRowId,
+    };
+    this.refreshSub?.unsubscribe();
+  }
+
+  private scrollToSelectedRow(): void {
+    if (!this.selectedRowId) return;
+    const id = this.selectedRowId;
+    setTimeout(() => {
+      const container = this.host.nativeElement.querySelector('.table-container') as HTMLElement | null;
+      const row = this.host.nativeElement.querySelector(`[data-row-id="${id}"]`) as HTMLElement | null;
+      if (!container || !row) return;
+      const targetTop = row.offsetTop - (container.clientHeight - row.clientHeight) / 2;
+      container.scrollTop = Math.max(0, targetTop);
+    });
+  }
 
 
 
@@ -188,45 +243,39 @@ export class ZivildienerListComponent {
       filtered = filtered.filter(item => item.aktiv === true);
     }
 
-    this.filteredData = this.applySorting(filtered);
+    // Default sort: Familienname A→Z. A user-selected column takes precedence,
+    // except 'aktiv' when only active rows are shown — that sort has no effect
+    // and we keep the data on the default Familienname order instead.
+    let sortField = this.activeSortColumn ?? 'nachname';
+    if (sortField === 'aktiv' && !this.showInactive) {
+      sortField = 'nachname';
+    }
+    this.filteredData = this.applySorting(filtered, sortField);
     this.dataSource.data = this.filteredData;
   }
-  private applySorting(data: ApiPerson[]): ApiPerson[] {
-    const sortedField = Object.keys(this.sortState).find(field =>
-      this.sortState[field] === 'asc' || this.sortState[field] === 'desc'
-    );
 
-    if (!sortedField) return data;
-
-    const direction = this.sortState[sortedField];
-
+  private applySorting(data: ApiPerson[], field: string): ApiPerson[] {
+    const direction = this.sortState[field];
     return [...data].sort((a, b) => {
-      let valueA = this.getSortValue(a, sortedField);
-      let valueB = this.getSortValue(b, sortedField);
-
+      const valueA = this.getSortValue(a, field);
+      const valueB = this.getSortValue(b, field);
       if (valueA < valueB) return direction === 'asc' ? -1 : 1;
       if (valueA > valueB) return direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }
-
-  getRowClass(row: Person): string {
-    return row.aktiv === false ? 'inactive-row' : '';
   }
 
   toggleSort(field: string) {
-    this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+    if (this.activeSortColumn === field) {
+      this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
+    }
+    this.activeSortColumn = field;
 
-    const direction = this.sortState[field];
-    const sorted = [...this.filteredData].sort((a, b) => {
-      let valueA = this.getSortValue(a, field);
-      let valueB = this.getSortValue(b, field);
+    // Aktiv sort only re-orders rows when inactive rows are also visible.
+    // When hidden, we still toggle the icon direction but skip the resort.
+    if (field === 'aktiv' && !this.showInactive) return;
 
-      if (valueA < valueB) return direction === 'asc' ? -1 : 1;
-      if (valueA > valueB) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-    this.filteredData = sorted;
+    this.filteredData = this.applySorting(this.filteredData, field);
     this.dataSource.data = this.filteredData;
   }
 
@@ -234,6 +283,10 @@ export class ZivildienerListComponent {
     let value = '';
 
     switch (field) {
+      case 'aktiv':
+        // asc → active (1) before inactive (0); desc flips it.
+        value = item.aktiv ? '0' : '1';
+        break;
       case 'nachname':          // changed from 'famName'
         value = (item.nachname || '').toString();
         break;
@@ -257,12 +310,7 @@ export class ZivildienerListComponent {
   }
 
   getSortIcon(column: string): string {
-    if (this.sortState[column] === 'asc') {
-      return 'keyboard_arrow_up';
-    } else if (this.sortState[column] === 'desc') {
-      return 'keyboard_arrow_down';
-    }
-    return 'swap_vert';
+    return this.sortState[column] === 'desc' ? 'mdi-chevron-down' : 'mdi-chevron-up';
   }
 
   compare(a: string | number | boolean, b: string | number | boolean, isAsc: boolean): number {
@@ -274,13 +322,14 @@ export class ZivildienerListComponent {
     return 0;
   }
 
-  goToDetails(row: ApiPerson): void {
-    console.log('Navigate to details:', row);
+  selectRow(row: ApiPerson): void {
+    this.selectedRowId = row.id ?? null;
+  }
 
+  goToDetails(row: ApiPerson): void {
     if (row.id) {
-      sessionStorage.setItem('selectedPerson', JSON.stringify(row));
-     // this.router.navigate(['/zivildiener', row.id]);
-      this.router.navigate(['/zivildiener', row.id], { state: { rowData: row } });
+      this.selectedRowId = row.id;
+      this.router.navigate(['/zivildiener', row.id]);
     } else {
       console.error('civilian ID is missing');
     }

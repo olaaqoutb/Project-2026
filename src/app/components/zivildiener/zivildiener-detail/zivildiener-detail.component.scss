@@ -2,6 +2,7 @@
   background-color: #f5f5f5;
   width: 100%!important;
   min-width: 100%!important;
+  font-family: Roboto, sans-serif;
 }
 
 .header {
@@ -84,12 +85,31 @@
 .icon-button {
   border: 1px solid black;
   border-radius: 4px;
-  padding: 5px;
+  padding: 0;
   width: 45px !important;
   color: white;
   background-color: #2E4155;
   height: 34px !important;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  i.mdi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    color: white;
+  }
+
+  mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
 }
 
 .header-title {
@@ -100,6 +120,7 @@
   font-weight: bold;
   color: #ffffff;
 }
+
 
 .header-right {
   display: flex;
@@ -123,18 +144,17 @@
 }
 .left-panel {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: auto;
   width: 50%;
+  height:calc(100vh - 150px)!important;
   .tree {
     background: transparent;
     .month-node {
       .month-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
+
+        margin-left: 5px;
         .month-name {
           font-weight: 500;
           font-size: 15px;
@@ -145,37 +165,60 @@
         padding-left: 25px;
         display: flex;
         flex-direction: column;
-        // gap: 16px;
-        // margin-top: 4px;
+
 
         .detail-row {
           display: flex;
-          justify-content: space-between;
-          margin-bottom: 4px;
-          font-size: 15px;
+          align-items: center;
+          gap: 4px;
+          margin-bottom: 1px;
 
-          .detail-label {
-            font-size: 13px;
-            color: #666;
+          .detail-label,
+          .detail-value {
+            color: #502832E6;
+            font-weight: normal !important;
           }
 
           .detail-value {
-            font-size: 13px;
-            font-weight: 500;
-            color: #333;
+            font-weight: bold !important;
+            color: #502832E6;
+            text-align: left;
           }
         }
+
+        // Level 1 — first line (14px): Arbeitszeit / Soll-Arbeitszeit / Saldo
+        .zivild-first-line .detail-row,
+        .zivild-first-line .detail-label,
+        .zivild-first-line .detail-value {
+          font-size: 14px;
+        }
+
+        // Level 1 — second line (13px): Urlaubstage / Urlaub
+        .zivild-second-line .detail-row,
+        .zivild-second-line .detail-label,
+        .zivild-second-line .detail-value {
+          font-size: 13px;
+        }
+
+        .detail-row-arbeitszeit { min-width: 120px; }
+        .detail-row-soll       { min-width: 135px; }
+        .detail-row-saldo      { min-width: 75px; }
+        .detail-row-urlaubstage{ min-width: 90px; }
+        .detail-row-urlaub     { min-width: 75px; }
       }
     }
-    .zivild-first-line{
+    .zivild-first-line,
+    .zivild-second-line {
       display: flex;
       flex-direction: row;
-      gap: 10px;
+      gap: 7px;
     }
-    .zivild-second-line{
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
+    .zivild-first-line { margin-bottom: 0; }
+    .zivild-second-line { margin-top: 2px; }
+
+    // Level 1 month name (first line of the level) = 14px
+    .month-node .month-header .month-name {
+      font-size: 14px !important;
     }
     .month-icon {
       font-size: 16px;
@@ -209,7 +252,7 @@
       display: flex;
       align-items: flex-start;
       border-bottom: 1px solid #f0f0f0;
-      padding: 8px 0;
+      padding: 2px 0;
       cursor: pointer;
     }
 
@@ -221,6 +264,7 @@
 .month-node {
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-left: 4px;
 
   &:hover {
     background-color: #f5f5f5;
@@ -228,7 +272,7 @@
 
   &.selected-month {
     background-color: #f0f8ff !important;
-    border-left: 3px solid #2E4155;
+    border-left: none !important;
   }
 }
 .node-content {
@@ -242,10 +286,9 @@
   // flex: 2;
   background: white;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 55%;
   overflow: auto;
+  height:calc(100vh - 150px)!important;
 
   .table-container2 {
     height: 100%;
@@ -262,8 +305,8 @@
       }
 
       .mat-cell {
-        font-size: 12px;
-        padding: 8px 16px;
+        font-size: 13px;
+        padding: 8px 10px;
 
         .entry-icon {
           font-size: 19px;
@@ -315,25 +358,74 @@
 .detail-line {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   padding: 0;
   width: 100%;
-  justify-content: space-between;
 
   .event-icon {
     color: #2E4155;
     font-size: 16px;
+    min-width: 16px;
+    flex-shrink: 0;
   }
 
-  .day-of-week,
-  .date-display,
+  .day-of-week {
+    padding-left: 2px;
+    min-width: 28px;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .date-display {
+    padding-left: 2px;
+    min-width: 90px;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
   .type-time-display {
     padding-left: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 150px;
+    flex-shrink: 0;
+    font-size: 14px;
+
+    .day-type-label {
+      color: #502832E6;
+      font-weight: normal;
+      font-size: 14px;
+    }
+
+    .day-type-value {
+      color: #502832E6;
+      font-weight: bold;
+      font-size: 14px;
+    }
   }
+
   #alarm-icon {
     margin-left: auto;
     flex-shrink: 0;
   }
+}
+
+.arbeitszeit-label {
+  color: #502832E6 !important;
+}
+
+.arbeitszeit-value-level1 {
+  color: #502832E6 !important;
+  font-weight: bold !important;
+}
+
+// Saldo at the month level: keep aligned with Arbeitszeit. The inline
+// [style.color]="getSaldoColorValue(...)" binding doesn't use !important
+// so this rule wins.
+.detail-row-saldo .detail-label,
+.detail-row-saldo .detail-value {
+  color: #502832E6 !important;
 }
 
 .bezeichnung-header {
@@ -342,14 +434,15 @@
 }
 
 .detail-icon2 {
-  font-size: 15px;
+  font-size: 10pt;
+margin-right:2px ;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin: 20px 10px;
+  margin: 20px 0px;
 }
 
 .group-one,
@@ -430,15 +523,93 @@
   border: 1px solid #e6e3e3 !important;
 }
 
+.border:focus {
+  border: 1px solid #e6e3e3 !important;
+}
+
+// Datum input: when ENABLED, match the dark color of other inputs.
+// When disabled/readonly, fall back to Material's default greyed look.
+.stempelzeit-form-panel {
+  .field-input.date-field input.mat-mdc-input-element:not(:disabled):not([readonly]) {
+    color: rgba(0, 0, 0, 0.87) !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+    opacity: 1 !important;
+    margin-top:0px!important;
+  }
+}
+
 .header-btn {
-  border: 1px solid black;
+  border: 1px solid #2E4155;
   border-radius: 4px;
-  padding: 5px;
+  padding: 0 10px !important;
   color: white !important;
   background-color: #2E4155;
   height: 34px !important;
+  min-height: 34px !important;
   margin: 5px;
   cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px;
+  line-height: 1;
+  white-space: nowrap;
+
+  // Material MDC wraps button content in .mdc-button__label — force the
+  // wrapper AND its children (i.mdi + span) onto one horizontal centered row.
+  ::ng-deep .mdc-button__label,
+  .mdc-button__label {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    line-height: 1 !important;
+    height: 100% !important;
+    vertical-align: middle !important;
+  }
+
+  i.mdi {
+    color: white;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    height: 24px;
+    vertical-align: middle;
+  }
+
+  i.mdi::before {
+    line-height: 1 !important;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  span {
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+    vertical-align: middle;
+  }
+}
+
+// Delete button styled like vertrag .btn-loeschen
+.btn-loeschen {
+  background-color: #b91c1c !important;
+  color: white !important;
+  border-color: #b91c1c !important;
+  height: 34px !important;
+  padding: 7px 10px 7px 15px !important;
+
+  i.mdi { color: white !important; }
+
+  &:hover:not(:disabled) {
+    background-color: #b92222 !important;
+    color: white !important;
+    border-color: #b92222 !important;
+    i.mdi { color: white !important; }
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .form-header h2 {
@@ -485,9 +656,91 @@
 .stempelzeit-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   width: 60% !important;
   padding-left: 20px;
+}
+
+// Force all right-form inputs (input + datepicker + anmerkung) to a single 300px width
+.stempelzeit-form-panel,
+.day-form {
+  .field-input {
+    width: 300px !important;
+    max-width: 300px !important;
+    flex: 0 0 300px;
+    box-sizing: border-box;
+  }
+
+  // Datum is wider than the others, and the datepicker toggle sits INSIDE the input
+  .field-input.date-field {
+    width: 290px !important;
+    max-width: 290px !important;
+    flex: 0 0 290px;
+    position: relative;
+
+    .mat-mdc-form-field-icon-suffix,
+    .mat-datepicker-toggle {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+
+    .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+    }
+
+    // reserve space on the right so the typed date doesn't sit under the icon
+    .mat-mdc-form-field-infix,
+    input.datum {
+      width: 100% !important;
+      padding-right: 36px !important;
+      box-sizing: border-box;
+    }
+  }
+
+  .field-input .mat-mdc-form-field-infix,
+  .field-input .mat-mdc-text-field-wrapper,
+  .field-input input,
+  .field-input textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  // Anmerkung used to be .full-width; force it to behave like the others now
+  .field-input.full-width {
+    width: 300px !important;
+    max-width: 300px !important;
+  }
+
+  // Label alignment — fixed width, right-aligned, consistent gap
+  .field-label,
+  .time-label {
+    min-width: 90px !important;
+    width: 120px !important;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0E5272;
+    flex-shrink: 0;
+  }
+
+  // Tighter gaps + remove the 10% form indent so labels & inputs line up cleanly
+  .form-field-group {
+    gap: 8px;
+    left: 0 !important;
+    padding-left: 10%;
+  }
+
+  .time-section { gap: 10px; margin-left: 7px; }
+  .time-group { gap: 8px; }
+  .time-inputs-horizontal { gap: 14px; }
+  .time-column { gap: 4px; }
+  .mint { margin-bottom: 0; }
 }
 
 .icon-del {
@@ -528,7 +781,7 @@
 
 .field-label {
   font-weight: 500;
-  color: #333;
+  color: #0E5272;
   min-width: 100px;
   text-align: right;
   font-size: 16px;
@@ -537,8 +790,8 @@
 .time-section {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  margin-left: 7px;
+  gap: 10px!important;
+  margin-left: 26px!important;
 }
 
 .time-group {
@@ -549,7 +802,7 @@
 
 .time-label {
   font-weight: 500;
-  color: #333;
+  color: #0E5272;
   min-width: 100px;
   text-align: right;
 }
@@ -702,6 +955,7 @@
   flex-direction: row;
   align-items: center;
   gap: 5px;
+  margin-left: 29px!important;
 }
 
 .mint {
@@ -913,23 +1167,31 @@
 
 .stempelzeit-line {
   cursor: pointer;
-  // margin: 16px;
-  margin-top: 0!important;
+  margin: 0 !important;
+  // padding: 10px 0 25px 0;
   border-bottom: 1px solid #F0F0F0;
-
-  padding: 10px 0 25px 20%;
   transition: background-color 0.2s ease;
   height: 34px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // gap: 12px;
+
   &:hover {
     background-color: #f5f5f5;
   }
 
   &.selected {
     background-color: #e3f2fd !important;
-    border-left: 4px solid #2E4155;
-    padding-left: calc(20% - 4px);
+    border-left: none !important;
     font-weight: 500;
   }
+}
+
+.tree-node-children {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 .day-node {
@@ -937,14 +1199,32 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 
+  .tree-node-header {
+    padding: 1px 0 !important;
+  }
+
   &:hover {
     background-color: #f5f5f5;
   }
 
   &.selected-day {
     background-color: #e8f4f8 !important;
-    border-left: 3px solid #338E9C;
+    border-left: none !important;
   }
+}
+
+.month-node .tree-node-header {
+  padding: 2px 0 !important;
+}
+
+.detail-line {
+  min-height: 22px;
+}
+
+.type-time-display,
+.arbeitszeit-value,
+.saldo-value {
+  font-weight: bold !important;
 }
 
 .day-button-toggle {
@@ -958,7 +1238,7 @@
 }
 .stempelzeit-range,
 .stempelzeit-type {
-  padding-right: 15px;
+  padding-right: 12px;
   color:#b91c1c ;
 }
 
@@ -1392,4 +1672,409 @@ textarea[matInput] {
 // }
 .type-time-display{
   font-size: 13px;
+}
+
+// Table header background color
+.time-table {
+  .mat-mdc-header-row,
+  .mat-header-row,
+  tr.mat-mdc-header-row,
+  tr.table-header-row {
+    background-color: #338E9C !important;
+  }
+
+  th.mat-mdc-header-cell,
+  th.mat-header-cell,
+  .mat-mdc-header-cell {
+    background-color: #338E9C !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-bottom: none !important;
+  }
+
+  // Body cells use the red accent at 13px. Tighter horizontal padding so the
+  // table fits within the right panel without a horizontal scrollbar.
+  // Row-specific classes (.row-default, etc.) and inline saldo colors still
+  // override via !important / inline styles.
+  td.mat-mdc-cell,
+  td.mat-cell {
+    color: #b91c1c !important;
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+  }
+
+  th.mat-mdc-header-cell,
+  th.mat-header-cell {
+    font-size: 14px !important;
+    padding: 6px 8px !important;
+  }
+
+  td.mat-mdc-footer-cell,
+  td.mat-footer-cell {
+    padding: 6px 8px !important;
+  }
+
+  td.mat-column-uhrzeit,
+  th.mat-column-uhrzeit {
+    white-space: nowrap;
+  }
+
+  // Saldo body cells: look exactly like the other body cells — same red,
+  // normal weight, 13px. Inline [style.color]/[style.font-weight] on the
+  // span are overridden via !important. Footer (Summe) keeps its bold style.
+  tr.mat-mdc-row td.mat-column-saldo span,
+  tr.mat-row td.mat-column-saldo span {
+    color: #b91c1c !important;
+    font-weight: normal !important;
+    font-size: 13px !important;
+  }
+
+  // Footer (Summe) row styling
+  .table-summe-row,
+  tr.mat-mdc-footer-row,
+  tr.mat-footer-row {
+    background-color: #f1f3f5 !important;
+    font-weight: bold;
+  }
+
+  td.mat-mdc-footer-cell,
+  td.mat-footer-cell {
+    color: #000 !important;
+    font-weight: bold !important;
+    border-top: 1px solid #d0d0d0 !important;
+    padding: 8px 16px;
+  }
+
+  .summe-cell {
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+
+  .summe-value-cell {
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+}
+
+// Menu icon styling for Druck-Monatsubersicht
+.menu-mdi-icon {
+  font-size: 18px;
+  margin-right: 8px;
+  color: #2E4155;
+}
+.month-menu-panel {
+  .mat-mdc-menu-item {
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Level 2 (Stempelzeit) form border color override
+.stempelzeit-form-panel,
+.day-form {
+  // First form-field-group in the day form is Arbeitszeit — its input
+  // value renders in red regardless of readonly/disabled state.
+  .form-field-group:first-of-type input.mat-mdc-input-element {
+    color: #C01020 !important;
+    -webkit-text-fill-color: #C01020 !important;
+  }
+
+  .mat-mdc-form-field,
+  .field-input {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #e6e3e3 !important;
+      border-width: 1px !important;
+    }
+  }
+
+  .field-input.mat-mdc-form-field .mdc-notched-outline > * {
+    border-color: #e6e3e3 !important;
+  }
+
+  .mat-mdc-text-field-wrapper,
+  .mat-mdc-form-field-flex {
+    border-color: #e6e3e3 !important;
+  }
+
+  .time-value,
+  .dash {
+    border: 1px solid #e6e3e3 !important;
+  }
+
+  .datum,
+  input.datum {
+    border-color: #e6e3e3 !important;
+  }
+}
+
+::ng-deep .stempelzeit-form-panel,
+::ng-deep .day-form {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #e6e3e3 !important;
+  }
+}
+
+// Day Form: match the vertical rhythm of .stempelzeit-form, add 7px left margin
+// to the field groups, and widen the labels so they don't wrap.
+.day-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .form-field-group {
+    margin-left: 4px;
+    padding-left: 0 !important;
+    gap: 5px !important;
+
+    .field-label {
+      min-width: 180px !important;
+      width: 180px !important;
+    }
+  }
+
+  > .header + .form-field-group {
+    margin-top: 24px;
+  }
+
+  .mat-mdc-form-field,
+  .field-input {
+    &.mat-focused,
+    &:hover,
+    &:focus-within,
+    .mdc-text-field--focused,
+    .mdc-text-field:not(.mdc-text-field--disabled):hover {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #e6e3e3 !important;
+        border-width: 1px !important;
+      }
+    }
+  }
+}
+
+::ng-deep .day-form {
+  .mdc-text-field--focused,
+  .mat-focused,
+  .mdc-text-field:hover {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #e6e3e3 !important;
+      border-width: 1px !important;
+    }
+  }
+}
+
+// Level 3 (Stempelzeit line) — must be MORE indented than level 2 (day-node)
+// because level 3 is a child of level 2. day-node has padding-left: 8%,
+// so we add extra padding on top of that for the stempelzeit-line.
+.day-node .tree-node-children {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+.stempelzeit-line {
+  justify-content: flex-start !important;
+  padding-left: 102px !important; // extra indent beyond the inherited day-node padding
+  gap: 8px;
+  font-size: 14px;
+
+  .stempelzeit-range,
+  .stempelzeit-type,
+  .stempelzeit-anmerkung {
+    padding-right: 8px;
+    font-size: 14px;
+  }
+}
+
+.month-name{
+  margin-left: 5px!important;
+}
+
+// Right-panel forms: base font-size 14px, and form headers not bold
+.right-panel {
+  font-size: 14px;
+
+  // form headers (Month title, Day title, Stempelzeit title) — not bold
+  .header-title,
+  .right-header,
+  .form-header h2,
+  .header .header-title,
+  .form-header .right-header {
+    font-weight: normal !important;
+  }
+
+  // form labels, inputs, dropdowns, buttons inside right-side forms = 14px
+  .field-label,
+  .time-label,
+  .time-unit,
+  .group-one label,
+  .group-two label,
+  input,
+  textarea,
+  .mat-mdc-form-field,
+  .mat-mdc-input-element,
+  .mat-mdc-select,
+  .mat-mdc-select-value,
+  .mat-mdc-option,
+  button,
+  .form-control {
+    font-size: 14px !important;
+  }
+}
+
+.zivildiener-date-panel{
+  width:200px!important;
+  max-width: 200px!important;
+  min-width: 200px!important;
+}
+
+/* =========================================================================
+   Responsive layout — same pattern as vertrag-detail-2 / produkte-details:
+     - <=1400px: stack left tree + right form panels into a single column,
+                 let the whole component scroll vertically.
+     - <=900px:  tighter field/label widths and form padding.
+     - <=600px:  stack labels above inputs and let fields fill width.
+   ========================================================================= */
+@media (max-width: 1400px) {
+  :host {
+    display: block !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin !important;
+  }
+  :host::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+    display: block !important;
+  }
+  :host::-webkit-scrollbar-thumb {
+    background: #b0b0b0;
+    border-radius: 5px;
+  }
+
+  .content {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  // Let both panels grow to their natural content height. The single
+  // scrollbar comes from the host (app-zivildiener-detail) — no per-panel
+  // scrollbars.
+  .left-panel,
+  .right-panel {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 280px;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  // Slightly narrower labels so day/stempelzeit forms still fit comfortably.
+  .day-form .field-label,
+  .stempelzeit-form-panel .field-label,
+  .stempelzeit-form-panel .time-label {
+    min-width: 160px !important;
+    width: 160px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .day-form .form-field-group,
+  .stempelzeit-form-panel .form-field-group {
+    padding-left: 4% !important;
+  }
+
+  .day-form .field-input,
+  .stempelzeit-form-panel .field-input,
+  .stempelzeit-form-panel .field-input.date-field {
+    width: 240px !important;
+    max-width: 240px !important;
+    flex: 0 0 240px;
+  }
+
+  .day-form .field-label,
+  .stempelzeit-form-panel .field-label,
+  .stempelzeit-form-panel .time-label {
+    min-width: 130px !important;
+    width: 130px !important;
+  }
+
+  .stempelzeit-form {
+    width: 100% !important;
+    padding-left: 12px !important;
+  }
+
+  .form-field-group {
+    width: auto !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .day-form .form-field-group,
+  .stempelzeit-form-panel .form-field-group {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding-left: 8px !important;
+    gap: 4px !important;
+  }
+
+  .day-form .field-label,
+  .stempelzeit-form-panel .field-label,
+  .stempelzeit-form-panel .time-label {
+    text-align: left !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .day-form .field-input,
+  .stempelzeit-form-panel .field-input,
+  .stempelzeit-form-panel .field-input.date-field {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100%;
+  }
+
+  .form-header,
+  .header {
+    height: auto !important;
+    min-height: 43px;
+    flex-wrap: wrap;
+  }
+
+  .header-title,
+  .right-header {
+    font-size: 14px !important;
+  }
+
+  // Stempelzeit time-section: keep the Anmelde/Abmelde rows readable
+  .stempelzeit-form-panel .time-section {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-left: 0 !important;
+  }
+}
+
+// Exact 1920×1080 (Full HD) — tighter Anmelde/Abmelde indent
+@media (width: 1920px) and (height: 1080px) {
+  .time-section {
+    margin-left: 37px !important;
+  }
+}
+
+// Anything wider than 1920 — more room, push the time section further in
+@media (min-width: 1922px) {
+  .time-section {
+    margin-left: 56px !important;
+  }
 }

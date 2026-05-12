@@ -63,7 +63,7 @@ export const routes: Routes = [
   { path: 'bereitschaftkorrigieren', component: BereitschaftKorrigierenListComponent },
   { path: 'bereitschaftkorrigieren/:id', component: BereitschaftKorrigierenDetailsComponent ,  canActivate: [refreshGuard]},
   { path: 'zivildiener', component: ZivildienerListComponent },
-  { path: 'zivildiener/:id', component: ZivildienerDetailComponent ,  canActivate: [refreshGuard]},
+  { path: 'zivildiener/:id', component: ZivildienerDetailComponent },
   { path: 'stempelzeiten', component: StempelzeitList2Component },
   { path: 'stempelzeiten/:id', component: StempelzeitDetails2Component ,  canActivate: [refreshGuard]},
 

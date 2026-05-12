@@ -38,7 +38,9 @@
 }
 
 .left-panel {
-  flex: 1 1 50%;
+  flex: 0 0 50%;
+  width: 50%;
+  max-width: 50%;
   min-width: 0;
   height: 100vh; /* Fixed height */
   display: flex;
@@ -202,7 +204,7 @@ i.mdi.icon-header-alarm,
 }
 
 .calendar-icon {
-  font-size: 16px;
+  font-size: 10pt;
   color: #2E4155;
 }
 
@@ -589,8 +591,7 @@ i.mdi.icon-header-alarm,
   .anmerkung-textarea{
     width: 32%!important;
   }
-  .time-section{
-  }
+
   .stempel-input{  width: 32%!important;
   }
 }
@@ -782,7 +783,6 @@ mat-tree-node {
 
   &.selected {
     background-color: #e3f2fd;
-    border-left: 4px solid #2E4155;
   }
 }
 
@@ -1209,7 +1209,6 @@ margin-top: 5px!important;
   max-height: calc(100vh - 220px); /* Adjust based on your header height */
 }
 
-/* Responsive: stack panels and let fields shrink on narrower screens */
 @media (max-width: 1400px) {
   .container2 {
     flex-direction: column !important;

@@ -74,11 +74,13 @@ export class TreeNodeService {
 
       monthNode.children.push(dayNode);
 
-      // Sort days by date (newest first)
+      // Sort days by date (oldest first) — matches the order used by
+      // transformToTreeStructure on initial load, so saving day 8 doesn't
+      // suddenly drop below day 11.
       monthNode.children.sort((a, b) => {
         const dateA = getDateFromFormattedDayFn(a.name || '');
         const dateB = getDateFromFormattedDayFn(b.name || '');
-        return dateB.getTime() - dateA.getTime();
+        return dateA.getTime() - dateB.getTime();
       });
     }
 

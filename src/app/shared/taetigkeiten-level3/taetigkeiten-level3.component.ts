@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { TaetigkeitenTimeBoxComponent } from '../components/taetigkeiten-time-box/taetigkeiten-time-box.component';
 import { ApiProdukt } from '../../models/ApiProdukt';
@@ -30,6 +31,7 @@ import { ApiBuchungsart } from '../../models/ApiBuchungsart';
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTooltipModule,
     TextFieldModule,
     TaetigkeitenTimeBoxComponent,
   ],
@@ -37,6 +39,26 @@ import { ApiBuchungsart } from '../../models/ApiBuchungsart';
   styleUrl: './taetigkeiten-level3.component.scss',
 })
 export class TaetigkeitenLevel3Component {
+  /** Tooltip strings — edit here, not in the template. */
+  readonly tooltips = {
+    loeschen: 'Löschen',
+    abbrechen: 'Abbrechen',
+    speichern: 'Speichern',
+    bearbeiten: 'Bearbeiten',
+  };
+
+  /** Resolves the left header button's tooltip based on the current state. */
+  get leftButtonTooltip(): string {
+    return this.isEditing || this.isCreatingNew || this.isNewlyCreated
+      ? this.tooltips.abbrechen
+      : this.tooltips.loeschen;
+  }
+
+  /** Resolves the right (edit/save) header button's tooltip. */
+  get editSaveTooltip(): string {
+    return this.isEditing ? this.tooltips.speichern : this.tooltips.bearbeiten;
+  }
+
   @Input() formGroup!: FormGroup;
   @Input() title: string = 'Tätigkeit';
 
@@ -54,12 +76,15 @@ export class TaetigkeitenLevel3Component {
   @Input() saveAttempted: boolean = false;
   @Input() canEditTimeSection: boolean = false;
   @Input() showHeader: boolean = true;
+  @Input() showDatum: boolean = true;
+  @Input() showDuration: boolean = false;
+  @Input() dauerStundenMax: number = 24;
 
   @Output() cancel = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Output() save = new EventEmitter<void>();
   @Output() edit = new EventEmitter<void>();
-  @Output() validateTime = new EventEmitter<'anmeldezeit' | 'abmeldezeit'>();
+  @Output() validateTime = new EventEmitter<'anmeldezeit' | 'abmeldezeit' | 'duration'>();
 
   getBuchungsartDisplay(key: string): string {
     return ApiZeitTyp[key as keyof typeof ApiZeitTyp] ?? key;
@@ -72,6 +97,25 @@ export class TaetigkeitenLevel3Component {
   onTimeChange(field: string, value: number, timeType: 'anmeldezeit' | 'abmeldezeit'): void {
     this.formGroup.get(field)?.patchValue(value);
     this.validateTime.emit(timeType);
+  }
+
+  get isDauerEmpty(): boolean {
+    const h = Number(this.formGroup?.get('durationStunde')?.value || 0);
+    const m = Number(this.formGroup?.get('durationMinuten')?.value || 0);
+    return h === 0 && m === 0;
+  }
+
+  onDurationHourChange(value: number): void {
+    this.formGroup.get('durationStunde')?.patchValue(value);
+    if (value === this.dauerStundenMax) {
+      this.formGroup.get('durationMinuten')?.patchValue(0);
+    }
+    this.validateTime.emit('duration');
+  }
+
+  onDurationMinuteChange(value: number): void {
+    this.formGroup.get('durationMinuten')?.patchValue(value);
+    this.validateTime.emit('duration');
   }
 
   get isAnmerkungEmpty(): boolean {

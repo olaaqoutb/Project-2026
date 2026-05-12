@@ -1,0 +1,62 @@
+<h2 mat-dialog-title class="custom-dialog-title">Stundensatz-Änderung erzeugen</h2>
+
+<mat-dialog-content class="dialog-body">
+  <!-- Aktivierungsdatum (required) -->
+  <div class="field-row">
+    <label class="field-label" for="aktivierungsdatum">Aktivierungsdatum:</label>
+    <mat-form-field
+      appearance="outline"
+      class="dialog-field date-field"
+      [class.invalid-required]="saveAttempted && (isDateMissing() || isDateDuplicate())"
+    >
+      <input
+        matInput
+        id="aktivierungsdatum"
+        [matDatepicker]="datumPicker"
+        [(ngModel)]="aktivierungsdatum"
+        placeholder="TT.MM.JJJJ"
+        autocomplete="off"
+      />
+      <mat-datepicker-toggle matSuffix [for]="datumPicker" class="date-icon"></mat-datepicker-toggle>
+      <mat-datepicker #datumPicker panelClass="vertrag-stundensatz-date-panel"></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+  <!-- Stundensatz (optional) -->
+  <div class="field-row">
+    <label class="field-label" for="stundensatz">Stundensatz:</label>
+    <mat-form-field appearance="outline" class="dialog-field">
+      <input
+        matInput
+        id="stundensatz"
+        type="number"
+        step="0.01"
+        [(ngModel)]="stundensatz"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+
+  <!-- Validation summary -->
+  <div class="error-summary" *ngIf="saveAttempted && hasErrors()">
+    <p class="error-title">Es sind Eingabefehler aufgetreten</p>
+    <p class="error-msg" *ngIf="isDateDuplicate()">
+      Dieses 'Aktivierungsdatum' ist bereits vorhanden!
+    </p>
+    <p class="error-msg" *ngIf="isDateMissing()">
+      Bitte geben Sie ein Aktivierungsdatum ein.
+    </p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-raised-button class="dialog-btn dialog-btn-secondary" (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    <span>Abbrechen</span>
+  </button>
+  <span class="spacer"></span>
+  <button mat-raised-button class="dialog-btn dialog-btn-primary" (click)="onOk()">
+    <mat-icon>check</mat-icon>
+    <span>OK</span>
+  </button>
+</mat-dialog-actions>

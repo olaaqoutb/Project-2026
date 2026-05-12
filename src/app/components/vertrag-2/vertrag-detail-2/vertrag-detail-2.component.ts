@@ -39,6 +39,8 @@ import {
   StundensatzAendeungDialogComponent,
   StundensatzAendeungDialogResult,
 } from '../../dialogs/Stundensatz-aendeung-dialog/stundensatz-aendeung-dialog/stundensatz-aendeung-dialog.component';
+import { StundensatzAenderungListComponent } from '../stundensatz-aenderung-list/stundensatz-aenderung-list.component';
+import { StundensatzAenderungEntry } from '../../dialogs/stundensatz-aenderung-create-dialog/stundensatz-aenderung-create-dialog.component';
 import { FlatNode } from '../../../models/Flat-node';
 import { TaetigkeitNode } from '../../../models/TaetigkeitNode';
 import { VertragService } from '../../../services/vertrag.service';
@@ -109,6 +111,7 @@ export const MY_DATE_FORMATS: MatDateFormats = {
     MatTooltipModule,
     MatCardModule,
     MatToolbarModule,
+    StundensatzAenderungListComponent,
 
   ],
   providers: [
@@ -124,6 +127,9 @@ vertragForm!: FormGroup;
   positionDetailForm!: FormGroup;
   verbraucherDetailForm!: FormGroup;
   childDetailForm!: FormGroup;
+  // Inline Stundensatz-Änderung rows shown next to the date/satz buttons in
+  // the Verbraucher form. Replaces the old free-text textarea.
+  stundensatzAenderungen: StundensatzAenderungEntry[] = [];
   isFormEditable = false;
   isPositionFormEditable = false;
   isVerbraucherFormEditable = false;
@@ -272,6 +278,7 @@ private loadRollenbezeichnungen(): void {
     });
 }
  addVertragsposition(): void {
+  if (this.isTopVertragFormBusy) return; // top Vertrag form is being edited/created
   this.cancelAndResetNewFlags();
 
   const newPosition: VertragTreeNode = {
@@ -318,6 +325,7 @@ private loadRollenbezeichnungen(): void {
 
 addVerbraucher(parentNode: VertragTreeNode, event: Event): void {
   event.stopPropagation();
+  if (this.isTopVertragFormBusy) return; // top Vertrag form is being edited/created
   this.cancelAndResetNewFlags();
 
   if (!parentNode || parentNode.level !== 1) return;
@@ -362,8 +370,16 @@ addVerbraucher(parentNode: VertragTreeNode, event: Event): void {
 canAddStundenplanung(node: FlatNode): boolean {
   return node && node.level === 2;
 }
+
+// True while the top Vertrag form is in create OR edit mode. Used to
+// block any tree creation / selection / expansion (the user is busy
+// finishing the top form first).
+get isTopVertragFormBusy(): boolean {
+  return this.isFormEditable === true;
+}
      addStundenplanung(parentNode: VertragTreeNode, event: Event): void {
   event.stopPropagation();
+  if (this.isTopVertragFormBusy) return; // top Vertrag form is being edited/created
   this.cancelAndResetNewFlags();
 
   if (!parentNode || parentNode.level !== 2) return;
@@ -452,7 +468,7 @@ private buildOption(enumObj: Record<string, string>): string[] {
       stundensatz: [''],
       StundensatzAnderung:[''],
       stundenkontingent: [''],
-      volumenEuro: ['', Validators.required],
+      volumenEuro: [''],            // no longer required — only Verbrauchertyp is required by default
       anmerkung: ['']
     });
     this.verbraucherDetailForm.disable();
@@ -462,35 +478,52 @@ private buildOption(enumObj: Record<string, string>): string[] {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((typ: string) => {
         this.applyVerbraucherRequiredValidators(typ);
+        // Picking a Verbrauchertyp must always reveal its dependent fields
+        // in their normal (non-red) state — even if the user previously
+        // clicked save with an empty form. They have to click Save again
+        // to see the new fields highlighted.
+        this.verbraucherSubmitAttempted = false;
       });
   }
 
   private applyVerbraucherRequiredValidators(typ: string): void {
+    // Intentionally a no-op now. We don't add Validators.required dynamically
+    // anymore, otherwise Material auto-paints the fields red as soon as the
+    // user picks a Verbrauchertyp (before any save attempt). Required-ness
+    // by typ is enforced manually in saveVerbraucherDetails via
+    // isVerbraucherRequiredMissing(...).
+    void typ;
     const personCtl = this.verbraucherDetailForm.get('person');
     const stundensatzCtl = this.verbraucherDetailForm.get('stundensatz');
     const stundenkontingentCtl = this.verbraucherDetailForm.get('stundenkontingent');
     const verbraucherCtl = this.verbraucherDetailForm.get('verbraucher');
-
-    if (typ === 'Personal') {
-      personCtl?.setValidators([Validators.required]);
-      stundensatzCtl?.setValidators([Validators.required]);
-      stundenkontingentCtl?.setValidators([Validators.required]);
-      verbraucherCtl?.clearValidators();
-    } else if (typ === 'Sachmittel') {
-      verbraucherCtl?.setValidators([Validators.required]);
-      personCtl?.clearValidators();
-      stundensatzCtl?.clearValidators();
-      stundenkontingentCtl?.clearValidators();
-    } else {
-      personCtl?.clearValidators();
-      stundensatzCtl?.clearValidators();
-      stundenkontingentCtl?.clearValidators();
-      verbraucherCtl?.clearValidators();
-    }
+    personCtl?.clearValidators();
+    stundensatzCtl?.clearValidators();
+    stundenkontingentCtl?.clearValidators();
+    verbraucherCtl?.clearValidators();
     personCtl?.updateValueAndValidity({ emitEvent: false });
     stundensatzCtl?.updateValueAndValidity({ emitEvent: false });
     stundenkontingentCtl?.updateValueAndValidity({ emitEvent: false });
     verbraucherCtl?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  // Checks whether a Verbraucher field is required-by-typ AND empty.
+  // Used in the template (gated by verbraucherSubmitAttempted) so the red
+  // highlight only appears AFTER the user clicks Save and the field is
+  // actually missing — Material itself never marks the field invalid.
+  isVerbraucherRequiredMissing(field: string): boolean {
+    const value = this.verbraucherDetailForm.get(field)?.value;
+    const empty = value === null || value === undefined || value === '';
+    if (field === 'verbraucherTyp') return empty;
+
+    const typ = this.verbraucherDetailForm.get('verbraucherTyp')?.value;
+    if (typ === 'Personal') {
+      return ['person', 'stundensatz', 'stundenkontingent'].includes(field) && empty;
+    }
+    if (typ === 'Sachmittel') {
+      return field === 'verbraucher' && empty;
+    }
+    return false;
   }
 
 private initChildDetailForm(): void {
@@ -646,11 +679,40 @@ private encodeToApi(map: Record<string, string>, value: string | null | undefine
   // Main Form Actions (Vertrag)
 onEditOrSubmit(): void {
   if (!this.isFormEditable) {
+    // Top form is stronger than any inner form — entering edit mode on the
+    // top Vertrag form closes any tree-level form that is currently being
+    // edited or newly created.
+    this.closeAnyInnerEdit();
+
     this.isFormEditable = true;
     this.vertragForm.enable();
   } else {
     this.onSubmit();
   }
+}
+
+// Close any tree-level form (Vertragsposition / Verbraucher / Stundenplanung)
+// that is currently in edit mode or pending creation. Used when the top
+// Vertrag form enters edit mode — the top form always wins.
+private closeAnyInnerEdit(): void {
+  // Discard any new node that is pending in the tree (not yet saved).
+  this.cancelAndResetNewFlags();
+
+  if (this.isPositionFormEditable) {
+    this.cancelPositionDetails();
+  }
+  if (this.isVerbraucherFormEditable) {
+    this.cancelVerbraucherDetails();
+  }
+  if (this.isChildFormEditable) {
+    this.cancelChildDetails();
+  }
+  this.isPositionFormEditable = false;
+  this.isVerbraucherFormEditable = false;
+  this.isChildFormEditable = false;
+  this.positionSubmitAttempted = false;
+  this.verbraucherSubmitAttempted = false;
+  this.childSubmitAttempted = false;
 }
 onSubmit(): void {
   this.vertragSubmitAttempted = true;
@@ -749,6 +811,10 @@ onSubmit(): void {
   }
 }
 selectPosition(position: VertragTreeNode): void {
+  // While the top Vertrag form is being created/edited the user can still
+  // browse the tree (select + expand) — they just can't enter edit mode
+  // for the inner forms or create new tree nodes.
+
   if (this.selectedPosition?.id === position.id && !position.isNew) {
     return;
   }
@@ -769,7 +835,52 @@ selectPosition(position: VertragTreeNode): void {
 toggleExpand(position: VertragTreeNode, event: Event): void {
   event.stopPropagation();
   if (position.isNew) return;
-  position.isExpanded = !position.isExpanded;
+
+  const willExpand = !position.isExpanded;
+  position.isExpanded = willExpand;
+
+  // Single-expansion rule: when opening a node, close every other node at
+  // the SAME level (and below) so only one branch is open per level.
+  if (willExpand) {
+    this.collapseSiblingsAndDeeper(position);
+  }
+}
+
+// Walk the whole tree; collapse any node that is at the same level as
+// `opened` OR deeper, except `opened` itself and its ancestors. Effect:
+// opening a level-1 closes all other level-1s (and their children);
+// opening a level-2 closes all other level-2s (and their children).
+private collapseSiblingsAndDeeper(opened: VertragTreeNode): void {
+  const ancestors = new Set<VertragTreeNode>();
+  this.collectAncestors(this.vertragspositionen, opened, [], ancestors);
+
+  const walk = (nodes: VertragTreeNode[] | undefined): void => {
+    if (!nodes) return;
+    for (const n of nodes) {
+      if (n !== opened && !ancestors.has(n) && n.level >= opened.level && n.isExpanded) {
+        n.isExpanded = false;
+      }
+      walk(n.children);
+    }
+  };
+  walk(this.vertragspositionen);
+}
+
+private collectAncestors(
+  nodes: VertragTreeNode[] | undefined,
+  target: VertragTreeNode,
+  trail: VertragTreeNode[],
+  out: Set<VertragTreeNode>
+): boolean {
+  if (!nodes) return false;
+  for (const n of nodes) {
+    if (n === target) {
+      trail.forEach(a => out.add(a));
+      return true;
+    }
+    if (this.collectAncestors(n.children, target, [...trail, n], out)) return true;
+  }
+  return false;
 }
 
 private doSelectPosition(position: VertragTreeNode): void {
@@ -884,6 +995,10 @@ private doSelectPosition(position: VertragTreeNode): void {
 // }
   onEditOrSubmitPositionOrChild(): void {
     if (!this.selectedPosition) return;
+    // While the top Vertrag form is being created/edited, the inner forms
+    // are view-only — block the Bearbeiten / Speichern button so the user
+    // can't enter edit mode on a selected level.
+    if (this.isTopVertragFormBusy) return;
 
     if (this.selectedPosition.typ === 'Vertragsposition') {
       if (!this.isPositionFormEditable) {
@@ -1076,12 +1191,18 @@ private savePositionDetails(): void {
  private saveVerbraucherDetails(): void {
   if (!this.selectedPosition) return;
   this.verbraucherSubmitAttempted = true;
-  if (this.verbraucherDetailForm.invalid) {
-    this.verbraucherDetailForm.markAllAsTouched();
-    this.showErrorDialog(
-      this.buildRequiredErrorMessage(this.verbraucherDetailForm, this.verbraucherLabelMap),
-      VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError
-    );
+
+  // Manual required-field check (no Validators.required on the typ-dependent
+  // fields anymore, so the form is never auto-marked invalid before save).
+  const missingFields = ['verbraucherTyp', 'person', 'stundensatz', 'stundenkontingent', 'verbraucher']
+    .filter(f => this.isVerbraucherRequiredMissing(f));
+
+  if (missingFields.length > 0 || this.verbraucherDetailForm.invalid) {
+    const labels = missingFields.map(f => this.verbraucherLabelMap[f] || f);
+    const detail = labels.length
+      ? `Bitte füllen Sie folgende Felder aus:\n• ${labels.join('\n• ')}`
+      : this.buildRequiredErrorMessage(this.verbraucherDetailForm, this.verbraucherLabelMap);
+    this.showErrorDialog(detail, VERTRAG_DETAIL_MESSAGES.dialogTitles.validationError);
     return;
   }
 
@@ -1367,6 +1488,19 @@ private finalizeChildSave(): void {
   }, { emitEvent: false });
   this.childDetailForm.disable({ emitEvent: false });
 }
+  onStundensatzAenderungenChange(entries: StundensatzAenderungEntry[]): void {
+    this.stundensatzAenderungen = entries;
+    // Mirror the list back into the form control as a serialized summary so
+    // the form is still "dirty" and we can persist it via the existing flow.
+    const serialized = entries
+      .map(e => `${e.aktivierungsdatum} ${(+e.stundensatz).toFixed(2)}`)
+      .join('\n');
+    this.verbraucherDetailForm.get('StundensatzAnderung')?.setValue(serialized, {
+      emitEvent: false,
+    });
+    this.verbraucherDetailForm.markAsDirty();
+  }
+
   openStundensatzAenderungDialog(): void {
     if (!this.selectedPosition || this.selectedPosition.typ !== 'Verbraucher') return;
 

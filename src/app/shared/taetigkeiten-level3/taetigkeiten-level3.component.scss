@@ -36,8 +36,26 @@
   color: rgb(255, 0, 0) !important;
 }
 
+/* Delete button — matches vertrage-detail-2 .btn-loeschen */
+.btn-loeschen {
+  background-color: #b91c1c !important;
+  color: white !important;
+  border-color: #b91c1c !important;
+  height: 34px !important;
+  padding: 7px 10px 7px 15px !important;
+  i.mdi { color: white !important; }
+  mat-icon { color: white !important; }
+  &:hover:not(:disabled) {
+    background-color: #b92222 !important;
+    color: white !important;
+    border-color: #b92222 !important;
+    i.mdi { color: white !important; }
+    mat-icon { color: white !important; }
+  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
 .header-btn {
-  border: 1px solid black !important;
   border-radius: 4px !important;
   padding: 5px !important;
   color: white !important;
@@ -59,10 +77,10 @@
 
   mat-icon,
   .mat-icon {
-    font-size: 16px !important;
-    width: 16px !important;
-    height: 16px !important;
-    line-height: 16px !important;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
     margin-right: 4px;
     display: inline-flex !important;
     align-items: center !important;
@@ -70,8 +88,8 @@
     vertical-align: middle;
   }
 
-  .mdi {
-    font-size: 16px !important;
+  i.mdi {
+    font-size: 18px !important;
     line-height: 1 !important;
     margin-right: 4px;
     display: inline-flex !important;
@@ -121,7 +139,7 @@
 
 .field-label {
   font-weight: 500;
-  color: #333;
+  color: #0e5272;
   width: 160px;
   min-width: 160px;
   flex: 0 0 160px;
@@ -193,7 +211,7 @@
 
 .time-label {
   font-weight: 500;
-  color: #333;
+  color: #0e5272;
   width: 160px;
   min-width: 160px;
   flex: 0 0 160px;
@@ -226,7 +244,7 @@
 
 .time-unit {
   font-weight: 500;
-  color: #333;
+  color: #0e5272;
   min-width: 100px;
   text-align: right;
   margin-bottom: 5px;
@@ -249,6 +267,14 @@
 .field-empty {
   ::ng-deep .mat-mdc-select .mat-mdc-select-trigger,
   ::ng-deep input.mat-mdc-input-element {
+    background-color: #fdecec !important;
+  }
+}
+
+/* Duration time-box empty highlight (alarm new-booking, non-remote) */
+.duration-empty {
+  ::ng-deep .time-value,
+  ::ng-deep .time-input {
     background-color: #fdecec !important;
   }
 }

@@ -1,0 +1,74 @@
+.stundensatz-list {
+  display: flex;
+  align-items: stretch;
+  width: 280px;       // match the width of the other form inputs (.flex-field)
+  min-width: 280px;
+  max-width: 280px;
+  flex: 0 0 280px;
+}
+
+// ───────── rows area ─────────
+.stundensatz-rows {
+  flex: 1;
+  width: 100%;
+  min-height: 56px;
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.stundensatz-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f6f9fa;
+  }
+
+  &.selected {
+    background: #eaf6f8;
+    border-left: 3px solid #338e9c;
+    padding-left: 7px;
+  }
+
+  .entry-date {
+    flex: 0 0 110px;
+    color: #2e4155;
+    font-weight: 500;
+  }
+
+  .entry-satz {
+    flex: 0 0 80px;
+    text-align: right;
+    color: #333;
+  }
+}
+
+.empty-hint {
+  padding: 10px;
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}
+
+.is-disabled {
+  opacity: 0.85;
+  pointer-events: none;
+}

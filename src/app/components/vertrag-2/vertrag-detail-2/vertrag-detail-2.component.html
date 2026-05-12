@@ -795,7 +795,7 @@
               <div class="form-row">
                 <mat-label class="field-label width required">Verbrauchertyp</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
-                  [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('verbraucherTyp')?.invalid">
+                  [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('verbraucherTyp')">
                   <mat-select
                     formControlName="verbraucherTyp"
                     panelClass="drop-down-bottom"
@@ -817,7 +817,7 @@
               >
                 <mat-label class="field-label width required">Verbraucher</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
-                  [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('verbraucher')?.invalid">
+                  [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('verbraucher')">
                   <input matInput formControlName="verbraucher" maxlength="30" />
                 </mat-form-field>
               </div>
@@ -833,7 +833,7 @@
                   <mat-form-field
                     appearance="outline"
                     class="form-field person-width"
-                    [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('person')?.invalid"
+                    [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('person')"
                   >
                     <mat-select
                       formControlName="person"
@@ -869,7 +869,7 @@
                   >Stundensatz inkl. UST.</mat-label
                 >
                 <mat-form-field appearance="outline" class="form-field"
-                  [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('stundensatz')?.invalid">
+                  [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('stundensatz')">
                   <input matInput formControlName="stundensatz" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
@@ -883,7 +883,7 @@
                   >Stundenkontingent jährlich</mat-label
                 >
                 <mat-form-field appearance="outline" class="form-field"
-                  [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('stundenkontingent')?.invalid">
+                  [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('stundenkontingent')">
                   <input
                     matInput
                     formControlName="stundenkontingent"
@@ -893,11 +893,10 @@
                 </mat-form-field>
               </div>
 
-              <!-- Volumen Euro -->
+              <!-- Volumen Euro (optional) -->
               <div class="form-row">
-                <mat-label class="field-label width required">Volumen [Euro]</mat-label>
-                <mat-form-field appearance="outline" class="form-field"
-                  [class.invalid-required]="verbraucherSubmitAttempted && verbraucherDetailForm.get('volumenEuro')?.invalid">
+                <mat-label class="field-label width">Volumen [Euro]</mat-label>
+                <mat-form-field appearance="outline" class="form-field">
                   <input matInput formControlName="volumenEuro" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
@@ -907,15 +906,53 @@
                 class="form-row stundensatz-row"
                 *ngIf="!selectedPosition?.isNew && !selectedPosition?.isPendingCreation"
               >
-                <mat-label class="field-label width">Stundensatz-Änderung</mat-label>
-                <mat-form-field appearance="outline" class="form-field">
-                  <textarea
-                    matInput
-                    formControlName="StundensatzAnderung"
-                    rows="2"
-                    maxlength="50"
-                  ></textarea>
-                </mat-form-field>
+                <div class="stundensatz-label-column">
+                  <mat-label class="field-label width">Stundensatz-Änderung</mat-label>
+                  <div class="stundensatz-action-row">
+                    <button
+                      type="button"
+                      class="stundensatz-action-btn"
+                      [disabled]="!isVerbraucherFormEditable"
+                      (click)="stundensatzList.onCreate()"
+                      matTooltip="Neue Stundensatz-Änderung"
+                      matTooltipPosition="below"
+                      aria-label="Neue Stundensatz-Änderung"
+                    >
+                      <mat-icon>add</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+
+                      class="stundensatz-action-btn"
+                      [disabled]="!isVerbraucherFormEditable"
+                      (click)="stundensatzList.onEdit()"
+                      matTooltip="Ausgewählte Änderung bearbeiten"
+                      matTooltipPosition="below"
+                      aria-label="Bearbeiten"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      
+                      class="stundensatz-action-btn"
+                      [disabled]="!isVerbraucherFormEditable"
+                      (click)="stundensatzList.onCancelSelected()"
+                      matTooltip="Ausgewählte Änderung entfernen"
+                      matTooltipPosition="below"
+                      aria-label="Entfernen"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <app-stundensatz-aenderung-list
+                  #stundensatzList
+                  class="form-field stundensatz-aenderung-list-host"
+                  [entries]="stundensatzAenderungen"
+                  [disabled]="!isVerbraucherFormEditable"
+                  (entriesChange)="onStundensatzAenderungenChange($event)"
+                ></app-stundensatz-aenderung-list>
               </div>
 
               <div class="form-row">

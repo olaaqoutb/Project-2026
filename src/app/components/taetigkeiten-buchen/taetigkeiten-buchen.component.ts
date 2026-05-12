@@ -116,6 +116,13 @@ export class TaetigkeitenBuchenComponent {
   private readonly destroyRef = inject(DestroyRef);
   /** Exposed so the template can read messages.fieldDisplay.* etc. */
   readonly messages = TAETIGKEITEN_BUCHEN_MESSAGES;
+
+  /** Tooltip strings — edit here, not in the template. */
+  readonly tooltips = {
+    headerMenu: 'Weitere Funktionen',
+    newRemoteBooking: 'Neue Remote-Buchung',
+    newBooking: 'Neue Buchung',
+  };
 private readonly baseBuchungsartOptions = ['ARBEITSZEIT', 'REMOTEZEIT'];
 private readonly baseTaetigkeitOptions = Object.values(ApiTaetigkeitTyp);
 
@@ -1179,7 +1186,7 @@ private performDelete(): void {
     this.timeUtilityService.decreaseMinute(this.taetigkeitForm, timeType);
   }
 
-  validateTime(timeType: 'anmeldezeit' | 'abmeldezeit'): void {
+  validateTime(timeType: 'anmeldezeit' | 'abmeldezeit' | 'duration'): void {
     this.timeUtilityService.validateTime(this.taetigkeitForm, timeType);
   }
 

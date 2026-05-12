@@ -135,7 +135,6 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 }
 
-.flex-field-start { position: relative; right: 2px; }
 .position-details-container .position-details-content mat-card { height: 350px !important; }
 .position-details-container .position-details-content { padding: 0 !important; }
 
@@ -330,14 +329,37 @@ button[mat-icon-button], button[mat-button], button[mat-raised-button] {
 }
 
 .mat-mdc-menu-content,
-.mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text {
-  color: #666666 !important;
-  background-color: rgb(241, 246, 246) !important;
+.mat-mdc-menu-content .mat-mdc-menu-item,
+.mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text,
+.mat-mdc-menu-content .mat-mdc-menu-item span {
+  color: #2c3e50 !important;
+  background-color: transparent !important;
   cursor: pointer !important;
   border-radius: 5px !important;
   font-size: 15px !important;
 }
-.mat-mdc-menu-item:hover { background-color: #ffffff !important; cursor: pointer !important; }
+// Disable hover background on menu options entirely.
+.mat-mdc-menu-item,
+.mat-mdc-menu-item:hover,
+.mat-mdc-menu-item:focus,
+.mat-mdc-menu-item.cdk-program-focused,
+.mat-mdc-menu-item.cdk-keyboard-focused,
+.mat-mdc-menu-item.mat-mdc-menu-item-highlighted {
+  background-color: transparent !important;
+  cursor: pointer !important;
+  color: #2c3e50 !important;
+}
+.mat-mdc-menu-item .mat-mdc-focus-indicator,
+.mat-mdc-menu-item::before,
+.mat-mdc-menu-item::after {
+  background: transparent !important;
+  opacity: 0 !important;
+}
+// MDI icons inside menu options also use #2c3e50.
+.mat-mdc-menu-item i.mdi,
+.mat-mdc-menu-item i.mdi::before {
+  color: #2c3e50 !important;
+}
 .mat-mdc-menu-item .mat-icon { font-size: 15px !important; }
 
 .mat-mdc-menu-item i.mdi,
@@ -713,18 +735,103 @@ mat-form-field .child-input { width: 300px !important; }
 }
 
 .position-details-container .position-details-content .form-row.stundensatz-row {
-  align-items: center !important;
+  align-items: flex-start !important;
   height: auto !important;
   margin-top: 0 !important;
   margin-bottom: 10px !important;
 }
 .position-details-container .position-details-content .form-row.stundensatz-row .field-label {
-  align-self: center !important;
+  align-self: flex-start !important;
 }
 .position-details-container .position-details-content .form-row.stundensatz-row textarea.mat-mdc-input-element {
   min-height: 36px !important;
   padding-top: 2px !important;
   padding-bottom: 2px !important;
+}
+
+// Label column on the left: label on top, the 3 action buttons in a
+// single horizontal row directly UNDER the label.
+.stundensatz-label-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 197px; // same width as the .field-label.width — keeps things aligned
+
+  .field-label {
+    margin-bottom: 0 !important;
+  }
+
+  .stundensatz-action-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+  }
+}
+
+// The 3 small action buttons under the label — same height, icons centered.
+.stundensatz-action-btn,
+button.stundensatz-action-btn.mat-mdc-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  line-height: 32px !important;
+  border: 1px solid #c7c7c7 !important;
+  border-radius: 3px !important;
+  background: #fff !important;
+  color: #2e4155 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+
+  // Material wraps the icon in an inner span/button-touch-target. Force
+  // every layer to flex-center so the icon ends up dead-center.
+  ::ng-deep .mat-mdc-button-persistent-ripple,
+  ::ng-deep .mat-mdc-button-ripple,
+  ::ng-deep .mat-mdc-focus-indicator,
+  ::ng-deep .mat-mdc-button-touch-target {
+    display: none !important;
+  }
+
+  mat-icon,
+  .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+    color: #2e4155 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  &:hover:not(:disabled) {
+    background: #f0f4f6 !important;
+    border-color: #338e9c !important;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+
+    mat-icon,
+    .mat-icon {
+      color: #888 !important;
+    }
+  }
 }
 
 .flex-field { min-width: 280px !important; max-width: 280px !important; width: 280px !important; }
