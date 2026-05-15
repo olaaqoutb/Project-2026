@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="custom-dialog-title">Leistungskategorie erzeugen</h2>
+
+<mat-dialog-content class="dialog-body">
+  <!-- Kategorie (required, unique) -->
+  <div class="field-row">
+    <label class="field-label" for="lkKategorie">Kategorie:</label>
+    <mat-form-field
+      appearance="outline"
+      class="dialog-field"
+      [class.invalid-required]="saveAttempted && (isKategorieMissing() || isKategorieDuplicate())"
+    >
+      <input
+        matInput
+        id="lkKategorie"
+        [(ngModel)]="lkKategorie"
+        maxlength="30"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+
+  <!-- Bezeichnung (optional) -->
+  <div class="field-row">
+    <label class="field-label" for="lkBezeichnung">Bezeichnung:</label>
+    <mat-form-field appearance="outline" class="dialog-field">
+      <input
+        matInput
+        id="lkBezeichnung"
+        [(ngModel)]="lkBezeichnung"
+        maxlength="60"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+
+  <!-- Faktor (required, decimal) -->
+  <div class="field-row">
+    <label class="field-label" for="lkFaktor">Faktor:</label>
+    <mat-form-field
+      appearance="outline"
+      class="dialog-field"
+      [class.invalid-required]="saveAttempted && isFaktorMissing()"
+    >
+      <input
+        matInput
+        id="lkFaktor"
+        type="number"
+        step="0.000001"
+        [(ngModel)]="lkFaktor"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+
+  <!-- Validation summary -->
+  <div class="error-summary" *ngIf="saveAttempted && hasErrors()">
+    <p class="error-title">Es sind Eingabefehler aufgetreten</p>
+    <p class="error-msg" *ngIf="isKategorieMissing()">
+      Bitte geben Sie eine Kategorie ein.
+    </p>
+    <p class="error-msg" *ngIf="isKategorieDuplicate()">
+      Diese Kategorie ist bereits vorhanden!
+    </p>
+    <p class="error-msg" *ngIf="isFaktorMissing()">
+      Bitte geben Sie einen Faktor ein.
+    </p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-raised-button class="dialog-btn dialog-btn-secondary" (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    <span>Abbrechen</span>
+  </button>
+  <span class="spacer"></span>
+  <button mat-raised-button class="dialog-btn dialog-btn-primary" (click)="onOk()">
+    <mat-icon>check</mat-icon>
+    <span>OK</span>
+  </button>
+</mat-dialog-actions>

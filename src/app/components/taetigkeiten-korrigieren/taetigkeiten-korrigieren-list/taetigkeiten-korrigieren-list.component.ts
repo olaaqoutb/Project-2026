@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -56,30 +56,27 @@ export class TaetigkeitenKorrigierenListComponent {
      mitarbeiterart: 'asc'
    };
 
-   private static readonly LAST_ROW_KEY = 'taetkor.lastRowId';
-   private static readonly SEARCH_KEY = 'taetkor.search';
-   private static readonly SHOW_INACTIVE_KEY = 'taetkor.showInactive';
-   private static readonly SORT_COLUMN_KEY = 'taetkor.sortColumn';
-   private static readonly SORT_DIRECTION_KEY = 'taetkor.sortDirection';
    selectedRowId: string | null = null;
    activeSortColumn: string | null = null;
 
    constructor(
      private renderer: Renderer2,
      private router: Router,
+     private host: ElementRef<HTMLElement>,
      private taetigkeitenKorrigierenService: TaetigkeitenKorrigierenService,
-   ) {
-     this.searchTerm = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SEARCH_KEY) ?? '';
-     this.showInactive = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SHOW_INACTIVE_KEY) === 'true';
-     this.activeSortColumn = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SORT_COLUMN_KEY);
-     const storedDir = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.SORT_DIRECTION_KEY) as 'asc' | 'desc' | null;
-     if (this.activeSortColumn && storedDir) {
-       this.sortState[this.activeSortColumn] = storedDir;
-     }
-   }
+   ) {}
 
    ngOnInit(): void {
      window.scrollTo(0, 0);
+     // Beim Klick auf den "Zurück"-Pfeil in den Details bekommt diese Liste die
+     // zuletzt geöffnete Person-ID via History-State zurück. So bleibt die
+     // Markierung erhalten, ohne dass wir sessionStorage benötigen. Beim Klick
+     // aus dem Seitenmenü oder von einer anderen Komponente fehlt der State
+     // und die Liste startet wie gewünscht frisch.
+     const restoreId = (history.state && history.state.restoreRowId) as string | undefined;
+     if (restoreId) {
+       this.selectedRowId = restoreId;
+     }
      this.loadDataFromServer();
    }
 
@@ -93,7 +90,9 @@ export class TaetigkeitenKorrigierenListComponent {
          this.attendanceData = this.transformData(data);
          this.applyFilter();
          this.isLoading = false;
-         this.restoreAndScrollToLastRow();
+         if (this.selectedRowId) {
+           this.scrollToSelectedRow();
+         }
        },
        error: (error: any) => {
          console.error('Error loading persons:', error);
@@ -103,25 +102,22 @@ export class TaetigkeitenKorrigierenListComponent {
      });
    }
 
-   onRowClick(row: ApiPerson): void {
-     this.selectedRowId = row.id ?? null;
-     if (row.id) {
-       sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.LAST_ROW_KEY, row.id);
-     }
+   /** Scrollt die zuletzt ausgewählte Zeile innerhalb des Tabellen-Containers
+    *  in die Mitte, ohne die ganze Seite zu verschieben. */
+   private scrollToSelectedRow(): void {
+     if (!this.selectedRowId) return;
+     const id = this.selectedRowId;
+     setTimeout(() => {
+       const container = this.host.nativeElement.querySelector('.table-container') as HTMLElement | null;
+       const row = this.host.nativeElement.querySelector(`[data-row-id="${id}"]`) as HTMLElement | null;
+       if (!container || !row) return;
+       const targetTop = row.offsetTop - (container.clientHeight - row.clientHeight) / 2;
+       container.scrollTop = Math.max(0, targetTop);
+     });
    }
 
-   private restoreAndScrollToLastRow(): void {
-     const lastId = sessionStorage.getItem(TaetigkeitenKorrigierenListComponent.LAST_ROW_KEY);
-     if (!lastId) return;
-     this.selectedRowId = lastId;
-     setTimeout(() => {
-       const el = document.querySelector(`[data-row-id="${lastId}"]`) as HTMLElement | null;
-       const container = document.querySelector('.table-container') as HTMLElement | null;
-       if (!el || !container) return;
-       const elRect = el.getBoundingClientRect();
-       const containerRect = container.getBoundingClientRect();
-       container.scrollTop += (elRect.top - containerRect.top) - (containerRect.height / 2) + (elRect.height / 2);
-     }, 0);
+   onRowClick(row: ApiPerson): void {
+     this.selectedRowId = row.id ?? null;
    }
 
   private transformData(data: ApiPerson[]): ApiPerson[] {
@@ -137,12 +133,10 @@ export class TaetigkeitenKorrigierenListComponent {
 
    ngOnDestroy(): void {}
    onCheckboxChange(): void {
-     sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SHOW_INACTIVE_KEY, String(this.showInactive));
      this.applyFilter();
    }
 
    filterdata(): void {
-     sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SEARCH_KEY, this.searchTerm);
      this.applyFilter();
    }
 
@@ -188,8 +182,6 @@ export class TaetigkeitenKorrigierenListComponent {
      this.sortState[field] = this.sortState[field] === 'asc' ? 'desc' : 'asc';
    }
    this.activeSortColumn = field;
-   sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SORT_COLUMN_KEY, field);
-   sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.SORT_DIRECTION_KEY, this.sortState[field]);
 
    const direction = this.sortState[field];
    const sorted = [...this.filteredData].sort((a, b) => {
@@ -233,12 +225,7 @@ export class TaetigkeitenKorrigierenListComponent {
 
 
   getSortIcon(column: string): string {
-     if (this.sortState[column] === 'asc') {
-       return 'keyboard_arrow_up';
-     } else if (this.sortState[column] === 'desc') {
-       return 'keyboard_arrow_down';
-     }
-     return 'swap_vert';
+     return this.sortState[column] === 'desc' ? 'mdi-chevron-down' : 'mdi-chevron-up';
    }
 
   goToDetails(row: ApiPerson): void {
@@ -248,7 +235,6 @@ export class TaetigkeitenKorrigierenListComponent {
    }
 
    this.selectedRowId = row.id;
-   sessionStorage.setItem(TaetigkeitenKorrigierenListComponent.LAST_ROW_KEY, row.id);
    this.router.navigate(['/edit-activities', row.id]);
  }
 

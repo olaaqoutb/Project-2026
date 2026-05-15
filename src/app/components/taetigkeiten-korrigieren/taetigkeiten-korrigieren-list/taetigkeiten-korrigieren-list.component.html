@@ -54,37 +54,31 @@
 
 
       <ng-container matColumnDef="nachname">
-
-        <th mat-header-cell *matHeaderCellDef >
-          <div class="sort-header" (click)="toggleSort('nachname')">
-          Familienname
-              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'nachname'">{{ getSortIcon('nachname') }}</mat-icon>
-</div>
- </th>
-
-
+        <th mat-header-cell *matHeaderCellDef (click)="toggleSort('nachname')">
+          <div class="sort-header">
+            Familienname
+            <span class="mdi sort-icon" [ngClass]="getSortIcon('nachname')" *ngIf="activeSortColumn === 'nachname'"></span>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let element">{{ element.nachname || "" }}</td>
       </ng-container>
 
       <ng-container matColumnDef="vorname">
-        <th mat-header-cell *matHeaderCellDef >
-          <div class="sort-header" (click)="toggleSort('vorname')">
-          Vorname
-
-
-              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'vorname'">{{ getSortIcon('vorname') }}</mat-icon>
-              </div>
- </th>
+        <th mat-header-cell *matHeaderCellDef (click)="toggleSort('vorname')">
+          <div class="sort-header">
+            Vorname
+            <span class="mdi sort-icon" [ngClass]="getSortIcon('vorname')" *ngIf="activeSortColumn === 'vorname'"></span>
+          </div>
+        </th>
         <td mat-cell *matCellDef="let element">{{ element.vorname || "" }}</td>
       </ng-container>
 
       <ng-container matColumnDef="mitarbeiterart">
-        <th mat-header-cell *matHeaderCellDef >
-          <div class="sort-header" (click)="toggleSort('mitarbeiterart')">
-          Mitarbeiterart
-
-              <mat-icon class="sort-arrow" *ngIf="activeSortColumn === 'mitarbeiterart'">{{getSortIcon('mitarbeiterart')}}</mat-icon>
-            </div>
+        <th mat-header-cell *matHeaderCellDef (click)="toggleSort('mitarbeiterart')">
+          <div class="sort-header">
+            Mitarbeiterart
+            <span class="mdi sort-icon" [ngClass]="getSortIcon('mitarbeiterart')" *ngIf="activeSortColumn === 'mitarbeiterart'"></span>
+          </div>
         </th>
         <td mat-cell *matCellDef="let element">{{ element.mitarbeiterart || "" }}</td>
       </ng-container>

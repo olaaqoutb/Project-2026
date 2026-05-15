@@ -7,9 +7,11 @@
           type="button"
           class="cancel-btn back-btn"
           (click)="onCancel()"
-          aria-label="Zurück zur Liste"
+          [attr.aria-label]="tooltips.zurueck"
+          [matTooltip]="tooltips.zurueck"
+          matTooltipPosition="below"
         >
-          <mat-icon>arrow_back</mat-icon>
+          <i class="mdi mdi-chevron-left mdi-24px icon-header" aria-hidden="true"></i>
         </button>
 
         <button
@@ -19,6 +21,8 @@
           class="cancel-btn"
           (click)="onCancelEdit()"
           [disabled]="saving"
+          [matTooltip]="tooltips.abbrechen"
+          matTooltipPosition="below"
         >
           <mat-icon>close</mat-icon>
           <span>Abbrechen</span>
@@ -34,6 +38,8 @@
           class="save-btn"
           (click)="onEditOrSubmit()"
           [disabled]="saving"
+          [matTooltip]="isFormEditable ? tooltips.speichern : tooltips.bearbeiten"
+          matTooltipPosition="below"
         >
           <mat-icon *ngIf="isFormEditable">check</mat-icon>
           <i *ngIf="!isFormEditable" class="mdi mdi-lead-pencil edit-icon"></i>
@@ -101,7 +107,7 @@
                 formControlName="uebergeordneteEinheitId"
                 [compareWith]="compareOrganisationEinheit"
                 placeholder="< Übergeordnete Org.Einheit wählen >"
-                panelClass="drop-down"
+                panelClass="drop-down-organ"
               >
                 <mat-option [value]="null">&lt; Übergeordnete Org.Einheit wählen &gt;</mat-option>
                 <mat-option *ngFor="let einheit of uebergeordneteEinheiten" [value]="einheit">
@@ -119,7 +125,7 @@
                 formControlName="leitung"
                 [compareWith]="comparePerson"
                 placeholder="< Leitung wählen >"
-                panelClass="drop-down"
+                panelClass="drop-down-organ"
 
               >
                 <mat-option [value]="null">&lt; Leitung wählen &gt;</mat-option>
@@ -133,7 +139,7 @@
 
         <div class="form-box right-box">
           <div class="form-row date-row">
-            <label class="field-label required" for="gueltigVon">Gültig von:</label>
+            <label class="field-label" for="gueltigVon">Gültig von:</label>
             <mat-form-field
               appearance="outline"
               class="field-input date-input boreder"

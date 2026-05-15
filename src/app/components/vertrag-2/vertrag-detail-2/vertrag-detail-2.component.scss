@@ -65,8 +65,48 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .form-column-second { position: relative; left: 15%; }
 .field-row { display: flex !important; align-items: center !important; height: 40px; }
 
-.field-label { width: 110px; font-weight: 500; color: #555; flex-shrink: 0; }
-.field-label.required::after { content: ""; }
+.field-row.top-list-row {
+  align-items: flex-start !important;
+  height: auto !important;
+  margin-bottom: 10px !important;
+  gap: 8px;
+  margin-top:4px!important;
+}
+
+// Right-align numeric inputs everywhere in the Vertrag flow — top form,
+// position details and any dialog opened from this component
+// (custom-dialog-width is the panelClass used by Stundensatz and
+// Leistungskategorie dialogs).
+.form-container input[type="number"],
+.position-details-container input[type="number"],
+.custom-dialog-width input[type="number"],
+// Plain-text inputs that still hold numeric values: target by formControlName
+.form-container input[formControlName="volumen"],
+.form-container input[formControlName="volumenStunden"],
+.form-container input[formControlName="volumenEuro"],
+.form-container input[formControlName="vertragssumme"],
+.form-container input[formControlName="stundenGeplant"],
+.form-container input[formControlName="stundenGebucht"],
+.form-container input[formControlName="lkBasisstundensatz"],
+.form-container input[formControlName="volumenLeistungspunkte"],
+.position-details-container input[formControlName="volumen"],
+.position-details-container input[formControlName="volumenStunden"],
+.position-details-container input[formControlName="volumenEuro"],
+.position-details-container input[formControlName="stundenGeplant"],
+.position-details-container input[formControlName="stundenGebucht"],
+.custom-dialog-width input[formControlName="volumen"],
+.custom-dialog-width input[formControlName="volumenEuro"],
+.custom-dialog-width input[formControlName="stundensatz"],
+.custom-dialog-width input[formControlName="faktor"],
+.custom-dialog-width input[formControlName="basisstundensatz"] {
+  text-align: right !important;
+}
+
+.field-label { width: 110px; font-weight: 500; color: #0e5272; flex-shrink: 0; }
+/* Doppelpunkt automatisch hinter jedem Vertrags-Label – statt das in jedem
+   HTML mat-label einzeln zu pflegen. */
+.field-label::after { content: ":"; }
+.field-label.required::after { content: ":"; }
 
 .checkbox-row { height: 40px; box-sizing: border-box; align-items: center; width: 200px; }
 .checkbox-row-bottom { height: 40px; box-sizing: border-box; align-items: center; width: 200px; position: relative; right: 12px; }
@@ -105,7 +145,7 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 .details-panes-container {
   display: flex; gap: 3px; padding: 0 5px 2rem 5px; background: white;
-  height: calc(100vh - 600px) !important;
+  height: calc(100vh - 900px) !important;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { width: 0; height: 0; display: none; }
@@ -140,20 +180,14 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 #menu-icon-right {
   color: white !important; background: #2E4155; height: 33px;
-  // &:hover:not(:disabled) { background: linear-gradient(to right, #3e5870, #4a5d78); }
 }
 
 .vertragspositionen-container {
   flex: 0 0 50%; width: 50%; min-width: 0; max-width: 50%; box-sizing: border-box;
   display: flex; flex-direction: column; min-height: 0;
-  height: calc(100vh - 300px) !important;
+  height: calc(100vh - 400px) !important;
   border: 1px solid #c7c7c7;
   overflow: hidden;
-
-  /* Only the row icons (level 1/2/3 marker, account, alarm and the
-     inline file-tree icon) should be 10pt. Button icons such as the
-     header "map-marker-plus" or the inline "account-plus" / "alarm"
-     buttons keep their original sizing. */
   .position-item i.mdi.position-icon,
   .position-item i.mdi.position-icon::before,
   .position-item .inline-icon,
@@ -257,7 +291,7 @@ mat-form-field.narrow-date input.mat-mdc-input-element {
 
 .position-details-container {
   flex: 1; display: flex; flex-direction: column; background-color: white;
-  height: calc(100vh - 300px); border: 1px solid #F8F8F8;
+  height: calc(100vh - 400px)!important; border: 1px solid #F8F8F8;
   .header-container {
     display: flex; justify-content: space-between; padding: 0 16px; background-color: #338E9C; height: 40px; flex-shrink: 0;
     .header-left, .header-right { display: flex; align-items: center; }
@@ -577,6 +611,7 @@ mat-form-field .child-input { width: 300px !important; }
   .start-icon-first { position: relative; left: 23px; }
   .bis-date { width: 14px !important; }
   .form-column-second { left: 5%; }
+
 }
 
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
@@ -757,8 +792,27 @@ mat-form-field .child-input { width: 300px !important; }
   align-items: flex-start;
   gap: 6px;
   flex-shrink: 0;
-  width: 197px; // same width as the .field-label.width — keeps things aligned
+  width: 118px;
+  .field-label {
+    margin-bottom: 0 !important;
+  }
 
+  .stundensatz-action-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // justify-content: center;
+    gap: 4px;
+    width: 100%;
+  }
+}
+.stundensatz-label-column-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 197px;
   .field-label {
     margin-bottom: 0 !important;
   }
@@ -1069,6 +1123,9 @@ button.stundensatz-action-btn.mat-mdc-icon-button {
   }
   .child-detail-form .third-level-form { width: 100% !important; }
   .child-detail-form.parent-position3 { right: 0 !important; }
+  .stundensatz-label-column-bottom{
+    width: 205px!important;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1107,6 +1164,23 @@ button.stundensatz-action-btn.mat-mdc-icon-button {
       flex: 1 1 100%;
       text-align: center;
     }
+//     .cdk-overlay-pane:has(.drop-down-bottom) {
+//   width: 300px !important;
+//   min-width: 300px !important;
+//   max-width: 300px !important;
+//   position: relative !important;
+//   left: 9px !important;
+// }
+
+// div.mat-mdc-select-panel.drop-down-bottom,
+// .cdk-overlay-pane .mat-mdc-select-panel.drop-down-bottom {
+//   width: 300px !important;
+//   min-width: 300px !important;
+//   max-width: 300px !important;
+//   box-sizing: border-box !important;
+//   position: relative !important;
+//   left: 9px !important;
+// }
   }
 
   .field-row {
@@ -1149,30 +1223,30 @@ button.stundensatz-action-btn.mat-mdc-icon-button {
   }
 }
 
-.cdk-overlay-pane:has(.drop-down-bottom) {
-  width: 268px !important;
-  min-width: 268px !important;
-  max-width: 268px !important;
-  position: relative !important;
-  left: 9px !important;
-}
-
-div.mat-mdc-select-panel.drop-down-bottom,
-.cdk-overlay-pane .mat-mdc-select-panel.drop-down-bottom {
-  width: 268px !important;
-  min-width: 268px !important;
-  max-width: 268px !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  left: 9px !important;
-}
-
 .aktiv-bottom { position: relative; right: 11px; }
 .field-label-position { position: relative; right: 5px; }
 
 @media (max-width: 1400px) {
   .checkbox-level1 { position: relative; right: 10px; }
   .aktiv-bottom { position: relative; left: 5px; }
+  .stundensatz-label-column {
+    width: 209px !important;
+    min-width: 209px !important;
+    align-items: flex-end !important;
+    .field-label {
+      text-align: right !important;
+      padding-right: 0 !important;
+      position: relative;
+      right: 10px !important;
+    }
+    // Right-align the 3 action buttons inside the action-row at this
+    // breakpoint. The row itself is `width:100%` filling the column, so
+    // `left`/`translateX` have no useful effect — we need to align the
+    // buttons INSIDE the row instead.
+    .stundensatz-action-row {
+      justify-content: flex-end !important;
+    }
+  }
 }
 
 .field-label,
@@ -1219,4 +1293,7 @@ div.mat-mdc-select-panel.drop-down-bottom,
 
 // .getit-TreeItem-Icon-Inaktiv {
 // 	color: #A03030;
+// }
+// .vertragspositionen-container {
+//   height: calc(100vh - 520px)!important;
 // }

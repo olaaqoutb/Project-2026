@@ -5,8 +5,8 @@
         mat-raised-button
         class="neu-button"
         (click)="createOrganisationseinheit()"
-        aria-label="Neue Organisation anlegen"
-        matTooltip="Neue Organisation anlegen"
+        [attr.aria-label]="tooltips.neu"
+        [matTooltip]="tooltips.neu"
         matTooltipPosition="below"
       >
         <i class="mdi mdi-cards-outline mdi-24px btn-icon" aria-hidden="true"></i>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="right-section">
-      <div class="checkbox-container">
+      <div class="checkbox-container" [matTooltip]="tooltips.inklInaktive" matTooltipPosition="below">
         <mat-checkbox
           class="inkle-inactive"
           [(ngModel)]="includeInactive"
@@ -29,7 +29,7 @@
         </mat-checkbox>
       </div>
 
-      <div class="search-container">
+      <div class="search-container" [matTooltip]="tooltips.suche" matTooltipPosition="below">
         <input
           type="text"
           placeholder="Suche"
@@ -52,9 +52,12 @@
     >
       <ng-container matColumnDef="kurzbezeichnung">
         <th mat-header-cell *matHeaderCellDef class="col-kurzbez">
-          <div class="sort-header" (click)="toggleSort('kurzbezeichnung')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('kurzbezeichnung')">
             Kurzbez
-            <mat-icon class="sort-arrow">{{ getSortIcon('kurzbezeichnung') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'kurzbezeichnung'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('kurzbezeichnung')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-kurzbez">
@@ -64,9 +67,12 @@
 
       <ng-container matColumnDef="bezeichnung">
         <th mat-header-cell *matHeaderCellDef class="col-bezeichnung">
-          <div class="sort-header" (click)="toggleSort('bezeichnung')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('bezeichnung')">
             Bezeichnung
-            <mat-icon class="sort-arrow">{{ getSortIcon('bezeichnung') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'bezeichnung'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('bezeichnung')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-bezeichnung">
@@ -76,9 +82,12 @@
 
       <ng-container matColumnDef="leitung">
         <th mat-header-cell *matHeaderCellDef class="col-leitung">
-          <div class="sort-header" (click)="toggleSort('leitung')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('leitung')">
             Leitung
-            <mat-icon class="sort-arrow">{{ getSortIcon('leitung') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'leitung'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('leitung')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-leitung">
@@ -88,9 +97,12 @@
 
       <ng-container matColumnDef="uebergeordneteEinheit">
         <th mat-header-cell *matHeaderCellDef class="col-uebergeordnet">
-          <div class="sort-header" (click)="toggleSort('uebergeordneteEinheit')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('uebergeordneteEinheit')">
             Überg. Einheit
-            <mat-icon class="sort-arrow">{{ getSortIcon('uebergeordneteEinheit') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'uebergeordneteEinheit'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('uebergeordneteEinheit')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-uebergeordnet">
@@ -100,9 +112,12 @@
 
       <ng-container matColumnDef="gueltigVon">
         <th mat-header-cell *matHeaderCellDef class="col-date">
-          <div class="sort-header" (click)="toggleSort('gueltigVon')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('gueltigVon')">
             Gültig von
-            <mat-icon class="sort-arrow">{{ getSortIcon('gueltigVon') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'gueltigVon'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('gueltigVon')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-date">
@@ -112,9 +127,12 @@
 
       <ng-container matColumnDef="gueltigBis">
         <th mat-header-cell *matHeaderCellDef class="col-date">
-          <div class="sort-header" (click)="toggleSort('gueltigBis')">
+          <div class="sort-header" [matTooltip]="tooltips.sort" matTooltipPosition="below" (click)="toggleSort('gueltigBis')">
             Gültig bis
-            <mat-icon class="sort-arrow">{{ getSortIcon('gueltigBis') }}</mat-icon>
+            <i *ngIf="activeSortColumn === 'gueltigBis'"
+               class="mdi sort-arrow"
+               [ngClass]="getSortIcon('gueltigBis')"
+               aria-hidden="true"></i>
           </div>
         </th>
         <td mat-cell *matCellDef="let org" [ngClass]="getStatusClass(org)" class="col-date">

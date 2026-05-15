@@ -220,6 +220,13 @@ $tablet: 900px;
   align-items: center;
   cursor: pointer;
   user-select: none;
+  gap: 4px;
+}
+
+i.mdi.sort-arrow {
+  font-size: 18px;
+  line-height: 1;
+  color: #2e4155;
 }
 
 // .sort-arrow {

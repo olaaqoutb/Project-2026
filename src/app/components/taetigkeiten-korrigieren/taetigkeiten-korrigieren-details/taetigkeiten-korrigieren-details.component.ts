@@ -85,6 +85,11 @@ export const DATE_FORMATS = {
     TaetigkeitenLevel1Component,
     TaetigkeitenLevel2Component,
     TaetigkeitenLevel3Component,],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
+  ],
   templateUrl: './taetigkeiten-korrigieren-details.component.html',
   styleUrl: './taetigkeiten-korrigieren-details.component.scss'
 })
@@ -175,6 +180,7 @@ export class TaetigkeitenKorrigierenDetailsComponent {
     hasNotification: node.hasNotification || false,
     formData: node.formData,
     stempelzeitData: node.stempelzeitData,
+    buchungData: node.buchungData,
     monthName: node.monthName,
     gebuchtTotal: node.gebuchtTotal,
     dayName: node.dayName,
@@ -310,6 +316,7 @@ export class TaetigkeitenKorrigierenDetailsComponent {
               parseInt(this.selectedOption),
               abschlussInfo,
               true,
+              false,
               true
             );
 
@@ -324,6 +331,12 @@ export class TaetigkeitenKorrigierenDetailsComponent {
 
             this.dataSource.data = treeData;
             this.recomputeAlarmDayKey();
+            // Ersten Monat im Baum automatisch aufklappen, damit der Benutzer
+            // direkt die Tage sieht, ohne den Knoten erst manuell zu öffnen.
+            const firstMonth = this.treeControl.dataNodes.find(n => n.level === 0);
+            if (firstMonth) {
+              this.treeControl.expand(firstMonth);
+            }
             this.isLoading = false;
 
             this.statusPanelService.addMessageRequest(
@@ -353,7 +366,14 @@ export class TaetigkeitenKorrigierenDetailsComponent {
   }
 
   goBackToList() {
-    this.router.navigate(['/edit-activities']);
+    // Beim Klick auf den "Zurück"-Pfeil die zuletzt geöffnete Person-ID an die
+    // Liste mitgeben, damit sie die Zeile wieder hervorhebt und in den
+    // sichtbaren Bereich scrollt. Beim Klick aus dem Seitenmenü oder von einer
+    // anderen Komponente fehlt der State und die Liste startet frisch.
+    const restoreRowId = this.personId;
+    this.router.navigate(['/edit-activities'], restoreRowId
+      ? { state: { restoreRowId } }
+      : {});
   }
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
@@ -450,9 +470,12 @@ export class TaetigkeitenKorrigierenDetailsComponent {
     }
 
     if (this.abschlussInfo?.naechsterBuchbarerTag) {
-      const selectedDate: Date = resolvedDate;
-      const naechsterBuchbarerTag = new Date(this.abschlussInfo.naechsterBuchbarerTag);
-      if (selectedDate < naechsterBuchbarerTag) {
+      // Vergleich als YYYY-MM-DD String, damit Zeitzonen-Versatz
+      // (UTC vs. lokal) bei `new Date('2026-02-08')` nicht zu falschen
+      // "Zeitraum abgeschlossen" Fehlern auf dem ersten erlaubten Tag führt.
+      const selectedDateKey = `${resolvedDate.getFullYear()}-${String(resolvedDate.getMonth() + 1).padStart(2, '0')}-${String(resolvedDate.getDate()).padStart(2, '0')}`;
+      const naechsterDateKey = this.abschlussInfo.naechsterBuchbarerTag.substring(0, 10);
+      if (selectedDateKey < naechsterDateKey) {
         this.openErrorDialog(
           'Zeitraum abgeschlossen',
           `Dieser Zeitraum ist bereits abgeschlossen. Frühestens ab ${this.abschlussInfo.naechsterBuchbarerTag} buchbar.`
@@ -477,6 +500,14 @@ export class TaetigkeitenKorrigierenDetailsComponent {
     }
 
     this.openInfoDialog('Änderungen wurden gespeichert.');
+    this.statusPanelService.addMessage(
+      'success',
+      'PUT',
+      `taetigkeitsbuchung/${this.selectedNode?.stempelzeitData?.id ?? ''}`,
+      '200',
+      0,
+      AppConstants.MSG_TAETIGKEITEN_UPDATED_SUCCESS
+    );
     this.isEditing = false;
     this.isNewlyCreated = false;
     this.formValidationService.disableAllFormControls(this.taetigkeitForm);
@@ -639,6 +670,63 @@ export class TaetigkeitenKorrigierenDetailsComponent {
   createNewThirdLevelForm(parentNode: FlatNode) {
     const parentDate = this.dateParserService.getDateFromFormattedDay(parentNode.dayName || '');
     this.activityFormService.initializeAlarmForm(this.alarmForm, parentDate);
+
+    const lastAbmelde = this.findLastAbmeldezeitForDay(parentNode);
+    if (lastAbmelde) {
+      this.alarmForm.patchValue({
+        anmeldezeitStunde: lastAbmelde.stunde,
+        anmeldezeitMinuten: lastAbmelde.minuten,
+        abmeldezeitStunde: lastAbmelde.stunde,
+        abmeldezeitMinuten: lastAbmelde.minuten,
+      }, { emitEvent: false });
+    }
+  }
+
+  /**
+   * Sucht im Tages-Knoten die späteste Abmeldezeit (Logoff) aller bereits
+   * vorhandenen Tätigkeits-Einträge. Wird genutzt, um beim Anlegen einer
+   * neuen Tätigkeit über den Alarm-Button Anmelde- und Abmeldezeit
+   * vorzubelegen.
+   */
+  private findLastAbmeldezeitForDay(dayNode: FlatNode): { stunde: number; minuten: number } | null {
+    const allNodes = this.treeControl.dataNodes;
+    const dayIdx = allNodes.indexOf(dayNode);
+    if (dayIdx < 0) return null;
+
+    let bestStunde = -1;
+    let bestMinuten = -1;
+    let bestTotalMin = -1;
+
+    for (let i = dayIdx + 1; i < allNodes.length; i++) {
+      const n = allNodes[i];
+      if (n.level <= 1) break;
+      if (n.level !== 2) continue;
+
+      let stunde: number | null = null;
+      let minuten: number | null = null;
+
+      if (n.stempelzeitData?.logoff) {
+        const lo = new Date(n.stempelzeitData.logoff);
+        if (!isNaN(lo.getTime())) {
+          stunde = lo.getHours();
+          minuten = lo.getMinutes();
+        }
+      } else if (n.formData?.abmeldezeit) {
+        stunde = Number(n.formData.abmeldezeit.stunde ?? 0);
+        minuten = Number(n.formData.abmeldezeit.minuten ?? 0);
+      }
+
+      if (stunde !== null && minuten !== null) {
+        const totalMin = stunde * 60 + minuten;
+        if (totalMin > bestTotalMin) {
+          bestTotalMin = totalMin;
+          bestStunde = stunde;
+          bestMinuten = minuten;
+        }
+      }
+    }
+
+    return bestStunde >= 0 ? { stunde: bestStunde, minuten: bestMinuten } : null;
   }
 
   approveNewThirdLevel() {
@@ -825,8 +913,11 @@ export class TaetigkeitenKorrigierenDetailsComponent {
   private performDelete(): void {
     if (!this.selectedNode) return;
 
-    const stempelzeitId = this.selectedNode.stempelzeitData?.id;
-    if (!stempelzeitId) {
+    // Für dauer-basierte Tätigkeiten (keine verlinkte Stempelzeit) existiert
+    // nur eine Buchungs-ID; daher zuerst auf buchungData.id zurückgreifen und
+    // erst dann auf die Stempelzeit-ID.
+    const deleteId = this.selectedNode.buchungData?.id ?? this.selectedNode.stempelzeitData?.id;
+    if (!deleteId) {
       this.openErrorDialog('Fehler beim Löschen', 'Keine ID zum Löschen gefunden.');
       return;
     }
@@ -841,7 +932,7 @@ export class TaetigkeitenKorrigierenDetailsComponent {
     };
 
     const startTime = Date.now();
-    this.taetigkeitenKorrigierenService.updateTaetigkeitsbuchung(stempelzeitId, dto, 'delete').subscribe({
+    this.taetigkeitenKorrigierenService.updateTaetigkeitsbuchung(deleteId, dto, 'delete').subscribe({
       next: (response) => {
         const duration = Date.now() - startTime;
         if (this.deleteNodeFromTree()) {

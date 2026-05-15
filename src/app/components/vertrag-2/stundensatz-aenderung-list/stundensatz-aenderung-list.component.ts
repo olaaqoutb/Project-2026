@@ -32,6 +32,10 @@ import {
 export class StundensatzAenderungListComponent {
   @Input() entries: StundensatzAenderungEntry[] = [];
   @Input() disabled = false;
+  // When true, the create/edit dialog defaults to the 1st of the current
+  // month and any picked date is normalized to the 1st of its month.
+  // Used by the LK-Basisstundensatz-Änderung context in the top Vertrag form.
+  @Input() snapToMonthStart = false;
   @Output() entriesChange = new EventEmitter<StundensatzAenderungEntry[]>();
 
   selectedIndex: number | null = null;
@@ -44,43 +48,41 @@ export class StundensatzAenderungListComponent {
   }
 
   onCreate(): void {
-    if (this.disabled) return;
-    const ref = this.dialog.open(StundensatzAenderungCreateDialogComponent, {
-      panelClass: 'custom-dialog-width',
-      data: {
-        existingDates: this.entries.map(e => e.aktivierungsdatum),
-      },
-    });
-    ref.afterClosed().subscribe((result: StundensatzAenderungEntry | null) => {
-      if (!result) return;
-      const newEntries = [...this.entries, result];
-      newEntries.sort((a, b) =>
-        this.toComparable(a.aktivierungsdatum).localeCompare(this.toComparable(b.aktivierungsdatum))
-      );
-      this.entries = newEntries;
-      this.selectedIndex = newEntries.findIndex(
-        e => e.aktivierungsdatum === result.aktivierungsdatum
-      );
-      this.entriesChange.emit(this.entries);
-    });
+    this.openEntryDialog(null);
   }
 
   onEdit(): void {
-    if (this.disabled || this.selectedIndex === null) return;
-    const current = this.entries[this.selectedIndex];
+    if (this.selectedIndex === null) return;
+    this.openEntryDialog(this.selectedIndex);
+  }
+
+  // Single open/edit path. editIndex === null → create new; otherwise replace
+  // the row at editIndex. Keeps existingDates, sort, selection and emit logic
+  // in one place so create/edit can't drift apart.
+  private openEntryDialog(editIndex: number | null): void {
+    if (this.disabled) return;
+
+    const existingDates = this.entries
+      .filter((_, i) => editIndex === null || i !== editIndex)
+      .map(e => e.aktivierungsdatum);
+
     const ref = this.dialog.open(StundensatzAenderungCreateDialogComponent, {
       panelClass: 'custom-dialog-width',
       data: {
-        existingDates: this.entries
-          .filter((_, i) => i !== this.selectedIndex)
-          .map(e => e.aktivierungsdatum),
-        entry: current,
+        existingDates,
+        snapToMonthStart: this.snapToMonthStart,
+        ...(editIndex !== null ? { entry: this.entries[editIndex] } : {}),
       },
     });
+
     ref.afterClosed().subscribe((result: StundensatzAenderungEntry | null) => {
-      if (!result || this.selectedIndex === null) return;
+      if (!result) return;
       const newEntries = [...this.entries];
-      newEntries[this.selectedIndex] = result;
+      if (editIndex !== null) {
+        newEntries[editIndex] = result;
+      } else {
+        newEntries.push(result);
+      }
       newEntries.sort((a, b) =>
         this.toComparable(a.aktivierungsdatum).localeCompare(this.toComparable(b.aktivierungsdatum))
       );

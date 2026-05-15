@@ -1,7 +1,4 @@
 <div class="stundensatz-list" [class.is-disabled]="disabled">
-  <!-- Rows only (date | satz). The 3 action buttons (create / edit / cancel)
-       live in the parent form-row so they can sit directly UNDER the
-       "Stundensatz-Änderung" label, not beside the rows. -->
   <div class="stundensatz-rows">
     <div
       *ngFor="let entry of entries; let i = index"

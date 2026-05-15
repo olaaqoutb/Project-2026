@@ -51,12 +51,12 @@
 
 <form [formGroup]="formGroup" class="taetigkeit-form">
   <div class="form-field-group">
-    <label class="field-label">Buchungsart</label>
+    <label class="field-label">Buchungsart:</label>
     <mat-form-field appearance="outline" class="field-input">
       <mat-select
         formControlName="buchungsart"
         [compareWith]="compareBuchungsart"
-        [disabled]="!isEditing || isHeaderCreated || (!isCreatingNew && !isNewlyCreated)"
+        [disabled]="!isEditing || isHeaderCreated || (!allowBuchungsartEditAlways && !isCreatingNew && !isNewlyCreated)"
         panelClass="drop-down"
       >
         <mat-option *ngFor="let art of buchungsartOptions" [value]="art">
@@ -67,7 +67,7 @@
   </div>
 
   <div class="form-field-group">
-    <label class="field-label">Produkt</label>
+    <label class="field-label">Produkt:</label>
     <mat-form-field appearance="outline" class="field-input">
       <mat-select
         formControlName="produkt"
@@ -83,7 +83,7 @@
   </div>
 
   <div class="form-field-group">
-    <label class="field-label">Produktposition</label>
+    <label class="field-label">Produktposition:</label>
     <mat-form-field appearance="outline" class="field-input">
       <mat-select
         formControlName="produktposition"
@@ -99,7 +99,7 @@
   </div>
 
   <div class="form-field-group">
-    <label class="field-label">Buchungspunkt</label>
+    <label class="field-label">Buchungspunkt:</label>
     <mat-form-field appearance="outline" class="field-input"
       [class.field-empty]="isFieldEmpty('buchungspunkt') && saveAttempted">
       <mat-select
@@ -116,7 +116,7 @@
   </div>
 
   <div class="form-field-group">
-    <label class="field-label">Tätigkeit</label>
+    <label class="field-label">Tätigkeit:</label>
     <mat-form-field appearance="outline" class="field-input"
       [class.field-empty]="isFieldEmpty('taetigkeit') && saveAttempted">
       <mat-select
@@ -133,7 +133,7 @@
   </div>
 
   <div class="form-field-group" *ngIf="showDatum">
-    <label class="field-label">Datum</label>
+    <label class="field-label">Datum:</label>
     <mat-form-field appearance="outline" class="field-input date-field"
       [class.field-empty]="isFieldEmpty('datum') && saveAttempted">
       <input
@@ -163,7 +163,7 @@
     [class.time-section-locked]="!canEditTimeSection"
     [class.duration-empty]="isDauerEmpty && saveAttempted">
     <div class="time-group">
-      <label class="time-label">Dauer [Stunden]</label>
+      <label class="time-label">Dauer [Stunden]:</label>
       <div class="time-inputs-horizontal">
         <div class="time-column">
           <app-taetigkeiten-time-box
@@ -192,7 +192,7 @@
     [class.time-section-locked]="!canEditTimeSection"
     [class.time-section-empty]="isTimeEmpty && saveAttempted">
     <div class="time-group">
-      <label class="time-label">Anmeldezeit[Stunde]</label>
+      <label class="time-label">Anmeldezeit [Stunde]:</label>
       <div class="time-inputs-horizontal">
         <div class="time-column">
           <app-taetigkeiten-time-box
@@ -215,7 +215,7 @@
     </div>
 
     <div class="time-group">
-      <label class="time-label">Abmeldezeit[Stunde]</label>
+      <label class="time-label">Abmeldezeit [Stunde]:</label>
       <div class="time-inputs-horizontal">
         <div class="time-column">
           <app-taetigkeiten-time-box
@@ -239,7 +239,7 @@
   </div>
 
   <div class="form-field-group">
-    <label class="field-label">Anmerkung</label>
+    <label class="field-label">Anmerkung:</label>
     <mat-form-field
       appearance="outline"
       class="field-input full-width"

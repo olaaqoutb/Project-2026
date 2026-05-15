@@ -28,7 +28,13 @@ import {
   MOCK_FEIERTAGE,
   MOCK_PERSONENVERMERKE,
   MOCK_PERSON_HISTORY,
+  MOCK_PERSON_1500000000579_PRODUKTE,
+  MOCK_PERSON_1500000000579_STEMPELZEITEN,
+  MOCK_PERSON_1500000000579_ABSCHLUSS_INFO,
+  MOCK_PERSON_1500000000579_PERSONENVERMERKE,
 } from './mock-data';
+
+const TEST_PERSON_ID = '1500000000579';
 
 /**
  * Intercepts outgoing HTTP requests and serves mock responses in place of a
@@ -149,12 +155,16 @@ export class MockBackendInterceptor implements HttpInterceptor {
     if (endpoint.match(/^personen\/[^/]+\/disable$/) && m === 'POST') {
       return MOCK_LOGGED_IN_PERSON;
     }
-    if (endpoint.match(/^personen\/[^/]+\/produkte$/) && m === 'GET') {
+    const produkteByPersonMatch = endpoint.match(/^personen\/([^/]+)\/produkte$/);
+    if (produkteByPersonMatch && m === 'GET') {
+      const pid = produkteByPersonMatch[1];
+      if (pid === TEST_PERSON_ID) return MOCK_PERSON_1500000000579_PRODUKTE;
       return MOCK_PRODUKTE;
     }
     const stempelzeitenByPersonMatch = endpoint.match(/^personen\/([^/]+)\/stempelzeiten$/);
     if (stempelzeitenByPersonMatch && m === 'GET') {
       const pid = stempelzeitenByPersonMatch[1];
+      if (pid === TEST_PERSON_ID) return MOCK_PERSON_1500000000579_STEMPELZEITEN;
       const direct = MOCK_STEMPELZEITEN.filter(s => s.person?.id === pid);
       if (direct.length > 0) return direct;
 
@@ -182,13 +192,22 @@ export class MockBackendInterceptor implements HttpInterceptor {
     if (endpoint.match(/^personen\/[^/]+\/teamleiter$/) && m === 'GET') {
       return [MOCK_PERSONEN[0]];
     }
-    if (endpoint.match(/^personen\/[^/]+\/abschluss\/info$/) && m === 'GET') {
+    const abschlussInfoMatch = endpoint.match(/^personen\/([^/]+)\/abschluss\/info$/);
+    if (abschlussInfoMatch && m === 'GET') {
+      const pid = abschlussInfoMatch[1];
+      if (pid === TEST_PERSON_ID) return MOCK_PERSON_1500000000579_ABSCHLUSS_INFO;
       return MOCK_ABSCHLUSS_INFO;
     }
-    if (endpoint.match(/^personen\/[^/]+\/abschluss-info$/) && m === 'GET') {
+    const abschlussInfoDashMatch = endpoint.match(/^personen\/([^/]+)\/abschluss-info$/);
+    if (abschlussInfoDashMatch && m === 'GET') {
+      const pid = abschlussInfoDashMatch[1];
+      if (pid === TEST_PERSON_ID) return MOCK_PERSON_1500000000579_ABSCHLUSS_INFO;
       return MOCK_ABSCHLUSS_INFO;
     }
-    if (endpoint.match(/^personen\/[^/]+\/personenvermerke$/) && m === 'GET') {
+    const vermerkeByPersonMatch = endpoint.match(/^personen\/([^/]+)\/personenvermerke$/);
+    if (vermerkeByPersonMatch && m === 'GET') {
+      const pid = vermerkeByPersonMatch[1];
+      if (pid === TEST_PERSON_ID) return MOCK_PERSON_1500000000579_PERSONENVERMERKE;
       return MOCK_PERSONENVERMERKE;
     }
     if (endpoint.match(/^personen\/[^/]+\/historyAuswertung$/) && m === 'GET') {
@@ -351,7 +370,24 @@ export class MockBackendInterceptor implements HttpInterceptor {
       ) &&
       m === 'POST'
     ) {
-      return { ...(body as any), id: `tb-${Date.now()}`, version: 1 };
+      // Echtes Backend liefert die neu erzeugte Stempelzeit inkl. ID zurück –
+      // diese ID wird vom Frontend für das spätere Löschen gebraucht. Im Mock
+      // synthesizen wir deshalb ebenfalls eine Stempelzeit-ID, sonst schlägt
+      // ein direktes Löschen mit "Keine ID zum Löschen gefunden" fehl.
+      const inBody = (body as any) || {};
+      const responseBody: any = {
+        ...inBody,
+        id: `tb-${Date.now()}`,
+        version: 1,
+      };
+      if (inBody.stempelzeit) {
+        responseBody.stempelzeit = {
+          ...inBody.stempelzeit,
+          id: inBody.stempelzeit.id ?? `sz-${Date.now()}`,
+          version: 1,
+        };
+      }
+      return responseBody;
     }
     const taetigkeitsbuchungMatch = endpoint.match(/^taetigkeitsbuchungen\/([^/]+)$/);
     if (taetigkeitsbuchungMatch && m === 'POST') {

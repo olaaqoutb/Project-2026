@@ -208,7 +208,7 @@ export class TreeNodeService {
         const loginTime = new Date(entry.login);
         const logoffTime = new Date(entry.logoff);
         return `${this.timeUtilityService.formatTime(loginTime)} - ${this.timeUtilityService.formatTime(logoffTime)}`;
-      }).join(', ');
+      }).join(' | ');
 
       return [`Stempelzeiten: ${combinedTimeRanges}`];
     }

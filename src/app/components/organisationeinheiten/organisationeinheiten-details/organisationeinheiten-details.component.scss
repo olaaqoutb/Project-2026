@@ -3,9 +3,6 @@ $tablet: 900px;
 $laptop: 1100px;
 $wide: 1920px;
 
-/* Component-wide font: same Roboto / 14px as the rest of the app.
-   Exclude icon elements — Material Icons / MDI use their own ligature font
-   and forcing Roboto on them would render the icon name as plain text. */
 :host,
 :host *:not(mat-icon):not(.mat-icon):not(.material-icons):not(.material-icons-outlined):not(i.mdi):not([class*="mdi-"]) {
   font-family: Roboto, sans-serif;
@@ -223,7 +220,7 @@ $wide: 1920px;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  // gap: 10px;
   width: 100%;
   align-items: flex-start;
 }
@@ -257,7 +254,7 @@ $wide: 1920px;
   text-align: right;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #333;
+  color: #0e5272;
   padding-right: 4px;
   margin-right: 0;
   white-space: nowrap;
@@ -350,7 +347,7 @@ $wide: 1920px;
 
   .form-columns {
     flex-direction: column;
-    gap: 16px;
+    // gap: 16px;
   }
 
   .form-box {
@@ -534,9 +531,9 @@ $wide: 1920px;
     margin: 0 14px;
   }
 
-  .form-columns {
-    gap: 170px;
-  }
+  // .form-columns {
+  //   gap: 170px;
+  // }
 
   .field-label {
     flex: 0 0 220px;
@@ -557,9 +554,9 @@ $wide: 1920px;
     margin: 0 210px;
   }
 
-  .form-columns {
-    gap: 220px;
-  }
+  // .form-columns {
+  //   gap: 220px;
+  // }
 
   .field-label {
     flex: 0 0 260px;
@@ -590,11 +587,13 @@ $wide: 1920px;
   border: 1px solid #E0E0E0 !important;
 
 }
-::ng-deep .drop-down{
-  min-width: 290px !important;
-   max-width: 290px !important;
-  width:290px !important;
-  margin-left:15px!important
+::ng-deep .drop-down-organ{
+  min-width: 315px !important;
+   max-width: 315px !important;
+  width:315px !important;
+  position:relative ;
+  left:3px!important;
+  // margin-left:25px!important
 }
 // ::ng-deep .drop-down-date2{
 //   min-width: 273px !important;

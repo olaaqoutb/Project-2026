@@ -41,6 +41,8 @@ import {
 } from '../../dialogs/Stundensatz-aendeung-dialog/stundensatz-aendeung-dialog/stundensatz-aendeung-dialog.component';
 import { StundensatzAenderungListComponent } from '../stundensatz-aenderung-list/stundensatz-aenderung-list.component';
 import { StundensatzAenderungEntry } from '../../dialogs/stundensatz-aenderung-create-dialog/stundensatz-aenderung-create-dialog.component';
+import { LeistungskategorienListComponent } from '../leistungskategorien-list/leistungskategorien-list.component';
+import { LeistungskategorieEntry } from '../../dialogs/leistungskategorie-create-dialog/leistungskategorie-create-dialog.component';
 import { FlatNode } from '../../../models/Flat-node';
 import { TaetigkeitNode } from '../../../models/TaetigkeitNode';
 import { VertragService } from '../../../services/vertrag.service';
@@ -112,6 +114,7 @@ export const MY_DATE_FORMATS: MatDateFormats = {
     MatCardModule,
     MatToolbarModule,
     StundensatzAenderungListComponent,
+    LeistungskategorienListComponent,
 
   ],
   providers: [
@@ -130,6 +133,10 @@ vertragForm!: FormGroup;
   // Inline Stundensatz-Änderung rows shown next to the date/satz buttons in
   // the Verbraucher form. Replaces the old free-text textarea.
   stundensatzAenderungen: StundensatzAenderungEntry[] = [];
+  // Top-form (Vertrag) LK lists — only visible when editing an existing
+  // contract (vertragId truthy), never in create mode.
+  lkBasisstundensatzAenderungen: StundensatzAenderungEntry[] = [];
+  leistungskategorien: LeistungskategorieEntry[] = [];
   isFormEditable = false;
   isPositionFormEditable = false;
   isVerbraucherFormEditable = false;
@@ -433,8 +440,20 @@ get isTopVertragFormBusy(): boolean {
       auftragsreferenz: [''],
       rahmenvertragGZ: [''],
       vertragstype: ['', Validators.required],
-      anmerkung: ['']
+      anmerkung: [''],
+      lkBasisstundensatz: [''],
+      volumenLeistungspunkte: [''],
     });
+  }
+
+  onLkBasisstundensatzAenderungenChange(entries: StundensatzAenderungEntry[]): void {
+    this.lkBasisstundensatzAenderungen = entries;
+    this.vertragForm.markAsDirty();
+  }
+
+  onLeistungskategorienChange(entries: LeistungskategorieEntry[]): void {
+    this.leistungskategorien = entries;
+    this.vertragForm.markAsDirty();
   }
 bezugsartenOptions: string[] = [];
 vertragsTypOptions: string[] = [];
@@ -594,8 +613,15 @@ private initChildDetailForm(): void {
         auftragsreferenz: detailData.auftragsreferenz || '',
         rahmenvertragGZ: detailData.geschaeftszahl || '',
         vertragstype: vertragsTypValue || '',
-        anmerkung: detailData.anmerkung || ''
+        anmerkung: detailData.anmerkung || '',
+        lkBasisstundensatz: detailData.lkBasisstundensatz || '',
+        volumenLeistungspunkte: detailData.volumenLeistungspunkte || '',
       });
+      this.leistungskategorien = (detailData.lkDetails || []).map(d => ({
+        lkKategorie: d.lkKategorie || '',
+        lkFaktor: d.lkFaktor !== undefined && d.lkFaktor !== null ? Number(d.lkFaktor) : 0,
+        lkBezeichnung: d.lkBezeichnung || '',
+      }));
       this.originalVertragData = JSON.parse(JSON.stringify(this.vertragForm.getRawValue()));
       if (!this.isFormEditable) {
         this.vertragForm.disable({ emitEvent: false });
@@ -756,6 +782,13 @@ onSubmit(): void {
   if (formValues.ende) {
     dto.gueltigBis = formValues.ende.toISOString();
   }
+  dto.lkBasisstundensatz = formValues.lkBasisstundensatz?.toString() ?? '';
+  dto.volumenLeistungspunkte = formValues.volumenLeistungspunkte?.toString() ?? '';
+  dto.lkDetails = this.leistungskategorien.map(e => ({
+    lkKategorie: e.lkKategorie,
+    lkBezeichnung: e.lkBezeichnung,
+    lkFaktor: e.lkFaktor?.toString() ?? '',
+  }));
 
   const saveObservable = isNewVertrag
     ? this.vertrageService.createVertrag(dto)

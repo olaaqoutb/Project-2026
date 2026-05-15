@@ -79,6 +79,13 @@ export class TaetigkeitenLevel3Component {
   @Input() showDatum: boolean = true;
   @Input() showDuration: boolean = false;
   @Input() dauerStundenMax: number = 24;
+  /**
+   * Wenn `true`, bleibt die Buchungsart auch beim Bearbeiten einer
+   * bestehenden Tätigkeit editierbar (Korrigieren-Workflow). Standard
+   * ist `false`, damit die bisherige Sperre im Buchen-Workflow erhalten
+   * bleibt.
+   */
+  @Input() allowBuchungsartEditAlways: boolean = false;
 
   @Output() cancel = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();

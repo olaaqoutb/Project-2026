@@ -1,0 +1,19 @@
+<div class="leistungskategorien-list" [class.is-disabled]="disabled">
+  <!-- Rows only (kategorie | faktor | bezeichnung). Action buttons (+/edit/×)
+       live in the parent form-row, directly under the label. -->
+  <div class="leistungskategorien-rows">
+    <div
+      *ngFor="let entry of entries; let i = index"
+      class="leistungskategorien-row"
+      [class.selected]="selectedIndex === i"
+      (click)="selectRow(i)"
+    >
+      <span class="entry-kategorie">{{ entry.lkKategorie }}</span>
+      <span class="entry-bezeichnung">{{ entry.lkBezeichnung }}</span>
+      <span class="entry-faktor">{{ entry.lkFaktor | number : '1.6-6' }}</span>
+    </div>
+    <div class="empty-hint" *ngIf="!entries.length">
+      Keine Leistungskategorien vorhanden.
+    </div>
+  </div>
+</div>

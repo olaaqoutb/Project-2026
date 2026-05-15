@@ -1,0 +1,131 @@
+<!-- <h2 mat-dialog-title class="custom-dialog-title">Stundensatz-Änderungen</h2>
+
+<mat-dialog-content class="dialog-body">
+  <div class="list-section">
+    <div class="list-header">
+      <span class="list-title">Stundensatz-Änderungen</span>
+      <div class="list-actions">
+        <button
+          type="button"
+          class="action-btn"
+          [disabled]="disabled"
+          (click)="clearForm()"
+          matTooltip="Neue Stundensatz-Änderung"
+          matTooltipPosition="below"
+          aria-label="Neue Stundensatz-Änderung"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+        <button
+          type="button"
+          class="action-btn"
+          [disabled]="disabled || selectedIndex === null"
+          (click)="onRemove()"
+          matTooltip="Ausgewählte Änderung entfernen"
+          matTooltipPosition="below"
+          aria-label="Entfernen"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="stundensatz-rows" [class.is-disabled]="disabled">
+      <div
+        *ngFor="let entry of entries; let i = index"
+        class="stundensatz-row"
+        [class.selected]="selectedIndex === i"
+        (click)="selectRow(i)"
+      >
+        <span class="entry-date">{{ entry.aktivierungsdatum }}</span>
+        <span class="entry-satz">{{ entry.stundensatz | number : '1.2-2' }}</span>
+      </div>
+      <div class="empty-hint" *ngIf="!entries.length">
+        Keine Stundensatz-Änderungen vorhanden.
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="field-row">
+      <label class="field-label" for="aktivierungsdatum">Aktivierungsdatum:</label>
+      <mat-form-field
+        appearance="outline"
+        class="dialog-field date-field"
+        [class.invalid-required]="saveAttempted && (isDateMissing() || isDateDuplicate())"
+      >
+        <input
+          matInput
+          id="aktivierungsdatum"
+          [matDatepicker]="datumPicker"
+          [(ngModel)]="aktivierungsdatum"
+          [disabled]="disabled"
+          placeholder="TT.MM.JJJJ"
+          autocomplete="off"
+        />
+        <mat-datepicker-toggle matSuffix [for]="datumPicker" class="date-icon"></mat-datepicker-toggle>
+        <mat-datepicker #datumPicker panelClass="vertrag-stundensatz-date-panel"></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="field-row">
+      <label class="field-label" for="stundensatz">Stundensatz:</label>
+      <mat-form-field appearance="outline" class="dialog-field">
+        <input
+          matInput
+          id="stundensatz"
+          type="number"
+          step="0.01"
+          [(ngModel)]="stundensatz"
+          [disabled]="disabled"
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        mat-raised-button
+        class="dialog-btn dialog-btn-secondary"
+        [disabled]="disabled || selectedIndex !== null"
+        (click)="onAdd()"
+      >
+        <mat-icon>add</mat-icon>
+        <span>Hinzufügen</span>
+      </button>
+      <button
+        type="button"
+        mat-raised-button
+        class="dialog-btn dialog-btn-secondary"
+        [disabled]="disabled || selectedIndex === null"
+        (click)="onUpdate()"
+      >
+        <mat-icon>edit</mat-icon>
+        <span>Aktualisieren</span>
+      </button>
+    </div>
+
+    <div class="error-summary" *ngIf="saveAttempted && hasErrors()">
+      <p class="error-title">Es sind Eingabefehler aufgetreten</p>
+      <p class="error-msg" *ngIf="isDateDuplicate()">
+        Dieses 'Aktivierungsdatum' ist bereits vorhanden!
+      </p>
+      <p class="error-msg" *ngIf="isDateMissing()">
+        Bitte geben Sie ein Aktivierungsdatum ein.
+      </p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-raised-button class="dialog-btn dialog-btn-secondary" (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    <span>Abbrechen</span>
+  </button>
+  <span class="spacer"></span>
+  <button mat-raised-button class="dialog-btn dialog-btn-primary" (click)="onOk()">
+    <mat-icon>check</mat-icon>
+    <span>OK</span>
+  </button>
+</mat-dialog-actions> -->

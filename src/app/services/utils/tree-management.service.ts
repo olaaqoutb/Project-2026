@@ -104,13 +104,16 @@ export class TreeManagementService {
   }
 
 
-transformToTreeStructure(products: ApiProdukt[], stempelzeiten: ApiStempelzeit[], year: number,abschlussInfo?:ApiAbschlussInfo, hideEmptyMonths: boolean = true, limitToLastTwoMonths: boolean = false ): TaetigkeitNode[] {
+transformToTreeStructure(products: ApiProdukt[], stempelzeiten: ApiStempelzeit[], year: number,abschlussInfo?:ApiAbschlussInfo, hideEmptyMonths: boolean = true, limitToLastTwoMonths: boolean = false, korrigierenMode: boolean = false ): TaetigkeitNode[] {
 // let closingDate: Date | null = null;
 
 // if (abschlussInfo?.naechsterBuchbarerTag) {
 //   closingDate = new Date(abschlussInfo.naechsterBuchbarerTag);
 // }
 const lastClosedMonthKey = abschlussInfo?.letzterMonatsabschluss ?? null;
+const naechsterBuchbarerMonthKey = abschlussInfo?.naechsterBuchbarerTag
+  ? abschlussInfo.naechsterBuchbarerTag.substring(0, 7)
+  : null;
 
 
     const stempelzeitenMap = new Map<string, ApiStempelzeit>();
@@ -157,7 +160,7 @@ const lastClosedMonthKey = abschlussInfo?.letzterMonatsabschluss ?? null;
               minutenDauer: buchung.minutenDauer || 0,
               anmerkung: buchung.anmerkung || '',
               jiraTicket: buchung.jiraTicket || '',
-              buchungsart: buchung.buchungsart || 'BUCHUNG'
+              buchungsart: buchung.zeitTyp || buchung.stempelzeit?.zeitTyp || buchung.buchungsart || 'BUCHUNG'
             };
 
             let linkedStempelzeit = null;
@@ -206,7 +209,18 @@ const isCurrentYear = year === today.getFullYear();
 let startMonthIndex: number;
 let lastMonthIndex: number;
 
-if (isCurrentYear && limitToLastTwoMonths) {
+if (korrigierenMode) {
+  // Im Korrigieren-Workflow werden ALLE Monate nach dem letzten
+  // Monatsabschluss aufgebaut (bis Jahresende bzw. heutigem Monat).
+  // Das spätere Filtern entfernt geschlossene und leere Monate.
+  if (lastClosedMonthKey && lastClosedMonthKey.startsWith(`${year}-`)) {
+    const closedMonth = parseInt(lastClosedMonthKey.substring(5, 7), 10);
+    startMonthIndex = isNaN(closedMonth) ? 0 : Math.min(11, closedMonth);
+  } else {
+    startMonthIndex = 0;
+  }
+  lastMonthIndex = isCurrentYear ? today.getMonth() : 11;
+} else if (isCurrentYear && limitToLastTwoMonths) {
   lastMonthIndex = today.getMonth();
   startMonthIndex = Math.max(0, lastMonthIndex - 1);
 } else if (isCurrentYear) {
@@ -232,7 +246,10 @@ for (let month = startMonthIndex; month <= lastMonthIndex; month++) {
 
     allDayKeys.forEach(dayKey => {
       const activities = activitiesByDay[dayKey] || [];
-      const stamps = stempelzeitenByDay.get(dayKey) || [];
+      const rawStamps = stempelzeitenByDay.get(dayKey) || [];
+      // Bereitschaftszeit-Stempelungen werden in der Tätigkeiten-Sicht ignoriert,
+      // damit sie weder in der Stempelzeiten-Liste noch in "Gestempelt" auftauchen.
+      const stamps = rawStamps.filter(s => String(s.zeitTyp || '').toUpperCase() !== 'BEREITSCHAFT');
       let dateObj: Date | null = null;
       if (activities.length > 0) {
         const dStr = activities[0].type === 'stempelzeit' ? activities[0].data.login : activities[0].data.datum;
@@ -307,6 +324,35 @@ if (totalGestempeltMinutes === 0 && activities.length > 0) {
       }
     });
 
+// Korrigieren-Workflow: der `naechsterBuchbarerTag` aus abschlussInfo soll
+// IMMER als (ggf. leerer) Tagesknoten im zugehörigen Monat sichtbar sein —
+// damit der Benutzer dort sofort eine neue Tätigkeit anlegen kann.
+// Gestempelt / Gebucht stehen dabei auf 00:00.
+if (korrigierenMode && abschlussInfo?.naechsterBuchbarerTag) {
+  const naechsterDate = new Date(abschlussInfo.naechsterBuchbarerTag);
+  if (!isNaN(naechsterDate.getTime()) && naechsterDate.getFullYear() === year) {
+    const monthYear = this.timeUtilityService.getMonthYearString(naechsterDate);
+    const monthNode = monthsMap[monthYear];
+    if (monthNode) {
+      const dateKey = `${naechsterDate.getFullYear()}-${String(naechsterDate.getMonth() + 1).padStart(2, '0')}-${String(naechsterDate.getDate()).padStart(2, '0')}`;
+      const alreadyPresent = (monthNode.children || []).some(d => d.dateKey === dateKey);
+      if (!alreadyPresent) {
+        monthNode.children = monthNode.children || [];
+        monthNode.children.push({
+          name: this.timeUtilityService.formatDayName(naechsterDate),
+          dayName: this.timeUtilityService.formatDayName(naechsterDate),
+          gestempelt: '00:00',
+          gebucht: '00:00',
+          hasNotification: false,
+          stempelzeitenList: [],
+          children: [],
+          dateKey: dateKey,
+        });
+      }
+    }
+  }
+}
+
  const treeData: TaetigkeitNode[] = [];
 
 
@@ -322,8 +368,20 @@ Object.values(monthsMap).forEach(monthNode => {
 const isEmpty = !monthNode.children || monthNode.children.length === 0;
 const isCurrentMonth = currentMonthKey !== null && monthNode.monthKey === currentMonthKey;
 const isPrevMonth = prevMonthKey !== null && monthNode.monthKey === prevMonthKey;
+const isNaechsterBuchbarerMonth = naechsterBuchbarerMonthKey !== null
+  && monthNode.monthKey === naechsterBuchbarerMonthKey;
 
-if (hideEmptyMonths && isEmpty && !isCurrentMonth && !isPrevMonth) {
+if (korrigierenMode) {
+  // Korrigieren-Regel: Geschlossene Monate (≤ letzterMonatsabschluss) komplett
+  // ausblenden und leere Monate nur dann anzeigen, wenn sie den nächsten
+  // buchbaren Tag enthalten.
+  if (lastClosedMonthKey && monthNode.monthKey && monthNode.monthKey <= lastClosedMonthKey) {
+    return;
+  }
+  if (isEmpty && !isNaechsterBuchbarerMonth) {
+    return;
+  }
+} else if (hideEmptyMonths && isEmpty && !isCurrentMonth && !isPrevMonth) {
   return;
 }
 

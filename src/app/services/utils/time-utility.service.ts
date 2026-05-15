@@ -88,7 +88,8 @@ export class TimeUtilityService {
   }
 
   /**
-   * Format day name (e.g., "Mo. 15. Januar")
+   * Format day name (e.g., "Mo. 08. Januar") – Tageszahl zweistellig
+   * mit führender Null, passend zum deutschen Datumsformat.
    */
   formatDayName(date: Date): string {
     const dayNames = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
@@ -97,7 +98,8 @@ export class TimeUtilityService {
       'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
     ];
 
-    return `${dayNames[date.getDay()]} ${date.getDate()}. ${monthNames[date.getMonth()]}`;
+    const dayNumber = date.getDate().toString().padStart(2, '0');
+    return `${dayNames[date.getDay()]} ${dayNumber}. ${monthNames[date.getMonth()]}`;
   }
 
   /**

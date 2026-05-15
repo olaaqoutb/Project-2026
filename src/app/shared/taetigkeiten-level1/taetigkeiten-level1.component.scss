@@ -114,6 +114,12 @@
   border: 1px solid #e6e3e3 !important;
 }
 
+/* Zahlenfeld (Gebucht) wird rechtsbündig dargestellt, damit
+   Stunden:Minuten am rechten Rand ausgerichtet sind. */
+.time-btn {
+  text-align: right;
+}
+
 :host ::ng-deep {
   .taetigkeit-form mat-checkbox {
     .mdc-checkbox__ripple,

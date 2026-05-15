@@ -3,13 +3,13 @@
   <div class="left-panel">
     <div class="left-panel-header">
       <button (click)="goBackToList()" matTooltip="Zurück zur Liste">
-        <i class="mdi mdi-arrow-left icon-header"></i>
+        <i class="mdi mdi-chevron-left mdi-24px icon-header" aria-hidden="true"></i>
       </button>
 
       <h1 class="title"> Tätigkeiten Korrigieren - {{ personName }} </h1>
 
       <button (click)="addTimeEntryFromHeader()" matTooltip="Neue Remote-Buchung">
-        <mat-icon class="icon-header">R</mat-icon>
+        <i class="mdi mdi-24px mdi-read icon-header"></i>
       </button>
     </div>
 
@@ -32,8 +32,8 @@
       >
         <div class="tree-node leaf-node2">
           <div class="third-container-top">
-            <mat-icon class="icon-add" *ngIf="node.zeitTyp !== 'REMOTEZEIT'">loupe</mat-icon>
-            <mat-icon class="icon-r" *ngIf="node.zeitTyp === 'REMOTEZEIT'">R</mat-icon>
+            <i class="mdi mdi-plus-circle-outline icon-add" *ngIf="node.zeitTyp !== 'REMOTEZEIT'"></i>
+            <i class="mdi mdi-read icon-r" *ngIf="node.zeitTyp === 'REMOTEZEIT'"></i>
             <span class="activity-product">{{ node.productName }}</span>
             <span class="activity-position">{{ node.positionName }}</span>
             <span class="activity-buchungspunkt">{{ node.buchungspunkt }}</span>
@@ -98,7 +98,7 @@
 
           <div class="level2-container-bottom">
             <button (click)="onAlarmClick(node, $event)" matTooltip="Neue Buchung">
-              <i class="mdi mdi-alarm-plus icon-header icon-header-alarm"></i>
+              <i class="mdi mdi-alarm mdi-24px icon-header icon-header-alarm"></i>
             </button>
           </div>
         </div>
@@ -113,199 +113,25 @@
     class="right-panel"
     *ngIf="isCreatingNewThirdLevel && showRightPanelAlarmActions && !isLoading && alarmNode"
   >
-    <div class="form-header">
-      <button mat-button class="header-btn cancel-btn" (click)="cancelNewThirdLevel()">
-        <mat-icon>close</mat-icon>
-        <span>Abbrechen</span>
-      </button>
-
-      <h2 class="right-header">Tätigkeit</h2>
-
-      <button mat-button class="header-btn approve-btn" (click)="approveNewThirdLevel()">
-        <mat-icon>check</mat-icon>
-        <span>Speichern</span>
-      </button>
-    </div>
-
-    <form [formGroup]="alarmForm" class="taetigkeit-form">
-      <div class="form-field-group">
-        <label class="field-label">Buchungsart</label>
-        <mat-form-field appearance="outline" class="field-input">
-          <mat-select formControlName="buchungsart" [compareWith]="compareBuchungsart" panelClass="drop-down">
-            <mat-option *ngFor="let art of buchungsartOptions" [value]="art">
-              {{ getBuchungsartDisplay(art) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Produkt</label>
-        <mat-form-field appearance="outline" class="field-input" panelClass="drop-down">
-          <mat-select formControlName="produkt" [compareWith]="compareString">
-            <mat-option *ngFor="let produkt of produktOptions" [value]="produkt.kurzName">
-              {{ produkt.kurzName }} - {{ produkt.produktname }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Produktposition</label>
-        <mat-form-field appearance="outline" class="field-input">
-          <mat-select formControlName="produktposition" [compareWith]="comparePosition" panelClass="drop-down">
-            <mat-option *ngFor="let position of produktpositionOptions" [value]="position">
-              {{ position.produktPositionname }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Buchungspunkt</label>
-        <mat-form-field appearance="outline" class="field-input"
-          [class.field-empty]="isAlarmFieldEmpty('buchungspunkt') && alarmSaveAttempted">
-          <mat-select formControlName="buchungspunkt" [compareWith]="compareBuchungspunkt" panelClass="drop-down">
-            <mat-option *ngFor="let punkt of buchungspunktOptions" [value]="punkt">
-              {{ punkt.buchungspunkt }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Tätigkeit</label>
-        <mat-form-field appearance="outline" class="field-input"
-          [class.field-empty]="isAlarmFieldEmpty('taetigkeit') && alarmSaveAttempted">
-          <mat-select formControlName="taetigkeit" [compareWith]="compareTaetigkeit" panelClass="drop-down">
-            <mat-option *ngFor="let taetigkeit of taetigkeitOptions" [value]="taetigkeit">
-              {{ taetigkeit }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="time-section"
-        *ngIf="!isAlarmRemote()"
-        [class.time-section-locked]="!canEditAlarmTime"
-        [class.dauer-empty]="isAlarmDauerEmpty && alarmSaveAttempted">
-        <div class="time-group">
-          <label class="time-label">Dauer [Stunden]</label>
-          <div class="time-inputs-horizontal">
-            <div class="time-column">
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('durationStunde')?.value || 0"
-                [max]="1"
-                [disabled]="!canEditAlarmTime"
-                (valueChange)="onDurationHourChange($event)"
-              />
-            </div>
-
-            <div class="time-column">
-              <div class="mint"><span class="time-unit">[Minuten]</span></div>
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('durationMinuten')?.value || 0"
-                [max]="59"
-                [disabled]="!canEditAlarmTime || getAlarmHour('duration') === 1"
-                (valueChange)="alarmForm.get('durationMinuten')?.patchValue($event); validateAlarmTime('duration')"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="time-section" *ngIf="isAlarmRemote()" [class.time-section-locked]="!canEditAlarmTime">
-        <div class="time-group">
-          <label class="time-label">Anmeldezeit[Stunde]</label>
-          <div class="time-inputs-horizontal">
-            <div class="time-column">
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('anmeldezeitStunde')?.value || 0"
-                [max]="24"
-                [disabled]="!canEditAlarmTime"
-                (valueChange)="alarmForm.get('anmeldezeitStunde')?.patchValue($event); validateAlarmTime('anmeldezeit')"
-              />
-            </div>
-
-            <div class="time-column">
-              <div class="mint"><span class="time-unit">[Minuten]</span></div>
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('anmeldezeitMinuten')?.value || 0"
-                [max]="59"
-                [disabled]="!canEditAlarmTime || getAlarmHour('anmeldezeit') === 24"
-                (valueChange)="alarmForm.get('anmeldezeitMinuten')?.patchValue($event); validateAlarmTime('anmeldezeit')"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="time-group">
-          <label class="time-label">Abmeldezeit[Stunde]</label>
-          <div class="time-inputs-horizontal">
-            <div class="time-column">
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('abmeldezeitStunde')?.value || 0"
-                [max]="24"
-                [disabled]="!canEditAlarmTime"
-                (valueChange)="alarmForm.get('abmeldezeitStunde')?.patchValue($event); validateAlarmTime('abmeldezeit')"
-              />
-            </div>
-
-            <div class="time-column">
-              <div class="mint"><span class="time-unit">[Minuten]</span></div>
-              <app-taetigkeiten-time-box
-                [value]="alarmForm.get('abmeldezeitMinuten')?.value || 0"
-                [max]="59"
-                [disabled]="!canEditAlarmTime || getAlarmHour('abmeldezeit') === 24"
-                (valueChange)="alarmForm.get('abmeldezeitMinuten')?.patchValue($event); validateAlarmTime('abmeldezeit')"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Anmerkung</label>
-        <mat-form-field
-          appearance="outline"
-          class="field-input full-width"
-          [class.anmerkung-empty]="isAlarmAnmerkungEmpty && alarmSaveAttempted"
-        >
-          <textarea
-            matInput
-            formControlName="anmerkung"
-            placeholder="Anmerkung eingeben"
-            class="anmerkung-textarea-field"
-            rows="3"
-            maxlength="50"
-            cdkTextareaAutosize
-            cdkAutosizeMinRows="3"
-            cdkAutosizeMaxRows="8"
-          ></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="form-field-group">
-        <label class="field-label">Jira-Ticket Nr:</label>
-        <mat-form-field
-          appearance="outline"
-          class="field-input"
-          [class.jira-invalid]="isAlarmJiraTicketInvalid"
-        >
-          <input
-            matInput
-            formControlName="jiraTicket"
-            placeholder="PGETIT-..."
-            class="gebucht-third datum"
-            maxlength="30"
-            (input)="onJiraInput($event, alarmForm)"
-          />
-          <mat-error *ngIf="isAlarmJiraTicketInvalid">
-            {{ jiraTicketErrorMessage(alarmForm) }}
-          </mat-error>
-        </mat-form-field>
-      </div>
-    </form>
+    <app-taetigkeiten-level3
+      [formGroup]="alarmForm"
+      title="Tätigkeit"
+      [buchungsartOptions]="buchungsartOptions"
+      [produktOptions]="produktOptions"
+      [produktpositionOptions]="produktpositionOptions"
+      [buchungspunktOptions]="buchungspunktOptions"
+      [taetigkeitOptions]="taetigkeitOptions"
+      [isEditing]="true"
+      [isCreatingNew]="true"
+      [saveAttempted]="alarmSaveAttempted"
+      [canEditTimeSection]="canEditAlarmTime"
+      [showDatum]="false"
+      [showDuration]="!isAlarmRemote()"
+      [dauerStundenMax]="24"
+      (cancel)="cancelNewThirdLevel()"
+      (save)="approveNewThirdLevel()"
+      (validateTime)="validateAlarmTime($event)"
+    ></app-taetigkeiten-level3>
   </div>
 
   <!-- ========================================= -->

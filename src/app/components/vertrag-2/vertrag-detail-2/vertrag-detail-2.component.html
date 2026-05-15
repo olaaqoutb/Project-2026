@@ -11,7 +11,7 @@
             matTooltip="Zurück"
             matTooltipPosition="below"
           >
-            <i class="mdi mdi-chevron-left mdi-24px" aria-hidden="true"></i>
+            <i class="mdi mdi-chevron-left mdi-24px icon-header" aria-hidden="true"></i>
           </button>
           <button
             *ngIf="isFormEditable"
@@ -23,7 +23,7 @@
             matTooltip="Abbrechen"
             matTooltipPosition="below"
           >
-            <mat-icon>close</mat-icon>
+            <i class="mdi mdi-close mdi-24px icon-header" aria-hidden="true"></i>
             Abbrechen
           </button>
           <button
@@ -73,7 +73,7 @@
           <!-- First Column -->
           <div class="form-column">
             <div class="field-row">
-              <mat-label class="required field-label">Vertragsname</mat-label>
+              <mat-label class="required field-label test">Vertragsname</mat-label>
               <mat-form-field appearance="outline" class="flex-field"
                 [class.invalid-required]="vertragSubmitAttempted && vertragForm.get('vertragsname')?.invalid">
                 <input
@@ -194,6 +194,68 @@
                 formControlName="lkVertrag"
                 class="check-abov"
               ></mat-checkbox>
+            </div>
+
+            <!-- Volumen [Leistungspunkte] — only on saved Verträge, not while creating -->
+            <div class="field-row" *ngIf="vertragId">
+              <mat-label class="field-label">Volumen [Leistungspunkte]</mat-label>
+              <mat-form-field appearance="outline" class="flex-field">
+                <input
+                  matInput
+                  formControlName="volumenLeistungspunkte"
+                  type="number"
+                  maxlength="30"
+                  class="input-height"
+                />
+              </mat-form-field>
+            </div>
+
+            <!-- Leistungskategorien list — only on saved Verträge, not while creating -->
+            <div class="field-row top-list-row" *ngIf="vertragId">
+              <div class="stundensatz-label-column">
+                <mat-label class="field-label">Leistungskategorien</mat-label>
+                <div class="stundensatz-action-row">
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="leistungskategorienList.onCreate()"
+                    matTooltip="Neue Leistungskategorie"
+                    matTooltipPosition="below"
+                    aria-label="Neue Leistungskategorie"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="leistungskategorienList.onEdit()"
+                    matTooltip="Ausgewählte Leistungskategorie bearbeiten"
+                    matTooltipPosition="below"
+                    aria-label="Bearbeiten"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="leistungskategorienList.onCancelSelected()"
+                    matTooltip="Ausgewählte Leistungskategorie entfernen"
+                    matTooltipPosition="below"
+                    aria-label="Entfernen"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <app-leistungskategorien-list
+                #leistungskategorienList
+                [entries]="leistungskategorien"
+                [disabled]="!isFormEditable"
+                (entriesChange)="onLeistungskategorienChange($event)"
+              ></app-leistungskategorien-list>
             </div>
           </div>
 
@@ -336,6 +398,70 @@
                   id="form-field-margin"
                 />
               </mat-form-field>
+            </div>
+
+            <!-- LK-Basisstundensatz [Euro] — only on saved Verträge, not while creating -->
+            <div class="field-row" *ngIf="vertragId">
+              <mat-label class="field-label">LK-Basisstundensatz [Euro]</mat-label>
+              <mat-form-field appearance="outline" class="flex-field">
+                <input
+                  matInput
+                  formControlName="lkBasisstundensatz"
+                  type="number"
+                  step="0.01"
+                  maxlength="30"
+                  class="input-height"
+                />
+              </mat-form-field>
+            </div>
+
+            <!-- LK-Basisstundensatz-Änderung list — reuses the level-2 Stundensatz list component -->
+            <div class="field-row top-list-row" *ngIf="vertragId">
+              <div class="stundensatz-label-column">
+                <mat-label class="field-label">LK-Basisstundensatz-Änderung</mat-label>
+                <div class="stundensatz-action-row">
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="lkBasisList.onCreate()"
+                    matTooltip="Neue Stundensatz-Änderung"
+                    matTooltipPosition="below"
+                    aria-label="Neue Stundensatz-Änderung"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="lkBasisList.onEdit()"
+                    matTooltip="Ausgewählte Änderung bearbeiten"
+                    matTooltipPosition="below"
+                    aria-label="Bearbeiten"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="stundensatz-action-btn"
+                    [disabled]="!isFormEditable"
+                    (click)="lkBasisList.onCancelSelected()"
+                    matTooltip="Ausgewählte Änderung entfernen"
+                    matTooltipPosition="below"
+                    aria-label="Entfernen"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <app-stundensatz-aenderung-list
+                #lkBasisList
+                [entries]="lkBasisstundensatzAenderungen"
+                [disabled]="!isFormEditable"
+                [snapToMonthStart]="true"
+                (entriesChange)="onLkBasisstundensatzAenderungenChange($event)"
+              ></app-stundensatz-aenderung-list>
             </div>
           </div>
         </div>
@@ -707,7 +833,7 @@
                 <mat-label class="field-label required">Planungsjahr</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
                   [class.invalid-required]="positionSubmitAttempted && positionDetailForm.get('planungsjahr')?.invalid">
-                  <input matInput formControlName="planungsjahr" maxlength="30" />
+                  <input matInput formControlName="planungsjahr" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
 
@@ -715,7 +841,7 @@
               <div class="form-row">
                 <mat-label class="field-label">Volumen [Stunden]</mat-label>
                 <mat-form-field appearance="outline" class="form-field">
-                  <input matInput formControlName="volumen" maxlength="30" />
+                  <input matInput formControlName="volumen" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
 
@@ -724,7 +850,7 @@
                 <mat-label class="field-label required">Volumen [Euro]</mat-label>
                 <mat-form-field appearance="outline" class="form-field"
                   [class.invalid-required]="positionSubmitAttempted && positionDetailForm.get('volumenEuro')?.invalid">
-                  <input matInput formControlName="volumenEuro" maxlength="30" />
+                  <input matInput formControlName="volumenEuro" type="number" maxlength="30" />
                 </mat-form-field>
               </div>
               <!-- Sixth Line - Aktiv Checkbox -->
@@ -746,7 +872,7 @@
                 <mat-form-field appearance="outline" class="form-field">
                   <mat-select
                     formControlName="rollenbezRahmenvertrag"
-                    panelClass="drop-down-bottom"
+                    panelClass="drop-down"
                   >
                     <mat-option [value]="''" disabled>{{ messages.placeholders.rollenbez }}</mat-option>
                     <mat-option
@@ -798,7 +924,7 @@
                   [class.invalid-required]="verbraucherSubmitAttempted && isVerbraucherRequiredMissing('verbraucherTyp')">
                   <mat-select
                     formControlName="verbraucherTyp"
-                    panelClass="drop-down-bottom"
+                    panelClass="drop-down"
                   >
                     <mat-option [value]="''" disabled>{{ messages.placeholders.verbrauchertyp }}</mat-option>
                     <mat-option
@@ -837,7 +963,7 @@
                   >
                     <mat-select
                       formControlName="person"
-                      panelClass="drop-down-bottom"
+                      panelClass="drop-down"
                     >
                       <mat-option [value]="''" disabled>{{ messages.placeholders.person }}</mat-option>
                       <mat-option
@@ -906,7 +1032,7 @@
                 class="form-row stundensatz-row"
                 *ngIf="!selectedPosition?.isNew && !selectedPosition?.isPendingCreation"
               >
-                <div class="stundensatz-label-column">
+                <div class="stundensatz-label-column-bottom">
                   <mat-label class="field-label width">Stundensatz-Änderung</mat-label>
                   <div class="stundensatz-action-row">
                     <button
@@ -934,7 +1060,7 @@
                     </button>
                     <button
                       type="button"
-                      
+
                       class="stundensatz-action-btn"
                       [disabled]="!isVerbraucherFormEditable"
                       (click)="stundensatzList.onCancelSelected()"
@@ -996,7 +1122,7 @@
                   <mat-select
                     formControlName="produkt"
                     class="child-input"
-                    panelClass="drop-down-bottom"
+                    panelClass="drop-down"
                   >
                     <mat-option [value]="''" disabled>{{ messages.placeholders.produkt }}</mat-option>
                     <mat-option *ngFor="let p of vertragList" [value]="p.id">
@@ -1014,7 +1140,7 @@
                   <mat-select
                     formControlName="produktposition"
                     class="child-input"
-                    panelClass="drop-down-bottom"
+                    panelClass="drop-down"
                   >
                     <mat-option [value]="''" disabled>{{ messages.placeholders.produktposition }}</mat-option>
                     <mat-option

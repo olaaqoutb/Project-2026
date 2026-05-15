@@ -58,8 +58,16 @@ export class OrganisationeinheitenListComponent {
   datalistoftaple: ApiOrganisationseinheit[] = [];
   selectedRows: ApiOrganisationseinheit[] = [];
 
-  private static readonly LAST_ROW_KEY = 'orgeinheiten.lastRowId';
   selectedRowId: string | null = null;
+
+  /** Tooltip-Texte – zentral hier definiert, damit die HTML-Vorlage nichts
+   *  Eigenes übersetzen muss und die Texte leicht wiederverwendbar bleiben. */
+  readonly tooltips = {
+    neu: 'Neue Organisation anlegen',
+    suche: 'Suchen',
+    inklInaktive: 'Inaktive Einträge anzeigen',
+    sort: 'Sortieren',
+  };
 
   sortState: { [key: string]: 'asc' | 'desc' | '' } = {
     kurzbezeichnung: '',
@@ -80,12 +88,22 @@ export class OrganisationeinheitenListComponent {
   ) { }
 
   ngOnInit(): void {
-    this.selectedRowId = sessionStorage.getItem(OrganisationeinheitenListComponent.LAST_ROW_KEY);
+    // Wenn wir vom Details-"Zurück"-Button hierher zurückkehren, liefert
+    // dieser die zuletzt geöffnete Zeilen-ID im History-State mit. So bleibt
+    // die Auswahl erhalten, ohne dass wir sessionStorage brauchen. Beim Klick
+    // aus dem Seitenmenü (oder von einer anderen Komponente) fehlt der State
+    // und die Liste startet wie gewünscht frisch.
+    const restoreId = (history.state && history.state.restoreRowId) as string | undefined;
+    if (restoreId) {
+      this.selectedRowId = restoreId;
+    }
 
     this.OrganisationseinheitService.getActiveData().subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.scrollToSelectedRow();
+        if (this.selectedRowId) {
+          this.scrollToSelectedRow();
+        }
       },
       error: (err) => {
         this.errorHandlingService.handleAppError(err);
@@ -181,11 +199,9 @@ export class OrganisationeinheitenListComponent {
     });
   }
 
-  /**
-   * Scrolls the previously-selected row into view by adjusting only the
-   * table-container's scrollTop. Using scrollIntoView would also scroll the
-   * page and hide the header — this scopes the scroll to the inner container.
-   */
+  /** Scrollt die zuletzt ausgewählte Zeile (z.B. nach Rückkehr aus Details)
+   *  innerhalb des Tabellen-Containers in die Mitte, ohne die ganze Seite
+   *  zu verschieben. */
   private scrollToSelectedRow(): void {
     if (!this.selectedRowId) return;
     const id = this.selectedRowId;
@@ -201,17 +217,11 @@ export class OrganisationeinheitenListComponent {
   selectRow(row: ApiOrganisationseinheit): void {
     this.selectedRows = [row];
     this.selectedRowId = row.id ?? null;
-    if (row.id) {
-      sessionStorage.setItem(OrganisationeinheitenListComponent.LAST_ROW_KEY, row.id);
-    }
   }
 
   goToDetails(row: ApiOrganisationseinheit): void {
     this.selectedRows = [row];
     this.selectedRowId = row.id ?? null;
-    if (row.id) {
-      sessionStorage.setItem(OrganisationeinheitenListComponent.LAST_ROW_KEY, row.id);
-    }
     this.router.navigate(['/organisationseinheiten', row.id], {
       state: { selectedOrganisation: row }
     });
@@ -248,8 +258,10 @@ export class OrganisationeinheitenListComponent {
   }
 
   getSortIcon(column: string): string {
-    if (this.sortState[column] === 'desc') return 'keyboard_arrow_down';
-    return 'keyboard_arrow_up';
+    if (this.activeSortColumn !== column) return '';
+    if (this.sortState[column] === 'desc') return 'mdi-chevron-down';
+    if (this.sortState[column] === 'asc') return 'mdi-chevron-up';
+    return '';
   }
 
   private applySort(): void {

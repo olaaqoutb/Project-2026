@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DateAdapter } from '@angular/material/core';
@@ -32,6 +33,8 @@ import {
   DATE_FORMATS
 } from '../../bereitschaftszeiten/bereitschaftszeiten-details/bereitschaftszeiten-details.component';
 import { GermanDateInputDirective } from '../../../shared/directives/german-date-input.directive';
+import { StatusPanelService } from '../../../services/utils/status-panel-status.service';
+import { AppConstants } from '../../../models/app-constants';
 
 
 @Component({
@@ -49,6 +52,7 @@ import { GermanDateInputDirective } from '../../../shared/directives/german-date
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
+    MatTooltipModule,
     MatProgressSpinnerModule,
     GermanDateInputDirective
   ],
@@ -72,6 +76,16 @@ export class OrganisationeinheitenDetailsComponent {
   submitted = false;
   selectedOrganization: ApiOrganisationseinheit | null = null;
 
+  /** Tooltip-Texte für alle Toolbar-Buttons. Hier zentral abgelegt, damit
+   *  Übersetzungs- oder Wording-Änderungen nicht im Template gesucht werden
+   *  müssen. */
+  readonly tooltips = {
+    zurueck: 'Zurück zur Liste',
+    abbrechen: 'Abbrechen',
+    bearbeiten: 'Bearbeiten',
+    speichern: 'Speichern',
+  };
+
   dataSource: ApiOrganisationseinheit[] = [];
   uebergeordneteEinheiten: ApiOrganisationseinheit[] = [];
   leitungPersonen: ApiPerson[] = [];
@@ -84,7 +98,8 @@ export class OrganisationeinheitenDetailsComponent {
     private router: Router,
     private OrganisationseinheitService: OrganisationseinheitService,
     private personenService : PersonenService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private statusPanelService: StatusPanelService,
 
   ) {
     this.organisationseinheitForm = this.createForm();
@@ -327,26 +342,64 @@ export class OrganisationeinheitenDetailsComponent {
     };
 
     if (this.isNewOrganisationseinheit) {
+      const startTime = Date.now();
       this.OrganisationseinheitService.createOrganisation(newOrUpdatedOrg).subscribe({
         next: (response: ApiOrganisationseinheit) => {
+          const duration = Date.now() - startTime;
           console.log('Organisationseinheit created successfully:', response);
           handleSaveSuccess(response);
+          this.statusPanelService.addMessage(
+            'success',
+            'POST',
+            AppConstants.API_URL_ORGANISATION_EINHEITEN,
+            '200',
+            duration,
+            AppConstants.MSG_ORGANISATIONSEINHEIT_CREATED_SUCCESS
+          );
         },
-        error: (err) => handleSaveError(err, 'create')
+        error: (err) => {
+          const duration = Date.now() - startTime;
+          handleSaveError(err, 'create');
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_ORGANISATIONSEINHEIT_CREATED_ERROR, 'POST', duration, err);
+        }
       });
     } else {
+      const startTime = Date.now();
       this.OrganisationseinheitService.updateOrganisation(newOrUpdatedOrg).subscribe({
         next: (response) => {
+          const duration = Date.now() - startTime;
           console.log('Organisationseinheit updated successfully:', response);
           handleSaveSuccess(response);
+          this.statusPanelService.addMessage(
+            'success',
+            'PUT',
+            `${AppConstants.API_URL_ORGANISATION_EINHEITEN}/${newOrUpdatedOrg.id ?? ''}`,
+            '200',
+            duration,
+            AppConstants.MSG_ORGANISATIONSEINHEIT_UPDATED_SUCCESS
+          );
         },
-        error: (err) => handleSaveError(err, 'update')
+        error: (err) => {
+          const duration = Date.now() - startTime;
+          handleSaveError(err, 'update');
+          this.statusPanelService.addMessageRequest(
+            AppConstants.MSG_ORGANISATIONSEINHEIT_UPDATED_ERROR, 'PUT', duration, err);
+        }
       });
     }
   }
 
   onCancel(): void {
-    this.router.navigate(['/organisationseinheiten']);
+    // Beim Zurück-Klick die ID der gerade geöffneten Einheit mitgeben,
+    // damit die Liste sie wieder hervorheben und in die Mitte scrollen kann.
+    // Bei einer neu angelegten (noch nicht gespeicherten) Einheit gibt es
+    // keine ID -> in dem Fall navigieren wir ohne State, die Liste startet
+    // dann frisch ohne Markierung.
+    const restoreRowId = this.selectedOrganization?.id;
+    this.router.navigate(['/organisationseinheiten'], restoreRowId
+      ? { state: { restoreRowId } }
+      : {});
   }
 
   onCancelEdit(): void {

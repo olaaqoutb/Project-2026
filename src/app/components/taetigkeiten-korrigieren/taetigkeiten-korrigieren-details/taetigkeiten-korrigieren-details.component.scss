@@ -52,7 +52,7 @@ button[mattooltip] {
   pointer-events: auto !important;
   cursor: pointer !important;
   display: inline-flex !important;
-  align-items: center !important;
+  align-items: start !important;
   justify-content: center !important;
   height: auto !important;
   min-height: 0;
@@ -193,13 +193,16 @@ i.mdi.icon-header-alarm,
 
   &.selected {
     background-color: #e3f2fd;
-    border-left: 4px solid #2e4155;
   }
 }
 
 .calendar-icon {
-  font-size: 16px;
+  font-size: 10pt;
   color: #2e4155;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .gebucht-icon {
@@ -242,6 +245,7 @@ i.mdi.icon-header-alarm,
   gap: 8px;
   width: 100%;
   margin-left: 5px;
+  align-items: flex-start;
 }
 
 .level-container {
@@ -267,7 +271,11 @@ i.mdi.icon-header-alarm,
   min-height: 24px;
   padding: 0;
   margin: 0;
-  align-items: center !important;
+  align-items: start !important;
+  .calendar-icon {
+    position: relative;
+    bottom: 1px;
+  }
 }
 
 .day-content-wrapper {
@@ -291,7 +299,7 @@ i.mdi.icon-header-alarm,
   font-weight: bold;
   font-size: 14px;
   color: #333;
-  margin-left: 10px;
+  margin-left: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -28,6 +28,10 @@ export interface StundensatzAenderungEntry {
 export interface StundensatzAenderungCreateDialogData {
   existingDates: string[];
   entry?: StundensatzAenderungEntry;
+  // When true the picker defaults to the 1st of the current month and any
+  // chosen date is normalized to the 1st of its month before saving.
+  // Used by the LK-Basisstundensatz-Änderung context.
+  snapToMonthStart?: boolean;
 }
 
 @Injectable()
@@ -109,6 +113,9 @@ export class StundensatzAenderungCreateDialogComponent {
     if (this.data?.entry) {
       this.aktivierungsdatum = this.parseGermanDate(this.data.entry.aktivierungsdatum);
       this.stundensatz = this.data.entry.stundensatz;
+    } else if (this.data?.snapToMonthStart) {
+      const now = new Date();
+      this.aktivierungsdatum = new Date(now.getFullYear(), now.getMonth(), 1);
     }
   }
 
@@ -146,7 +153,10 @@ export class StundensatzAenderungCreateDialogComponent {
   private formattedDate(): string {
     if (this.aktivierungsdatum instanceof Date) {
       if (isNaN(this.aktivierungsdatum.getTime())) return '';
-      const d = this.aktivierungsdatum.getDate().toString().padStart(2, '0');
+      const day = this.data?.snapToMonthStart
+        ? 1
+        : this.aktivierungsdatum.getDate();
+      const d = day.toString().padStart(2, '0');
       const m = (this.aktivierungsdatum.getMonth() + 1).toString().padStart(2, '0');
       const y = this.aktivierungsdatum.getFullYear();
       return `${d}.${m}.${y}`;

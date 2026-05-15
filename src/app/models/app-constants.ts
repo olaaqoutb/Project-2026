@@ -75,6 +75,14 @@ export class AppConstants {
   static readonly MSG_TAETIGKEITEN_DELETED_SUCCESS = 'Die Tätigkeitsbuchung wurde erfolgreich gelöscht';
   static readonly MSG_TAETIGKEITEN_DELETED_ERROR = 'Die Tätigkeitsbuchung wurde nicht gelöscht';
 
+  // Organisationseinheit
+  static readonly MSG_ORGANISATIONSEINHEIT_CREATED_SUCCESS = 'Die Organisationseinheit wurde erfolgreich erzeugt';
+  static readonly MSG_ORGANISATIONSEINHEIT_CREATED_ERROR = 'Die Organisationseinheit wurde nicht erzeugt';
+  static readonly MSG_ORGANISATIONSEINHEIT_UPDATED_SUCCESS = 'Die Organisationseinheit wurde erfolgreich geändert';
+  static readonly MSG_ORGANISATIONSEINHEIT_UPDATED_ERROR = 'Die Organisationseinheit wurde nicht geändert';
+  static readonly MSG_ORGANISATIONSEINHEIT_DELETED_SUCCESS = 'Die Organisationseinheit wurde erfolgreich gelöscht';
+  static readonly MSG_ORGANISATIONSEINHEIT_DELETED_ERROR = 'Die Organisationseinheit wurde nicht gelöscht';
+
   // Freigabeposition
   static readonly MSG_FREIGABEPOSITIONEN_UPDATED_SUCCESS = 'Die Freigabeposition wurde erfolgreich geändert';
   static readonly MSG_FREIGABEPOSITIONEN_UPDATED_ERROR = 'Die Freigabeposition wurde nicht geändert';
